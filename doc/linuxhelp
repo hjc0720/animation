@@ -1,0 +1,26 @@
+使用C/C++语言开发程序时，当程序crash的时候产生core dump文件对于调试程序是很有帮助的。在Redhat Linux系统中默认是不生成core dump文件的，这是因为在/etc/profile文件中有这样一行
+ulimit -S -c 0 > /dev/null 2>&1
+
+如何打开core dump呢？最简单的方法是用户在自己的~/.bash_profile中加入ulimit -S -c unlimited > /dev/null 2>&1，这样设置后允许当前用户生成没有大小限制的core dump文件。此外还有两种系统级修改生成core dump的方法。
+
+
+指定动态库搜索路径
+
+众所周知，Linux动态库的默认搜索路径是/lib和/usr/lib。动态库被创建后，一般都复制到这两个目录中。当程序执行时需要某动态库，并且该动 态库还未加载到内存中，则系统会自动到这两个默认搜索路径中去查找相应的动态库文件，然后加载该文件到内存中，这样程序就可以使用该动态库中的函数，以及该动态库的其它资源了。在Linux 中，动态库的搜索路径除了默认的搜索路径外，还可以通过以下三种方法来指定。
+
+方法一：在配置文件/etc/ld.so.conf中指定动态库搜索路径；
+vi /etc/ld.so.conf 
+添加 lib目录 
+ldconfig 
+
+方法二：通过环境变量LD_LIBRARY_PATH指定动态库搜索路径；
+export LD_LIBRARY_PATH=”LD_LIBRARY_PATH:/opt/” 
+
+方法三：在编译目标代码时指定该程序的动态库搜索路径。
+还可以在编译目标代码时指定程序的动态库搜索路径。通过gcc 的参数”-Wl,-rpath,”指定
+
+
+
+
+
+

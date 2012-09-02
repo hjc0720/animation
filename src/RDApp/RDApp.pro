@@ -1,0 +1,22 @@
+CONFIG += qt
+CONFIG += debug
+TEMPLATE = app
+TARGET = read_google_book
+include(../path.pri)
+
+SOURCES += main.cpp RDMainWindow.cpp
+
+HEADERS += RDMainWindow.h 
+
+INCLUDEPATH += ../RDBase
+
+DEPENDENCY_SHARE_LIBRARIES = RDCommon
+DEPENDENCY_SHARE_LIBRARIES += RDCommonData
+DEPENDENCY_SHARE_LIBRARIES += RDBase RDDocument
+DEPENDENCY_SHARE_LIBRARIES += RD3rdSupport
+DEPENDENCY_SHARE_LIBRARIES += RDObject
+DEPENDENCY_SHARE_LIBRARIES += RDToolEdit
+DEPENDENCY_SHARE_LIBRARIES += RDWidget
+DEPENDENCY_SHARE_LIBRARIES += RDTimeline
+LIBS += -lssl
+include("../../depends.pri")

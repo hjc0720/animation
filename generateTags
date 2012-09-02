@@ -1,0 +1,4 @@
+#!/bin/bash 
+ctags -aR --fields=+ianS --extra=+q -o tags
+find -name "*.h" -o -name "*.cpp" -o -name "*.c" > cscope.file
+cscope -bq -i cscope.file

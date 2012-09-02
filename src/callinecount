@@ -1,0 +1,4 @@
+#!/bin/bash
+find ./ -name "*.h" -o -name "*.cpp" | xargs wc -l > temp_hjc
+sort -n temp_hjc
+rm temp_hjc

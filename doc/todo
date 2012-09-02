@@ -1,0 +1,4 @@
+将keylist改成模板形式
+添加时间线
+redo undo
+bound须包含子的大小，但是还得知道本身的bound,因此建议增加物件bound和node bound，
