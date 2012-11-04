@@ -21,6 +21,7 @@
 #include "mac_define.h"
 #include "RDScene.h"
 #include "RDStory.h"
+#include "RDSection.h"
 #include <QDebug>
 
 
@@ -30,7 +31,7 @@ RDSectionView::RDSectionView(int nScale,RDScene* pScene,QWidget* pWidget )
     :QGraphicsView(pWidget)
 	 ,m_nScale(nScale)
 {
-	SetScene(pScene);
+	SetSceneNode(pScene);
 	scale(1.0 / m_nScale,1);
 	setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
@@ -43,17 +44,40 @@ RDSectionView::RDSectionView(int nScale,RDScene* pScene,QWidget* pWidget )
 	//rt.setBottom(std::max(rt.height(),(qreal)event->size().height()));
 	//setSceneRect(rt);
 //}	
-void RDSectionView::SetScene(RDScene* pScene)
+void RDSectionView::SetSceneNode(RDScene* pScene)
 {
 	m_pScene = pScene;
 	qreal fWidth = m_pScene->GetSceneLength() ;/// m_nScale;
 	qreal fHeight = (m_pScene->GetTotalChildCount() + 1) * RDTRACK_HEIGTH;
-	QGraphicsScene* pGraphicScene = new QGraphicsScene(0,0,fWidth,fHeight);
-	//size_t nStoryCount = pScene->GetStoryCount();
-	const RDStory* pStory = pScene->GetStory(0);
-	pGraphicScene->addRect(0,0,pStory->GetStoryLength() ,RDTRACK_HEIGTH);
-	qDebug() << "story length:"<<pStory->GetStoryLength()<<m_nScale;
 	QGraphicsScene* pOldScene = scene();
-	setScene(pGraphicScene);
 	SAFE_DELETE(pOldScene);
+
+	QGraphicsScene* pGraphicScene = new QGraphicsScene(0,0,fWidth,fHeight);
+	setScene(pGraphicScene);
+    
+	size_t nStoryCount = pScene->GetStoryCount();
+    for(size_t i = 0; i < nStoryCount; i++)
+    {
+        const RDStory* pStory = pScene->GetStory(i);
+        pGraphicScene->addRect(pStory->GetStartTime(false),0,pStory->GetStoryLength() ,RDTRACK_HEIGTH);
+        int nIndex = 1;
+        AddChildNodeSection(nIndex,pScene,pStory->GetStoryId());
+    }
+//	qDebug() << "story length:"<<pStory->GetStoryLength()<<m_nScale;
+}
+
+void RDSectionView::AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& idStory)
+{
+    size_t nChildCount = pNode->GetChildCount();
+    for(size_t  i = 0; i < nChildCount; i++)
+    {
+        RDNode* pChildNode = pNode->GetChild(i);
+        for(size_t j = 0; j < pChildNode->GetSectionCount(idStory); j++)
+        {
+            const RDSection* pSection = pChildNode->GetSection(idStory,j);
+            scene()->addRect(pSection->GetStartTime(),nIndex * RDTRACK_HEIGTH,pSection->GetLength() ,RDTRACK_HEIGTH);
+        }
+        nIndex++;
+        AddChildNodeSection(nIndex,pChildNode,idStory);
+    }
 }

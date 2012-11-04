@@ -62,7 +62,7 @@ RDNode::~RDNode()
     }   
     for(auto mapit = m_vecSetctionListMap.begin(); mapit != m_vecSetctionListMap.end(); mapit++)
     {
-        std::list<RDSection*>& pSectionList = mapit->second;
+        std::vector<RDSection*>& pSectionList = mapit->second;
         for(auto listIt = pSectionList.begin(); listIt != pSectionList.end(); listIt++)
         {
             RDSection* pSection = *listIt;
@@ -148,12 +148,12 @@ bool RDNode::AddSection(const RDTime& nStoryTime,const RDTime& nLength,const QUu
     auto pFindRes = m_vecSetctionListMap.find(storyId);
     if(pFindRes == m_vecSetctionListMap.end())
     {
-        std::list<RDSection*> sectionList;
+        std::vector<RDSection*> sectionList;
         sectionList.push_back(pNewSection);
-        m_vecSetctionListMap.insert(pair<QUuid,std::list<RDSection*>>(storyId,sectionList));
+        m_vecSetctionListMap.insert(pair<QUuid,std::vector<RDSection*>>(storyId,sectionList));
         return true;
     }
-    std::list<RDSection*>& pSectionList = pFindRes->second;
+    std::vector<RDSection*>& pSectionList = pFindRes->second;
     for(auto it = pSectionList.begin(); it != pSectionList.end(); it++) 
     {
         if(nStoryTime < (*it)->GetStartTime())
@@ -382,6 +382,7 @@ RDNode* RDNode::GetChild(const QUuid& NodeId)
     }
     return 0;
 }
+
 bool RDNode::CalSpaceVector(const RDTime& nSectionTime,RDRenderData& RenderData)
 {
     bool ret = false;
@@ -394,6 +395,19 @@ bool RDNode::CalSpaceVector(const RDTime& nSectionTime,RDRenderData& RenderData)
     RenderData.SetPos(vOffsetPos);
     //================================================================================
     return ret;
+}
+
+size_t RDNode::GetSectionCount(const QUuid& idStory)const
+{
+    auto pFindRes = m_vecSetctionListMap.find(idStory);
+    if(pFindRes != m_vecSetctionListMap.end())
+        return pFindRes->second.size();
+    else
+        return 0;
+}
+RDSection* RDNode::GetSection(const QUuid& idStory,size_t nIndex)
+{
+    return m_vecSetctionListMap[idStory].at(nIndex);
 }
 //================================================================================
 RDFileDataStream& operator << (RDFileDataStream& buffer,const RDNode& node)
@@ -422,7 +436,7 @@ RDFileDataStream& operator << (RDFileDataStream& buffer,const RDNode& node)
     for(auto it = node.m_vecSetctionListMap.begin(); it != node.m_vecSetctionListMap.end(); it++)
     {
         buffer << it->first;
-        const list<RDSection*>& SectionList = it->second;
+        const vector<RDSection*>& SectionList = it->second;
         int nSectionCount = SectionList.size();
         buffer << nSectionCount;
         for(auto SectionIt = SectionList.begin(); SectionIt != SectionList.end(); SectionIt ++)
@@ -469,7 +483,7 @@ RDFileDataStream& operator >> (RDFileDataStream& buffer,RDNode& node)
     {
         QUuid StoryId;
         buffer >> StoryId;
-        list<RDSection*> SectionList;
+        vector<RDSection*> SectionList;
         int nSectionCount;
         buffer >> nSectionCount;
         for(int i = 0; i < nSectionCount; i++)

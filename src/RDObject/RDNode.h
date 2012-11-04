@@ -39,7 +39,7 @@ enum RDNodeType
     RDNoderScene,
 };
 
-typedef std::list<RDSection*>::iterator RDSectionList;
+typedef std::vector<RDSection*>::iterator RDSectionList;
 class RDScene;
 
 class RDNode
@@ -89,6 +89,8 @@ public:
     RDRenderChangeLevel GetMaxChangeLevel(const QString& pName)const;
     void SetChangeLevel(RDRenderChangeLevel nLevel);
 
+    size_t GetSectionCount(const QUuid& idStory)const;
+    RDSection* GetSection(const QUuid& idStory,size_t nIndex);
 protected:
     void            MoveSection(const RDTime& nSteps, RDSectionList pStart,RDSectionList pEnd );
     void            UpdateSection(const RDTime& nFrame /*global frame*/,RDRenderData& pRD);
@@ -104,7 +106,7 @@ protected:
     QString     m_strName;
     QUuid       m_NodeID;
     std::vector<RDNode*> m_vecChildObj;
-    std::map<QUuid,std::list<RDSection*>> m_vecSetctionListMap;
+    std::map<QUuid,std::vector<RDSection*>> m_vecSetctionListMap;
     std::map<QString,RDRenderData*> m_vecRenderData;
     //std::list<RDParagraph*> m_vecParagraph;
 

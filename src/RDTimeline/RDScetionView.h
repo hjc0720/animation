@@ -21,12 +21,15 @@
 class QGraphicsScene;
 class RDScene;
 class QResizeEvent;
+class RDNode;
+class QUuid;
 class RDSectionView :public QGraphicsView
 {
 public:
     RDSectionView(int nScale,RDScene* pScene,QWidget* pWidget );
-	void SetScene(RDScene* pScene);
+	void SetSceneNode(RDScene* pScene);
 protected:
+    void AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& idStory);
 	//virtual void resizeEvent(QResizeEvent* event); 
 protected:
 	RDScene* m_pScene;

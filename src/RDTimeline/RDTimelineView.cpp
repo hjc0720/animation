@@ -53,13 +53,13 @@ RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
 
 
 	m_pRuler = new RDTimeRuler(10000000,this);
-    RDSectionView* pView = new RDSectionView(10000000,&pScene,this);
+    m_pSectionView = new RDSectionView(10000000,&pScene,this);
     QVBoxLayout* pRight = new QVBoxLayout();
 	pRight->setContentsMargins(0,0,0,0);
     pRight->setSpacing(0);
     pRight->addWidget(m_pRuler);
     //pRight->addSpacing(20);
-    pRight->addWidget(pView);
+    pRight->addWidget(m_pSectionView);
 
 	pTimeLineHLayout->addLayout(pLeft);
 	pTimeLineHLayout->addLayout(pRight);
@@ -83,6 +83,7 @@ void RDTimelineView::InsertObj(RDNode& pNewNode)
 	int nIndex = GetHeadIndex(pNewNode);
 	RDObjHead* pHead = new RDObjHead(pNewNode,this);
 	m_pHeadLayout->insertWidget(nIndex,pHead);
+    m_pSectionView->SetSceneNode(m_pScene);
 }
 
 int RDTimelineView::GetHeadIndex(const RDNode& pNode)

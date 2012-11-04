@@ -24,6 +24,7 @@ class RDNode;
 class QVBoxLayout;
 class QScrollArea;
 class RDTimeRuler;
+class RDSectionView;
 
 class RDTimelineView :public QDockWidget
 {
@@ -41,6 +42,7 @@ protected slots:
 protected:
 		RDScene* m_pScene;
 		QScrollArea* m_pHead;
+        RDSectionView* m_pSectionView;
 		QVBoxLayout* m_pHeadLayout;
 		RDTimeRuler* m_pRuler;
 };
