@@ -37,37 +37,46 @@
     </calendar>
   </calendars>
   <tasks>
-    <task id="1" name="&#x65F6;&#x95F4;&#x7EBF;" note="" work="115200" start="20121006T000000Z" end="20121014T120000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
-      <task id="2" name="&#x65F6;&#x95F4;&#x7EBF;&#x663E;&#x793A;" note="" work="86400" start="20121006T000000Z" end="20121013T120000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
-        <task id="3" name="section&#x663E;&#x793A;" note="" work="28800" start="20121007T160000Z" end="20121010T220000Z" work-start="20121007T160000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+    <task id="1" name="&#x65F6;&#x95F4;&#x7EBF;" note="" work="108000" start="20121006T000000Z" end="20121013T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+      <task id="2" name="&#x65F6;&#x95F4;&#x7EBF;&#x663E;&#x793A;" note="" work="79200" start="20121006T000000Z" end="20121012T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+        <task id="3" name="section&#x663E;&#x793A;" note="" work="14400" start="20121007T160000Z" end="20121008T220000Z" work-start="20121007T160000Z" percent-complete="50" priority="0" type="normal" scheduling="fixed-work">
           <predecessors>
             <predecessor id="1" predecessor-id="5" type="FS"/>
           </predecessors>
         </task>
-        <task id="4" name="story &#x663E;&#x793A;" note="" work="28800" start="20121010T220000Z" end="20121013T120000Z" work-start="20121011T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+        <task id="4" name="story &#x663E;&#x793A;" note="" work="28800" start="20121008T220000Z" end="20121012T220000Z" work-start="20121009T200000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work">
           <predecessors>
             <predecessor id="1" predecessor-id="3" type="FS"/>
           </predecessors>
         </task>
         <task id="5" name="&#x7269;&#x4EF6;&#x5217;&#x8868;" note="" work="28800" start="20121006T000000Z" end="20121007T160000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
+        <task id="6" name="&#x6839;&#x636E;story&#x7ED8;&#x5236;&#x65F6;&#x95F4;&#x7EBF;" note="" work="7200" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
       </task>
-      <task id="6" name="&#x65F6;&#x95F4;&#x7EBF;&#x7F16;&#x8F91;" note="" work="28800" start="20121013T120000Z" end="20121014T120000Z" work-start="20121013T120000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+      <task id="7" name="&#x65F6;&#x95F4;&#x7EBF;&#x7F16;&#x8F91;" note="" work="28800" start="20121012T220000Z" end="20121013T220000Z" work-start="20121013T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
         <predecessors>
           <predecessor id="1" predecessor-id="2" type="FS"/>
         </predecessors>
       </task>
     </task>
-    <task id="7" name="&#x6E32;&#x67D3;&#x5668;" note="" work="72000" start="20121006T000000Z" end="20121012T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
-      <task id="8" name="OpenGL&#x5E95;&#x5C42;" note="" work="72000" start="20121006T000000Z" end="20121012T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
+    <task id="8" name="&#x6E32;&#x67D3;&#x5668;" note="" work="72000" start="20121006T000000Z" end="20121012T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+      <task id="9" name="OpenGL&#x5E95;&#x5C42;" note="" work="72000" start="20121006T000000Z" end="20121012T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
     </task>
-    <task id="9" name="&#x64AD;&#x51FA;&#x5668;" note="" work="28800" start="20121006T000000Z" end="20121007T160000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
-    <task id="10" name="&#x7F16;&#x8F91;&#x5668;" note="" work="28800" start="20121006T000000Z" end="20121007T160000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
+    <task id="10" name="&#x64AD;&#x51FA;&#x5668;" note="" work="28800" start="20121006T000000Z" end="20121007T160000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
+    <task id="11" name="&#x7F16;&#x8F91;&#x5668;" note="" work="28800" start="20121006T000000Z" end="20121007T160000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
   </tasks>
   <resource-groups/>
   <resources>
     <resource id="1" name="huangjianchao" short-name="hjc" type="1" units="0" email="" note="" std-rate="100"/>
   </resources>
   <allocations>
+    <allocation task-id="9" resource-id="1" units="100"/>
+    <allocation task-id="11" resource-id="1" units="100"/>
+    <allocation task-id="10" resource-id="1" units="100"/>
+    <allocation task-id="8" resource-id="1" units="100"/>
+    <allocation task-id="7" resource-id="1" units="100"/>
+    <allocation task-id="6" resource-id="1" units="100"/>
+    <allocation task-id="5" resource-id="1" units="100"/>
+    <allocation task-id="4" resource-id="1" units="100"/>
     <allocation task-id="3" resource-id="1" units="100"/>
   </allocations>
 </project>
