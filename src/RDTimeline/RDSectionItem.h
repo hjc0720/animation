@@ -21,11 +21,11 @@ class RDSection;
 class RDSectionItem : public QGraphicsItem
 {
 public:
-    RDSectionItem(RDSection* pSection,int nHeight,int nXOffset,int nYOffset);
+    RDSectionItem(const RDSection* pSection,int nHeight,int nXOffset,int nYOffset);
     QRectF boundingRect()const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 protected:
-    RDSection* m_pSection;
+    const RDSection* m_pSection;
     int         m_nHeight;
     int         m_nXOffset;
     int         m_nYOffset;

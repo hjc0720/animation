@@ -23,6 +23,7 @@
 #include "RDStory.h"
 #include "RDSection.h"
 #include <QDebug>
+#include "RDSectionItem.h"
 
 
 #define RDTRACK_HEIGTH 20
@@ -75,7 +76,9 @@ void RDSectionView::AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& i
         for(size_t j = 0; j < pChildNode->GetSectionCount(idStory); j++)
         {
             const RDSection* pSection = pChildNode->GetSection(idStory,j);
-            scene()->addRect(pSection->GetStartTime(),nIndex * RDTRACK_HEIGTH,pSection->GetLength() ,RDTRACK_HEIGTH);
+            RDSectionItem* pItem = new RDSectionItem(pSection,RDTRACK_HEIGTH,0,nIndex * RDTRACK_HEIGTH);
+            scene()->addItem(pItem);
+//            scene()->addRect(pSection->GetStartTime(),nIndex * RDTRACK_HEIGTH,pSection->GetLength() ,RDTRACK_HEIGTH);
         }
         nIndex++;
         AddChildNodeSection(nIndex,pChildNode,idStory);
