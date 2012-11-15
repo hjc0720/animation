@@ -8,6 +8,8 @@ SOURCES += main.cpp RDMainWindow.cpp
 
 HEADERS += RDMainWindow.h 
 
+RESOURCES = resource.qrc
+
 INCLUDEPATH += ../RDBase
 
 DEPENDENCY_SHARE_LIBRARIES = RDCommon

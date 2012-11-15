@@ -265,7 +265,7 @@ void RDDocument::AddChildNode(RDNode& parent,RDNode& pChild)
 {
     RDRenderData* pRenderData = parent.GetRenderData(DEFAULT_RD);
     auto pStory = pRenderData->GetCurStory();
-    pChild.AddSection(m_nCurFrame - pStory->GetStartTime(false),100000000,pStory->GetStoryId());
+    pChild.AddSection(m_nCurFrame - pStory->GetStartTime(false),1000000000,pStory->GetStoryId());
 
     parent.Lock();
     parent.AddChild(pChild);

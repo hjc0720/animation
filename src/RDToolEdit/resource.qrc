@@ -1,6 +1,0 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource>
-    <file alias="image_tool">image/image_tool.png</file>
-    <file alias="select_tool">image/select_tool.png</file>
-</qresource>
-</RCC>

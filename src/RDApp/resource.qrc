@@ -1,0 +1,10 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file alias="image_tool">image/tool_edit/image_tool.png</file>
+    <file alias="select_tool">image/tool_edit/select_tool.png</file>
+
+    <file alias="stop">image/timeline/stop.png</file>
+    <file alias="keep">image/timeline/keep.png</file>
+    <file alias="cycle">image/timeline/cycle.png</file>
+</qresource>
+</RCC>

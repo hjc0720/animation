@@ -25,8 +25,11 @@ public:
     QRectF boundingRect()const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 protected:
+    void SetSectionType();
+protected:
     const RDSection* m_pSection;
     int         m_nHeight;
     int         m_nXOffset;
     int         m_nYOffset;
+    QImage      m_imgSectionType;
 };

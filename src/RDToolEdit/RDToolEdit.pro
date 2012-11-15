@@ -14,7 +14,7 @@ HEADERS += RDImageTool.h RDSelectTool.h
 HEADERS += RDImageEdit.h
 HEADERS += RDSpaceCell.h
 
-RESOURCES = resource.qrc
+#RESOURCES = resource.qrc
 
 DEPENDENCY_SHARE_LIBRARIES = RDCommon
 DEPENDENCY_SHARE_LIBRARIES += RDCommonData
