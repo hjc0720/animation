@@ -69,7 +69,6 @@ void RDSectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * , 
 //        QRectF target(0,0,m_pSection->GetLength(),m_nHeight);
         painter->drawImage(target,m_imgSectionType);
         qDebug() << "image save";
-        m_imgSectionType.save("~/temp.png");
     }
 }
 
