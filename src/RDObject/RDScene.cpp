@@ -324,7 +324,7 @@ const RDStory* RDScene::GetStory(const RDTime& nFrame,bool bPlay)const
 
 RDTime RDScene::GetSceneLength()const
 {
-	auto it = m_StoryList.begin();
+	auto it = m_StoryList.rbegin();
 	RDStory* pStory = *it;
 	return pStory->GetStoryLength() + pStory->GetStartTime(false);
 }

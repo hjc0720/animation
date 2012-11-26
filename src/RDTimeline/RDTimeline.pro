@@ -6,7 +6,9 @@ TEMPLATE = lib
 VERSION = 1.0.1
 
 SOURCES += RDTimelineView.cpp RDObjHead.cpp RDTimeRuler.cpp RDScetionView.cpp RDSectionItem.cpp
+SOURCES += RDStoryItem.cpp
 HEADERS += RDTimelineView.h RDObjHead.h RDTimeRuler.h RDScetionView.h RDSectionItem.h
+HEADERS += RDStoryItem.h
 
 #RESOURCES = resource.qrc
 

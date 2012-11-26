@@ -48,16 +48,16 @@ RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
     QVBoxLayout* pLeft = new QVBoxLayout();
 	pLeft->setContentsMargins(0,0,0,0);
     pLeft->setSpacing(0);
-    pLeft->addSpacing(20);
+//    pLeft->addSpacing(20);
     pLeft->addWidget(m_pHead);
 
 
-	m_pRuler = new RDTimeRuler(10000000,this);
-    m_pSectionView = new RDSectionView(10000000,&pScene,this);
+	//m_pRuler = new RDTimeRuler(10000000,this);
+    m_pSectionView = new RDSectionView(&pScene,this);
     QVBoxLayout* pRight = new QVBoxLayout();
 	pRight->setContentsMargins(0,0,0,0);
     pRight->setSpacing(0);
-    pRight->addWidget(m_pRuler);
+//    pRight->addWidget(m_pRuler);
     //pRight->addSpacing(20);
     pRight->addWidget(m_pSectionView);
 
@@ -65,7 +65,7 @@ RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
 	pTimeLineHLayout->addLayout(pRight);
 
 	setWidget(pTimeLineWidget);
-    connect(m_pRuler,SIGNAL(FrameChanged(const RDTime&)),this,SIGNAL(FrameChanged(const RDTime&)));
+//    connect(m_pRuler,SIGNAL(FrameChanged(const RDTime&)),this,SIGNAL(FrameChanged(const RDTime&)));
 }
 void RDTimelineView::RDFillHead(RDNode& pNode)
 {

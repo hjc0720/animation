@@ -26,7 +26,7 @@ class QUuid;
 class RDSectionView :public QGraphicsView
 {
 public:
-    RDSectionView(int nScale,RDScene* pScene,QWidget* pWidget );
+    RDSectionView(RDScene* pScene,QWidget* pWidget );
 	void SetSceneNode(RDScene* pScene);
 protected:
     void AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& idStory);

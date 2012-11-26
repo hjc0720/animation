@@ -30,7 +30,7 @@ RDSectionItem::RDSectionItem(const RDSection* pSection,int nHeight,int nXOffset,
      ,m_nYOffset(nYOffset)
 {
     SetSectionType();
-    setPos(m_nXOffset,m_nYOffset);
+    setPos(m_nXOffset + m_pSection->GetStartTime(),m_nYOffset);
 }
 
 void RDSectionItem::SetSectionType()
@@ -66,7 +66,7 @@ void RDSectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * , 
     if(fRealSize < m_pSection->GetLength() / 2)
     {
         QRectF target(m_pSection->GetStartTime() + m_pSection->GetLength() - fRealSize,0,fRealSize,m_nHeight);
-//        QRectF target(0,0,m_pSection->GetLength(),m_nHeight);
+        //        QRectF target(0,0,m_pSection->GetLength(),m_nHeight);
         painter->drawImage(target,m_imgSectionType);
         qDebug() << "image save";
     }
@@ -75,5 +75,5 @@ void RDSectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * , 
 QRectF RDSectionItem::boundingRect()const
 {
     float fLeft = m_pSection->GetStartTime() + m_nXOffset;
-    return QRectF(fLeft,m_nYOffset,fLeft + m_pSection->GetLength(),m_nYOffset + m_nHeight);
+    return QRectF(fLeft,m_nYOffset,m_pSection->GetLength(),m_nHeight);
 }

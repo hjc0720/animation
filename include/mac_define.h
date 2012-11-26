@@ -28,4 +28,7 @@
 
 typedef unsigned long long RDTime;
 typedef unsigned int uint;
+
+#define SECOND_TO_TIME  1000000000
+#define MSECOND_TO_TIME 1000000
 #endif   // ----- #ifndef mac_define_INC  -----
