@@ -22,10 +22,9 @@
 #include <QWidget>
 #include <QDebug>
 
-RDStoryItem::RDStoryItem(const RDStory* pStory,int nHeight,const RDTime& nMinWidth)
+RDStoryItem::RDStoryItem(const RDStory* pStory,int nHeight)
     :m_pStory(pStory)
      ,m_nHeight(nHeight)
-     ,m_nMinWidth(nMinWidth)
 {
     SetStoryType();
     setPos(m_pStory->GetStartTime(false),0);
@@ -34,8 +33,7 @@ RDStoryItem::RDStoryItem(const RDStory* pStory,int nHeight,const RDTime& nMinWid
 QRectF RDStoryItem::boundingRect()const
 {
     float fLeft = m_pStory->GetStartTime(false);
-    double dWidth = std::max((RDTime)m_nMinWidth,m_pStory->GetStoryLength());
-    return QRectF(fLeft,0,dWidth,m_nHeight);
+    return QRectF(fLeft,0,m_pStory->GetStoryLength(),m_nHeight);
 }
 
 void RDStoryItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *widget)
@@ -58,7 +56,7 @@ void RDStoryItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWi
     double dMedLine = m_nHeight - (m_nHeight >> 1);
     double dSmallLine = m_nHeight - (m_nHeight >> 2);
     
-    double dWidth = std::max((RDTime)m_nMinWidth,m_pStory->GetStoryLength());
+    double dWidth = m_pStory->GetStoryLength();
     double dLen = 0;
     int nIndex = 0;
 

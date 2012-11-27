@@ -25,29 +25,27 @@
 #include <QDebug>
 #include "RDSectionItem.h"
 #include "RDStoryItem.h"
+#include "RDTimeMarker.h"
 
 
 #define RDTRACK_HEIGTH 20
 
 RDSectionView::RDSectionView(RDScene* pScene,QWidget* pWidget )
     :QGraphicsView(pWidget)
+     ,m_pTimeMarker(nullptr)
 {
 	SetSceneNode(pScene);
+    m_nScale = m_pScene->GetSceneLength() / 1920;
 	scale(1.0 / m_nScale,1);
 	setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
-//void RDSectionView::resizeEvent(QResizeEvent* event)
-//{
-	//RDTime nSceneLength = m_pScene->GetSceneLength();
-    //m_nScale = nSceneLength / event->size().width();
-	//scale(1.0 / m_nScale,1);
-	//size_t nCount = m_pScene->GetTotalChildCount();
-	//QRectF rt(0,0,nSceneLength / m_nScale,(nCount + 1) * RDTRACK_HEIGTH);
-	//rt.setRight(std::max(rt.width(),(qreal)event->size().width()));
-	//rt.setBottom(std::max(rt.height(),(qreal)event->size().height()));
-	//setSceneRect(rt);
-//}	
+void RDSectionView::resizeEvent(QResizeEvent* event)
+{
+    if(m_pTimeMarker)
+        m_pTimeMarker->SetHeight(height());
+    QGraphicsView::resizeEvent(event);
+}	
 
 void RDSectionView::SetSceneNode(RDScene* pScene)
 {
@@ -61,25 +59,18 @@ void RDSectionView::SetSceneNode(RDScene* pScene)
 	setScene(pGraphicScene);
     
 	size_t nStoryCount = pScene->GetStoryCount();
-    RDTime nTotalLen = 0;
     for(size_t i = 0; i < nStoryCount; i++)
     {
-        const RDStory* pStory = pScene->GetStory(i);
-        RDTime nMinWidth = 0;
-        if(i == nStoryCount - 1)
-        {
-            nMinWidth = width() - nTotalLen / m_nScale;
-//            qDebug() << "sectionView width" << nMinWidth;
-        }
-        RDStoryItem* pItem = new RDStoryItem(pStory,RDTRACK_HEIGTH,nMinWidth * m_nScale);
-        scene()->addItem(pItem);
-        //pGraphicScene->addRect(pStory->GetStartTime(false),0,pStory->GetStoryLength() ,RDTRACK_HEIGTH);
         int nIndex = 1;
+        const RDStory* pStory = pScene->GetStory(i);
         AddChildNodeSection(nIndex,pScene,pStory->GetStoryId());
-        nTotalLen += pStory->GetStoryLength();
+
+        RDStoryItem* pItem = new RDStoryItem(pStory,RDTRACK_HEIGTH);
+        scene()->addItem(pItem);
     }
-    m_nScale = nTotalLen / 1920;
-//	qDebug() << "story length:"<<pStory->GetStoryLength()<<m_nScale;
+
+    m_pTimeMarker = new RDTimeMarker(RDTRACK_HEIGTH,height());
+    scene()->addItem(m_pTimeMarker);
 }
 
 void RDSectionView::AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& idStory)
@@ -93,7 +84,6 @@ void RDSectionView::AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& i
             const RDSection* pSection = pChildNode->GetSection(idStory,j);
             RDSectionItem* pItem = new RDSectionItem(pSection,RDTRACK_HEIGTH,0,nIndex * RDTRACK_HEIGTH);
             scene()->addItem(pItem);
-//            scene()->addRect(pSection->GetStartTime(),nIndex * RDTRACK_HEIGTH,pSection->GetLength() ,RDTRACK_HEIGTH);
         }
         nIndex++;
         AddChildNodeSection(nIndex,pChildNode,idStory);

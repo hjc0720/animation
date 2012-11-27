@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="animation" company="" manager="" phase="" project-start="20121006T000000Z" mrproject-version="2" calendar="1">
+<project name="animation" company="" manager="" phase="" project-start="20121006T000000Z" mrproject-version="2" calendar="2">
   <properties/>
   <phases/>
   <calendars>
@@ -8,23 +8,7 @@
       <day-type id="1" name="&#x65E0;&#x5DE5;&#x4F5C;" description="&#x9ED8;&#x8BA4;&#x7684;&#x4E0D;&#x5DE5;&#x4F5C;&#x65E5;"/>
       <day-type id="2" name="&#x4F7F;&#x7528;&#x57FA;&#x7840;" description="&#x4F7F;&#x7528;&#x57FA;&#x65E5;&#x5386;&#x7684;&#x5929;"/>
     </day-types>
-    <calendar id="1" name="&#x9ED8;&#x8BA4;">
-      <default-week mon="0" tue="0" wed="0" thu="0" fri="0" sat="1" sun="1"/>
-      <overridden-day-types>
-        <overridden-day-type id="0">
-          <interval start="2000" end="2200"/>
-        </overridden-day-type>
-        <overridden-day-type id="1">
-          <interval start="0800" end="1200"/>
-          <interval start="1400" end="1600"/>
-          <interval start="2000" end="2200"/>
-        </overridden-day-type>
-      </overridden-day-types>
-      <days>
-        <day date="20121006" type="day-type" id="0"/>
-      </days>
-    </calendar>
-    <calendar id="2" name="test">
+    <calendar id="1" name="test">
       <default-week mon="0" tue="0" wed="0" thu="0" fri="0" sat="0" sun="0"/>
       <overridden-day-types>
         <overridden-day-type id="0">
@@ -35,11 +19,27 @@
         <day date="20121010" type="day-type" id="0"/>
       </days>
     </calendar>
+    <calendar id="2" name="&#x9ED8;&#x8BA4;">
+      <default-week mon="0" tue="0" wed="0" thu="0" fri="0" sat="1" sun="1"/>
+      <overridden-day-types>
+        <overridden-day-type id="1">
+          <interval start="0800" end="1200"/>
+          <interval start="1400" end="1600"/>
+          <interval start="2000" end="2200"/>
+        </overridden-day-type>
+        <overridden-day-type id="0">
+          <interval start="2000" end="2200"/>
+        </overridden-day-type>
+      </overridden-day-types>
+      <days>
+        <day date="20121006" type="day-type" id="0"/>
+      </days>
+    </calendar>
   </calendars>
   <tasks>
     <task id="1" name="&#x65F6;&#x95F4;&#x7EBF;" note="" work="64800" start="20121006T000000Z" end="20121010T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
       <task id="2" name="&#x65F6;&#x95F4;&#x7EBF;&#x663E;&#x793A;" note="" work="57600" start="20121006T000000Z" end="20121009T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
-        <task id="3" name="section&#x663E;&#x793A;" note="" work="14400" start="20121007T160000Z" end="20121008T220000Z" work-start="20121007T160000Z" percent-complete="60" priority="0" type="normal" scheduling="fixed-work">
+        <task id="3" name="section&#x663E;&#x793A;" note="" work="14400" start="20121007T160000Z" end="20121008T220000Z" work-start="20121007T160000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work">
           <predecessors>
             <predecessor id="1" predecessor-id="7" type="FS"/>
           </predecessors>
@@ -48,10 +48,10 @@
           <predecessors>
             <predecessor id="1" predecessor-id="3" type="FS"/>
           </predecessors>
-          <task id="5" name="&#x6DFB;&#x52A0;story item" note="" work="7200" start="20121008T220000Z" end="20121009T220000Z" work-start="20121009T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
-          <task id="6" name="story&#x91CC;&#x7ED8;&#x5236;&#x65F6;&#x95F4;&#x7EBF;" note="" work="7200" start="20121008T220000Z" end="20121009T220000Z" work-start="20121009T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
+          <task id="5" name="&#x6DFB;&#x52A0;story item" note="" work="7200" start="20121008T220000Z" end="20121009T220000Z" work-start="20121009T200000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work"/>
+          <task id="6" name="&#x7ED8;&#x5236;&#x65F6;&#x7801;&#x7EBF;" note="" work="7200" start="20121008T220000Z" end="20121009T220000Z" work-start="20121009T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
         </task>
-        <task id="7" name="&#x7269;&#x4EF6;&#x5217;&#x8868;" note="" work="28800" start="20121006T000000Z" end="20121007T160000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
+        <task id="7" name="&#x7269;&#x4EF6;&#x5217;&#x8868;" note="" work="28800" start="20121006T000000Z" end="20121007T160000Z" work-start="20121006T200000Z" percent-complete="50" priority="0" type="normal" scheduling="fixed-work"/>
       </task>
       <task id="8" name="&#x65F6;&#x95F4;&#x7EBF;&#x7F16;&#x8F91;" note="" work="7200" start="20121009T220000Z" end="20121010T220000Z" work-start="20121010T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
         <predecessors>

@@ -5,10 +5,10 @@ include("../path.pri")
 TEMPLATE = lib
 VERSION = 1.0.1
 
-SOURCES += RDTimelineView.cpp RDObjHead.cpp RDTimeRuler.cpp RDScetionView.cpp RDSectionItem.cpp
-SOURCES += RDStoryItem.cpp
-HEADERS += RDTimelineView.h RDObjHead.h RDTimeRuler.h RDScetionView.h RDSectionItem.h
-HEADERS += RDStoryItem.h
+SOURCES += RDTimelineView.cpp RDObjHead.cpp RDScetionView.cpp RDSectionItem.cpp
+SOURCES += RDStoryItem.cpp RDTimeMarker.cpp
+HEADERS += RDTimelineView.h RDObjHead.h RDScetionView.h RDSectionItem.h
+HEADERS += RDStoryItem.h RDTimeMarker.h
 
 #RESOURCES = resource.qrc
 

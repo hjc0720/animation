@@ -16,6 +16,8 @@
  * =====================================================================================
  */
 
+#ifndef  RDSTORYITEM_INC
+#define  RDSTORYITEM_INC
 
 #include <QGraphicsItem>
 #include "mac_define.h"
@@ -24,7 +26,7 @@ class RDStory;
 class RDStoryItem : public QGraphicsItem
 {
 public:
-    RDStoryItem(const RDStory* pStory,int nHeight,const RDTime& nMinWidth);
+    RDStoryItem(const RDStory* pStory,int nHeight);
     QRectF boundingRect()const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 protected:
@@ -32,5 +34,6 @@ protected:
 protected:
     const RDStory* m_pStory;
     int         m_nHeight;
-    RDTime      m_nMinWidth;
 };
+
+#endif   /* ----- #ifndef RDStoryItem_INC  ----- */

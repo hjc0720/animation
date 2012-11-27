@@ -23,6 +23,7 @@ class RDScene;
 class QResizeEvent;
 class RDNode;
 class QUuid;
+class RDTimeMarker;
 class RDSectionView :public QGraphicsView
 {
 public:
@@ -30,10 +31,11 @@ public:
 	void SetSceneNode(RDScene* pScene);
 protected:
     void AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& idStory);
-	//virtual void resizeEvent(QResizeEvent* event); 
+    virtual void resizeEvent(QResizeEvent* event); 
 protected:
 	RDScene* m_pScene;
 	int	 m_nScale;
+    RDTimeMarker* m_pTimeMarker;
 };
 
 #endif   // ----- #ifndef rdscetionview_INC  -----
