@@ -40,8 +40,10 @@ RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
 	QWidget* pHeadWidget = new QWidget(m_pHead);
 	m_pHeadLayout = new QVBoxLayout(pHeadWidget);
 	m_pHeadLayout->setContentsMargins(0,0,0,0);
+	m_pHeadLayout->setSpacing(0);
 	pHeadWidget->setLayout(m_pHeadLayout);
 	RDFillHead(pScene);
+	m_pHeadLayout->addStretch();
     m_pHead->setWidgetResizable(true);
 	m_pHead->setWidget(pHeadWidget);
 
@@ -75,7 +77,6 @@ void RDTimelineView::RDFillHead(RDNode& pNode)
 	{
 		RDFillHead(*pNode.GetChild(i));
 	}
-	m_pHeadLayout->addStretch();
 }
 
 void RDTimelineView::InsertObj(RDNode& pNewNode)

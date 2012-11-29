@@ -31,4 +31,7 @@ typedef unsigned int uint;
 
 #define SECOND_TO_TIME  1000000000
 #define MSECOND_TO_TIME 1000000
+
+
+#define RDTRACK_HEIGTH 25
 #endif   // ----- #ifndef mac_define_INC  -----

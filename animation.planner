@@ -63,7 +63,7 @@
     <task id="10" name="&#x6E32;&#x67D3;&#x5668;" note="" work="72000" start="20121006T000000Z" end="20121012T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
       <task id="11" name="OpenGL&#x5E95;&#x5C42;" note="" work="72000" start="20121006T000000Z" end="20121012T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
     </task>
-    <task id="12" name="&#x64AD;&#x51FA;&#x5668;" note="" work="36000" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+    <task id="12" name="&#x64AD;&#x51FA;&#x5668;" note="" work="43200" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
       <task id="13" name="&#x6DFB;&#x52A0;Layer&#x7269;&#x4EF6;" note="" work="21600" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
         <task id="14" name="Layer&#x652F;&#x6301;&#x6B63;&#x4EA4;&#xFF0C;&#x900F;&#x89C6;&#x4E24;&#x79CD;&#x6A21;&#x5F0F;" note="" work="7200" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
         <task id="15" name="Layer&#x652F;&#x6301;&#x903B;&#x8F91;Z&#x5E8F;" note="&#x903B;&#x8F91;Z&#x5E8F;&#x662F;&#x6307;&#x7269;&#x4EF6;&#x7684;&#x524D;&#x540E;&#x5173;&#x7CFB;&#x6309;&#x7167;&#x7269;&#x4EF6;&#x5C42;&#x7684;&#x524D;&#x540E;&#x5173;&#x7CFB;&#x5B9E;&#x73B0;&#10;&#x7269;&#x7406;Z&#x5E8F;&#x662F;&#x6307;&#x7269;&#x4EF6;&#x7684;&#x524D;&#x540E;&#x5173;&#x7CFB;&#x6309;&#x7167;&#x7269;&#x4EF6;&#x7684;&#x7269;&#x7406;Z&#x5E8F;&#x5B9E;&#x73B0;&#10;2012&#x5E74;11&#x6708;14&#x65E5;&#x661F;&#x671F;&#x4E09;&#xFF0C;20:55&#10;&#10;" work="7200" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
@@ -71,8 +71,9 @@
       </task>
       <task id="17" name="&#x6DFB;&#x52A0;Camera&#x7269;&#x4EF6;" note="" work="7200" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
       <task id="18" name="&#x5B9E;&#x73B0;GroupNode" note="" work="7200" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
+      <task id="19" name="&#x6DFB;&#x52A0;&#x5B58;&#x76D8;magic number" note="" work="7200" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
     </task>
-    <task id="19" name="&#x7F16;&#x8F91;&#x5668;" note="" work="28800" start="20121006T000000Z" end="20121007T160000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
+    <task id="20" name="&#x7F16;&#x8F91;&#x5668;" note="" work="28800" start="20121006T000000Z" end="20121007T160000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
   </tasks>
   <resource-groups/>
   <resources>
@@ -80,7 +81,7 @@
   </resources>
   <allocations>
     <allocation task-id="11" resource-id="1" units="100"/>
-    <allocation task-id="19" resource-id="1" units="100"/>
+    <allocation task-id="20" resource-id="1" units="100"/>
     <allocation task-id="12" resource-id="1" units="100"/>
     <allocation task-id="10" resource-id="1" units="100"/>
     <allocation task-id="8" resource-id="1" units="100"/>

@@ -28,7 +28,6 @@
 #include "RDTimeMarker.h"
 
 
-#define RDTRACK_HEIGTH 20
 
 RDSectionView::RDSectionView(RDScene* pScene,QWidget* pWidget )
     :QGraphicsView(pWidget)

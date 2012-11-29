@@ -17,6 +17,9 @@
 #include <QHBoxLayout>
 #include "RDNode.h"
 #include <QLabel>
+#include <QDebug>
+#include <QPainter>
+
 RDObjHead::RDObjHead(RDNode& pNode,QWidget* parent)
 	:QWidget(parent)
 	,m_NodeUuid(pNode.GetNodeID())
@@ -24,13 +27,17 @@ RDObjHead::RDObjHead(RDNode& pNode,QWidget* parent)
 {
 	static const int nSpace = 10;
 	m_pObjName = new QLabel(pNode.GetName(),this);
+    setMinimumHeight(RDTRACK_HEIGTH );
+    setMaximumHeight(RDTRACK_HEIGTH);
 	int nSpaceCount = CalSpaceCount(pNode);
 	
 	QHBoxLayout* pLayout = new QHBoxLayout;
 	pLayout->addSpacing(nSpace * nSpaceCount);
 	pLayout->addWidget(m_pObjName);
+	pLayout->setContentsMargins(0,0,0,0);
 	setLayout(pLayout);
 }
+
 int RDObjHead::CalSpaceCount(const RDNode& pNode)
 {
 	if(pNode.GetParent())
@@ -38,3 +45,12 @@ int RDObjHead::CalSpaceCount(const RDNode& pNode)
 	else
 		return 0;
 }
+
+//
+//void RDObjHead::paintEvent(QPaintEvent * e)
+//{
+//    qDebug() << "object head size:"<<rect();
+//    QPainter p(this);
+//    p.drawRect(rect());
+//    QWidget::paintEvent(e);
+//}
