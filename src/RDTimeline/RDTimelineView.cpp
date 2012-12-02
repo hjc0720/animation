@@ -69,6 +69,7 @@ RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
 	setWidget(pTimeLineWidget);
     connect(m_pSectionView,SIGNAL(FrameChanged(const RDTime&)),this,SIGNAL(FrameChanged(const RDTime&)));
 }
+
 void RDTimelineView::RDFillHead(RDNode& pNode)
 {
 	RDObjHead* pHead = new RDObjHead(pNode,this);

@@ -36,7 +36,7 @@ public:
     RDTimeMarker (int nHeight,int nViewHeight,double dScale);                             /* constructor */
     /* ====================  ACCESSORS     ======================================= */
     void SetHeight(int nHeight){m_nHeight = nHeight;}
-    void SetTime(const RDTime& nCurTime){m_nCurTime = nCurTime; setPos(m_nCurTime,0);}
+    void SetTime(const RDTime& nCurTime){m_nCurTime = nCurTime; setPos(m_nCurTime,0);update();}
     const RDTime& GetTime()const {return m_nCurTime ;}
     void SetScale(double dScale){m_dScale = 1 / dScale; update();}
 
@@ -48,6 +48,7 @@ public:
 
 protected:
     /* ====================  METHODS       ======================================= */
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
     /* ====================  DATA MEMBERS  ======================================= */
     QPolygon    m_tri;

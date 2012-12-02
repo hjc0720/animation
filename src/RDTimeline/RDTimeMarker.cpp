@@ -19,6 +19,9 @@
 #include "RDTimeMarker.h"
 #include <QPainter>
 #include <QWidget>
+#include <QGraphicsSceneMouseEvent>
+#include "RDScetionView.h"
+#include <cmath>
 /*
  *--------------------------------------------------------------------------------------
  *       Class:  RDTimeMarker
@@ -32,6 +35,7 @@ RDTimeMarker::RDTimeMarker (int nHeight,int nViewHeight,double dScale)
      ,m_dScale(1 / dScale)
 {
     m_tri.setPoints(3, -6, nHeight / 2, 6, nHeight / 2, 0, nHeight);
+    setFlags(ItemIsMovable);
     SetTime(0);
 }  /* -----  end of method RDTimeMarker::RDTimeMarker  (constructor)  ----- */
 
@@ -51,4 +55,15 @@ void RDTimeMarker::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QW
     painter->drawPolygon(m_tri);
     qDebug() << "ScalePt :" << m_dScale << "real Scale :" << fScale; 
     qDebug() << "paint rect" << "boundingRect" << boundingRect();
+}
+
+void RDTimeMarker::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    RDSectionScene* pScene = dynamic_cast<RDSectionScene*>(scene());
+    if(pScene && event->buttons().testFlag(Qt::LeftButton))
+    {
+        RDTime pos = std::max(0.0,event->scenePos().x());
+        pScene->ChangeFrame(pos);
+        event->accept();
+    }
 }
