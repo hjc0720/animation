@@ -21,6 +21,8 @@
 #include <QPainter>
 #include <QWidget>
 #include <QDebug>
+#include <QGraphicsSceneMouseEvent>
+#include "RDScetionView.h"
 
 RDStoryItem::RDStoryItem(const RDStory* pStory,int nHeight)
     :m_pStory(pStory)
@@ -28,6 +30,7 @@ RDStoryItem::RDStoryItem(const RDStory* pStory,int nHeight)
 {
     SetStoryType();
     setPos(m_pStory->GetStartTime(false),0);
+    setAcceptedMouseButtons(Qt::LeftButton);
 }
 
 QRectF RDStoryItem::boundingRect()const
@@ -89,4 +92,15 @@ void RDStoryItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWi
 void RDStoryItem::SetStoryType()
 {
 
+}
+
+void	RDStoryItem::mousePressEvent ( QGraphicsSceneMouseEvent * event )
+{
+    RDSectionScene* pScene = dynamic_cast<RDSectionScene*>(scene());
+    if(pScene && event->button() == Qt::LeftButton)
+    {
+        RDTime pos = event->scenePos().x();
+        pScene->ChangeFrame(pos);
+        event->accept();
+    }
 }

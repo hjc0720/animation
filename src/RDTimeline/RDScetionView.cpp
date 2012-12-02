@@ -27,22 +27,19 @@
 #include "RDStoryItem.h"
 #include "RDTimeMarker.h"
 
-
-
 RDSectionView::RDSectionView(RDScene* pScene,QWidget* pWidget )
     :QGraphicsView(pWidget)
-     ,m_pTimeMarker(nullptr)
 {
 	SetSceneNode(pScene);
-    m_nScale = m_pScene->GetSceneLength() / 1920;
-	scale(1.0 / m_nScale,1);
+    SetScale(m_pScene->GetSceneLength() / 1920);
 	setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
 void RDSectionView::resizeEvent(QResizeEvent* event)
 {
-    if(m_pTimeMarker)
-        m_pTimeMarker->SetHeight(height());
+    RDSectionScene* pScene = dynamic_cast<RDSectionScene*>(scene());
+    if(pScene && pScene->GetTimeMarker())
+        pScene->GetTimeMarker()->SetHeight(height());
     QGraphicsView::resizeEvent(event);
 }	
 
@@ -54,7 +51,8 @@ void RDSectionView::SetSceneNode(RDScene* pScene)
 	QGraphicsScene* pOldScene = scene();
 	SAFE_DELETE(pOldScene);
 
-	QGraphicsScene* pGraphicScene = new QGraphicsScene(0,0,fWidth,fHeight);
+	RDSectionScene* pGraphicScene = new RDSectionScene(0,0,fWidth,fHeight);
+    connect(pGraphicScene,SIGNAL(FrameChanged(const RDTime&)),this,SIGNAL(FrameChanged(const RDTime&)));
 	setScene(pGraphicScene);
     
 	size_t nStoryCount = pScene->GetStoryCount();
@@ -68,8 +66,9 @@ void RDSectionView::SetSceneNode(RDScene* pScene)
         scene()->addItem(pItem);
     }
 
-    m_pTimeMarker = new RDTimeMarker(RDTRACK_HEIGTH,height());
-    scene()->addItem(m_pTimeMarker);
+    RDTimeMarker* pTimeMarker = new RDTimeMarker(RDTRACK_HEIGTH,height(),1.0 / m_nScale);
+    pGraphicScene->SetTimeMarker(pTimeMarker);
+    scene()->addItem(pTimeMarker);
 }
 
 void RDSectionView::AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& idStory)
@@ -87,4 +86,13 @@ void RDSectionView::AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& i
         nIndex++;
         AddChildNodeSection(nIndex,pChildNode,idStory);
     }
+}
+
+void RDSectionView::SetScale(const RDTime& nScale) 
+{
+    m_nScale = nScale;
+    scale(1.0 / m_nScale,1);
+    RDSectionScene* pScene = dynamic_cast<RDSectionScene*>(scene());
+    if(pScene && pScene->GetTimeMarker())
+        pScene->GetTimeMarker()->SetScale(1.0 / m_nScale);
 }

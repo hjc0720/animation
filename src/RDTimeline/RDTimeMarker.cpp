@@ -26,18 +26,18 @@
  * Description:  constructor
  *--------------------------------------------------------------------------------------
  */
-RDTimeMarker::RDTimeMarker (int nHeight,int nViewHeight)
+RDTimeMarker::RDTimeMarker (int nHeight,int nViewHeight,double dScale)
     :m_tri(3)
-     ,m_nCurTime(0)
      ,m_nHeight(nViewHeight)
+     ,m_dScale(1 / dScale)
 {
     m_tri.setPoints(3, -6, nHeight / 2, 6, nHeight / 2, 0, nHeight);
-    setPos(m_nCurTime,0);
+    SetTime(0);
 }  /* -----  end of method RDTimeMarker::RDTimeMarker  (constructor)  ----- */
 
 QRectF RDTimeMarker::boundingRect()const
 {
-    return QRectF(-6,0,12,m_nHeight);
+    return QRectF(-6 * m_dScale ,0,12 * m_dScale  , m_nHeight);
 }
 
 void RDTimeMarker::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *widget)
@@ -46,7 +46,9 @@ void RDTimeMarker::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QW
     painter->drawLine(0,0,0,m_nHeight);
 
     qreal fScale = painter->worldTransform().m11();
-    painter->scale(1/fScale,1);
+    painter->scale(m_dScale,1);
     painter->setBrush(widget->palette().highlight());
     painter->drawPolygon(m_tri);
+    qDebug() << "ScalePt :" << m_dScale << "real Scale :" << fScale; 
+    qDebug() << "paint rect" << "boundingRect" << boundingRect();
 }

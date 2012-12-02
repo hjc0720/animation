@@ -19,6 +19,7 @@
 #ifndef  RDSTORYITEM_INC
 #define  RDSTORYITEM_INC
 
+#include <QObject>
 #include <QGraphicsItem>
 #include "mac_define.h"
 
@@ -30,6 +31,7 @@ public:
     QRectF boundingRect()const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 protected:
+    virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
     void SetStoryType();
 protected:
     const RDStory* m_pStory;

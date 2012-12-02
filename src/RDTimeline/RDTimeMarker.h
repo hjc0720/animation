@@ -22,6 +22,7 @@
 
 #include <QGraphicsItem>
 #include "mac_define.h"
+#include <QDebug>
 /*
  * =====================================================================================
  *        Class:  RDTimeMarker
@@ -32,11 +33,12 @@ class RDTimeMarker : public QGraphicsItem
 {
 public:
     /* ====================  LIFECYCLE     ======================================= */
-    RDTimeMarker (int nHeight,int nViewHeight);                             /* constructor */
+    RDTimeMarker (int nHeight,int nViewHeight,double dScale);                             /* constructor */
     /* ====================  ACCESSORS     ======================================= */
     void SetHeight(int nHeight){m_nHeight = nHeight;}
-    void SetTime(RDTime& nCurTime){m_nCurTime = nCurTime;}
+    void SetTime(const RDTime& nCurTime){m_nCurTime = nCurTime; setPos(m_nCurTime,0);}
     const RDTime& GetTime()const {return m_nCurTime ;}
+    void SetScale(double dScale){m_dScale = 1 / dScale; update();}
 
     QRectF boundingRect()const;
     /* ====================  MUTATORS      ======================================= */
@@ -51,6 +53,7 @@ protected:
     QPolygon    m_tri;
     RDTime      m_nCurTime;
     int         m_nHeight;
+    double      m_dScale;
 
 }; /* -----  end of class RDTimeMarker  ----- */
 
