@@ -1,5 +1,4 @@
 #include "RDTexture.h"
-#include "RDRenderDevice.h"
 #include <QImage>
 #include <QGLWidget>
 #include <mac_define.h>

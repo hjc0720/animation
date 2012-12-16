@@ -2,12 +2,7 @@
 #define RDTEXTURE_H
 # include <GL/gl.h>
 #include <QString>
-
-enum RDTexture_Type
-{
-    RDNormal2DTexture,
-    RDReadOnly2DTexture,
-};
+#include "RDRenderDevice.h"
 
 class RDTexture
 {
