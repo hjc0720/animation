@@ -33,6 +33,7 @@
 #include <QRectF>
 #include "RDEditerManager.h"
 #include "RDScene.h"
+#include "RDRenderDevice.h"
 
 bool g_bForceUpdate = false;
 
@@ -41,6 +42,26 @@ void RDRenderWidget::setVisible(bool visible)
     m_RenderTimer.start();
     QWidget::setVisible(visible);
 }
+
+void RDRenderWidget::resizeGL(int w, int h)
+{
+
+    m_document.Lock();
+    g_bForceUpdate = true;
+    m_fScale = min(w / (float)m_nProjWidth,h / (float)m_nProjHeight);
+    m_nXOffset = (w - GetRealPorjWidth()) / 2;
+    m_nYOffset = (h - GetRealPorjHeight()) / 2;
+
+    m_validRt.setLeft(0);
+    m_validRt.setTop(0);
+    m_validRt.setBottom(GetRealPorjHeight());
+    m_validRt.setRight(GetRealPorjWidth());
+
+    m_swapChain.Resize(w,h);
+    m_document.UnLock();
+    m_document.SetScale(m_fScale);
+}
+
 void    RDRenderWidget::OnTime(void* param)
 {
     static RenderManager* pRDManager = 0;
@@ -93,8 +114,8 @@ void    RDRenderWidget::OnTime(void* param)
     oldTime = dStartTime;
 }
 
-RDRenderWidget::RDRenderWidget(int nWidth, int nHeight,QWidget *parent /*= 0*/)
-    :QWidget(parent)
+RDRenderWidget::RDRenderWidget(int nWidth, int nHeight,const QGLFormat& format,QWidget *parent /*= 0*/)
+    :QGLWidget(format,parent)
      ,m_nProjWidth(nWidth)
      ,m_nProjHeight(nHeight)
      ,m_nXOffset(0)
@@ -108,7 +129,7 @@ RDRenderWidget::RDRenderWidget(int nWidth, int nHeight,QWidget *parent /*= 0*/)
     //setAttribute(Qt::WA_PaintOutsidePaintEvent);
     setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
     setFocusPolicy(Qt::ClickFocus);
-    //m_swapChain.GetFrontBuffer()->FillColor(0xff00ff00);
+   //m_swapChain.GetFrontBuffer()->FillColor(0xff00ff00);
 }
 RDRenderWidget::~RDRenderWidget()
 {
@@ -120,42 +141,22 @@ QSize RDRenderWidget::hintSize()const
     return QSize(m_nProjWidth,m_nProjHeight);
 }
 
-void RDRenderWidget::paintEvent(QPaintEvent* event)
-{
-    static double startTime = GetTime();
-    double nowTime = GetTime();
-    qDebug() << nowTime - startTime;
-    startTime = nowTime;
-    QPainter painter(this);
-    m_swapChain.Lock();
-    RDBuffer* pBuffer = m_swapChain.GetFrontBuffer();
-    QImage* pPixmap = pBuffer->GetBuffer();
-    QRectF target(event->rect());
-    qDebug() << "target" << target;
-    painter.drawImage(target,*pPixmap,target);
-    m_swapChain.UnLock();
-}
+//void RDRenderWidget::paintEvent(QPaintEvent* event)
+//{
+//    static double startTime = GetTime();
+//    double nowTime = GetTime();
+//    qDebug() << nowTime - startTime;
+//    startTime = nowTime;
+//    QPainter painter(this);
+//    m_swapChain.Lock();
+//    RDBuffer* pBuffer = m_swapChain.GetFrontBuffer();
+//    QImage* pPixmap = pBuffer->GetBuffer();
+//    QRectF target(event->rect());
+//    qDebug() << "target" << target;
+//    painter.drawImage(target,*pPixmap,target);
+//    m_swapChain.UnLock();
+//}
 
-
-void RDRenderWidget::resizeEvent(QResizeEvent* event)
-{
-    const QSize& newSize = event->size();
-
-    m_document.Lock();
-    g_bForceUpdate = true;
-    m_fScale = min(newSize.width() / (float)m_nProjWidth,newSize.height() / (float)m_nProjHeight);
-    m_nXOffset = (newSize.width() - GetRealPorjWidth()) / 2;
-    m_nYOffset = (newSize.height() - GetRealPorjHeight()) / 2;
-
-    m_validRt.setLeft(0);
-    m_validRt.setTop(0);
-    m_validRt.setBottom(GetRealPorjHeight());
-    m_validRt.setRight(GetRealPorjWidth());
-    
-    m_swapChain.Resize(newSize.width(),newSize.height());
-    m_document.UnLock();
-    m_document.SetScale(m_fScale);
-}
 
 bool RDRenderWidget::event(QEvent* e)
 {
@@ -212,6 +213,12 @@ float3 RDRenderWidget::ClientToScene(const QPoint& pos)
     vRet /= m_fScale;
     return vRet;
 }
+
+void RDRenderWidget::initializeGL()
+{
+    RDRenderDevice::CreateRenderManager(context());
+}
+
 void RDRenderWidget::keyPressEvent( QKeyEvent * event ) 
 {
     qDebug() << "RenderWidget key down";

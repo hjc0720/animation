@@ -61,7 +61,8 @@ signals:
     void    FrameChanged(const RDTime& nFrame);
 protected:
     void AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& idStory);
-    virtual void resizeEvent(QResizeEvent* event); 
+    virtual void resizeEvent(QResizeEvent* event);
+    virtual void wheelEvent(QWheelEvent *event);
 protected:
 	RDScene* m_pScene;
 	int	 m_nScale;

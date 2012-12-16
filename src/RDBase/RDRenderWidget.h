@@ -16,7 +16,7 @@
 
 #ifndef  RDREDERWIDGET_INC
 #define  RDREDERWIDGET_INC
-#include <QWidget>
+#include <QGLWidget>
 #include <QSize>
 #include <QRectF>
 #include "HMath.h"
@@ -27,11 +27,11 @@
 
 class MainWindow;
 
-class RDRenderWidget :public QWidget
+class RDRenderWidget :public QGLWidget
 {
     Q_OBJECT;
 public:
-    RDRenderWidget(int nWidth, int nHeight,QWidget *parent = 0);
+    RDRenderWidget(int nWidth, int nHeight,const QGLFormat& format,QWidget *parent = 0);
     ~RDRenderWidget();
     QSize hintSize()const;
     virtual bool event(QEvent* e);
@@ -41,12 +41,14 @@ signals:
 public slots:
     virtual void setVisible(bool visible);
 protected:
-    void paintEvent(QPaintEvent* event);
-    void resizeEvent(QResizeEvent* event);
+    //void paintEvent(QPaintEvent* event);
+    //void resizeEvent(QResizeEvent* event);
+    void resizeGL(int w,int h);
     int GetRealPorjWidth(){return floatToInt(m_nProjWidth * m_fScale);}
     int GetRealPorjHeight(){return floatToInt(m_nProjHeight * m_fScale);}
     virtual void keyPressEvent( QKeyEvent * event ) ;
     float3 ClientToScene(const QPoint& pos);
+    void initializeGL () ;
     static void    OnTime(void* param);
 protected:
     int     m_nProjWidth;

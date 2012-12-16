@@ -18,6 +18,8 @@
 #include "RDPropertySheet.h"
 #include "RDEditerManager.h"
 #include "RDTimelineView.h"
+#include <QApplication>
+#include <QDesktopWidget>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),m_bInit(false)
@@ -73,7 +75,12 @@ void MainWindow::InitWindow()
 }
 void MainWindow::AddCenterWidget()
 {
-	m_pCenterWidget = new RDRenderWidget(720,576,this); 
+    int nWidth = QApplication::desktop()->width();
+    int nHeight = QApplication::desktop()->height();
+    QGLFormat format;
+    format.setVersion(4,0);
+    format.setProfile(QGLFormat::CoreProfile);
+    m_pCenterWidget = new RDRenderWidget(nWidth,nHeight,format,this);
 	setCentralWidget(m_pCenterWidget);
 	RDDocument& pDoc = m_pCenterWidget->GetDocument();
 	m_UndoGroup.addStack(pDoc.GetUndoStack());

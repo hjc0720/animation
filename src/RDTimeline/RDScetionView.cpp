@@ -29,10 +29,11 @@
 
 RDSectionView::RDSectionView(RDScene* pScene,QWidget* pWidget )
     :QGraphicsView(pWidget)
+    ,m_nScale(1)
 {
-	SetSceneNode(pScene);
+    SetSceneNode(pScene);
     SetScale(m_pScene->GetSceneLength() / 1920);
-	setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
 void RDSectionView::resizeEvent(QResizeEvent* event)
@@ -41,21 +42,34 @@ void RDSectionView::resizeEvent(QResizeEvent* event)
     if(pScene && pScene->GetTimeMarker())
         pScene->GetTimeMarker()->SetHeight(height());
     QGraphicsView::resizeEvent(event);
-}	
+}
+
+void RDSectionView::wheelEvent(QWheelEvent *event)
+{
+    int nScale = m_nScale;
+    if(event->delta() > 0)
+        nScale *= (event->delta() / 8);
+    else
+        nScale /= -(event->delta() / 8);
+    nScale = std::max(nScale,MSECOND_TO_TIME / 100);
+    qDebug() << "scale" << nScale;
+    SetScale(nScale);
+    event->accept();
+}
 
 void RDSectionView::SetSceneNode(RDScene* pScene)
 {
-	m_pScene = pScene;
-	qreal fWidth = m_pScene->GetSceneLength() ;/// m_nScale;
-	qreal fHeight = (m_pScene->GetTotalChildCount() + 1) * RDTRACK_HEIGTH;
-	QGraphicsScene* pOldScene = scene();
-	SAFE_DELETE(pOldScene);
+    m_pScene = pScene;
+    qreal fWidth = m_pScene->GetSceneLength() ;/// m_nScale;
+    qreal fHeight = (m_pScene->GetTotalChildCount() + 1) * RDTRACK_HEIGTH;
+    QGraphicsScene* pOldScene = scene();
+    SAFE_DELETE(pOldScene);
 
-	RDSectionScene* pGraphicScene = new RDSectionScene(0,0,fWidth,fHeight);
+    RDSectionScene* pGraphicScene = new RDSectionScene(0,0,fWidth,fHeight);
     connect(pGraphicScene,SIGNAL(FrameChanged(const RDTime&)),this,SIGNAL(FrameChanged(const RDTime&)));
-	setScene(pGraphicScene);
-    
-	size_t nStoryCount = pScene->GetStoryCount();
+    setScene(pGraphicScene);
+
+    size_t nStoryCount = pScene->GetStoryCount();
     for(size_t i = 0; i < nStoryCount; i++)
     {
         int nIndex = 1;
@@ -90,8 +104,8 @@ void RDSectionView::AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& i
 
 void RDSectionView::SetScale(const RDTime& nScale) 
 {
+    scale(m_nScale / (float)nScale ,1);
     m_nScale = nScale;
-    scale(1.0 / m_nScale,1);
     RDSectionScene* pScene = dynamic_cast<RDSectionScene*>(scene());
     if(pScene && pScene->GetTimeMarker())
         pScene->GetTimeMarker()->SetScale(1.0 / m_nScale);

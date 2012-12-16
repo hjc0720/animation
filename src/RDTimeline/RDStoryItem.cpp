@@ -81,8 +81,17 @@ void RDStoryItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWi
     painter->scale(1/fScale,1);
     while(dTexLen < dWidth)
     {
-        double dNowScond = dTexLen / SECOND_TO_TIME;
-        QString lab = QString("%1").arg(dNowScond);
+        QString lab;
+        if(nType)
+        {
+            double dNowScond = dTexLen / SECOND_TO_TIME;
+            lab = QString("%1 s").arg(dNowScond);
+        }
+        else
+        {
+            double dNowScond = dTexLen / MSECOND_TO_TIME;
+            lab = QString("%1 ms").arg(dNowScond);
+        }
         painter->drawText((dTexLen + 1) * fScale, 20, lab);
         dTexLen += dLineSize * 10;
 //        qDebug() << "tex pos"<< dTexLen << dNowScond << "s";

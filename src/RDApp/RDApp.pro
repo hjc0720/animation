@@ -3,6 +3,7 @@ CONFIG += debug
 TEMPLATE = app
 TARGET = read_google_book
 include(../path.pri)
+ QT += opengl
 
 SOURCES += main.cpp RDMainWindow.cpp
 
@@ -10,15 +11,15 @@ HEADERS += RDMainWindow.h
 
 RESOURCES = resource.qrc
 
-INCLUDEPATH += ../RDBase
-
 DEPENDENCY_SHARE_LIBRARIES = RDCommon
+DEPENDENCY_SHARE_LIBRARIES += RDRenderManager
 DEPENDENCY_SHARE_LIBRARIES += RDCommonData
-DEPENDENCY_SHARE_LIBRARIES += RDBase RDDocument
 DEPENDENCY_SHARE_LIBRARIES += RD3rdSupport
 DEPENDENCY_SHARE_LIBRARIES += RDObject
 DEPENDENCY_SHARE_LIBRARIES += RDToolEdit
 DEPENDENCY_SHARE_LIBRARIES += RDWidget
 DEPENDENCY_SHARE_LIBRARIES += RDTimeline
+DEPENDENCY_SHARE_LIBRARIES += RDBase RDDocument
 LIBS += -lssl
+LIBS += -lGL
 include("../../depends.pri")

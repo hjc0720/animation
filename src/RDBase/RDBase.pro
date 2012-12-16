@@ -6,6 +6,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+ QT += opengl
 
 CONFIG += dll
 CONFIG += sse2 sse
@@ -20,6 +21,7 @@ HEADERS  += mainwindow.h RDRenderWidget.h RDToolBar.h
 HEADERS  += RDSetSceneDlg.h RDPropertySheet.h
 
 DEPENDENCY_SHARE_LIBRARIES = RDCommon
+DEPENDENCY_SHARE_LIBRARIES += RDRenderManager
 DEPENDENCY_SHARE_LIBRARIES += RDCommonData
 DEPENDENCY_SHARE_LIBRARIES += RDDocument
 DEPENDENCY_SHARE_LIBRARIES += RDObject

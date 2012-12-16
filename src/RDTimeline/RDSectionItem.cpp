@@ -68,7 +68,6 @@ void RDSectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * , 
         QRectF target(m_pSection->GetStartTime() + m_pSection->GetLength() - fRealSize,0,fRealSize,m_nHeight);
         //        QRectF target(0,0,m_pSection->GetLength(),m_nHeight);
         painter->drawImage(target,m_imgSectionType);
-        qDebug() << "image save";
     }
 }
 
