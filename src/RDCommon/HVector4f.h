@@ -33,10 +33,10 @@ public:
     float Mode()const;
     void Normalize();
 
-    float& GetX(){return m_data[0];}
-    float& GetY(){return m_data[1];}
-    float& GetZ(){return m_data[2];}
-    float& GetW(){return m_data[3];}
+    float& x(){return m_data[0];}
+    float& y(){return m_data[1];}
+    float& z(){return m_data[2];}
+    float& w(){return m_data[3];}
 
     void SetX(float f){m_data[0] = f;}
     void SetY(float f){m_data[1] = f;}

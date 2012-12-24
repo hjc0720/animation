@@ -22,10 +22,13 @@ struct RDFileTexture
 
 struct RDShader
 {
-    RDShader(){nRef = 0; pShader = 0;}
+    RDShader(const QString& Name)
+        :shaderName(Name)
+    { nRef = 1;pShader = 0;}
     ~RDShader(){ SAFE_DELETE(pShader);}
     int nRef;
     QGLShader* pShader;
+    QString shaderName;
 };
 
 struct RDVertexBuffer
@@ -40,6 +43,17 @@ struct RDVertexArray
     std::vector<RDVertexBuffer> arVertexBuffer;
 };
 
+struct RDShaderProgram
+{
+    RDShaderProgram(const QString& name)
+        :ProgramName(name)
+    {
+    }
+    ~RDShaderProgram(){SAFE_DELETE(pShaderProgram);}
+    int nRef;
+    QGLShaderProgram* pShaderProgram;
+    QString ProgramName;
+};
 ////////////////////////////////////////////////////////////////////////////////
 RDRenderDevice* g_pRenderManager = nullptr;
 ////////////////////////////////////////////////////////////////////////////////
@@ -96,39 +110,37 @@ const char* GetShaderExt(QGLShader::ShaderType nType)
     return "";
 }
 
-QGLShader *RDRenderDevice::CreateShader(const QString &fileName, QGLShader::ShaderType nType)
+RDShader *RDRenderDevice::CreateShader(const QString &fileName, QGLShader::ShaderType nType)
 {
     QMutexLocker locker(&m_lock);
     QFileInfo info(fileName);
     QString strShaderName = info.baseName() + GetShaderExt(nType);
-    QGLShader* pShader = GetExistShader(strShaderName);
+    RDShader* pShader = GetExistShader(strShaderName);
 
     if(!pShader)
     {
-        RDShader* pNewShader = new RDShader();
-        pNewShader->pShader = new QGLShader(nType,m_pDefaultContext);
-        pNewShader->pShader->compileSourceFile(fileName);
-        pNewShader->nRef = 1;
-        m_vecShader[strShaderName] = pNewShader;
-        pShader = pNewShader->pShader;
+        pShader = new RDShader(strShaderName);
+        pShader->pShader = new QGLShader(nType,m_pDefaultContext);
+        pShader->pShader->compileSourceFile(fileName);
+        pShader->nRef = 1;
+        m_vecShader[strShaderName] = pShader;
     }
     return pShader;
 }
 
-QGLShader *RDRenderDevice::CreateShader(const QString &code, const QString &shaderName, QGLShader::ShaderType nType)
+RDShader *RDRenderDevice::CreateShader(const QString &code, const QString &shaderName, QGLShader::ShaderType nType)
 {
     QMutexLocker locker(&m_lock);
     QString strShaderName = shaderName + GetShaderExt(nType);
-    QGLShader* pShader = GetExistShader(strShaderName);
+    RDShader* pShader = GetExistShader(strShaderName);
 
     if(!pShader)
     {
-        RDShader* pNewShader = new RDShader();
-        pNewShader->pShader = new QGLShader(nType,m_pDefaultContext);
-        pNewShader->pShader->compileSourceCode(code);
-        pNewShader->nRef = 1;
-        m_vecShader[strShaderName] = pNewShader;
-        pShader = pNewShader->pShader;
+        pShader = new RDShader(strShaderName);
+        pShader->pShader = new QGLShader(nType,m_pDefaultContext);
+        pShader->pShader->compileSourceCode(code);
+        pShader->nRef = 1;
+        m_vecShader[strShaderName] = pShader;
     }
     return pShader;
 }
@@ -149,6 +161,57 @@ int GetPtSize(RDVertexBufferType nType)
     }
     return 4;
 }
+
+QString GetAttributeName(RDVertexBufferType nType)
+{
+    switch(nType)
+    {
+    case  RDVB_Pos:
+        return QString("pos");
+    case RDVB_Color:
+        return QString("color");
+    case RDVB_Normal:
+        return QString("normal");
+    case RDVB_Texcoord:
+        return QString("texcoord");
+    case RDVB_Tang:
+        return QString("tang");
+    case RDVB_Bi:
+        return QString("bi");
+    }
+    return QString("");
+}
+
+RDShaderProgram *RDRenderDevice::CreateShaderProgram(RDShader *pVertexShader,  RDShader*pGeometryShader,  RDShader* pPixelShader, std::vector<RDVertexBufferType> VertexShaderType)
+{
+    QMutexLocker locker(&m_lock);
+    QString programName;
+    if(pVertexShader)
+        programName += pVertexShader->shaderName ;
+    if(pGeometryShader)
+        programName += pGeometryShader->shaderName;
+    if(pPixelShader)
+        programName += pPixelShader->shaderName;
+    auto it = m_vecShaderProgram.find(programName) ;
+    if(it != m_vecShaderProgram.end())
+    {
+       return it->second;
+    }
+    RDShaderProgram* pShaderProgram = new RDShaderProgram(programName);
+    pShaderProgram->nRef = 1;
+    pShaderProgram->pShaderProgram = new QGLShaderProgram(m_pDefaultContext);
+    pShaderProgram->pShaderProgram->addShader(pVertexShader->pShader);
+    pShaderProgram->pShaderProgram->addShader(pGeometryShader->pShader);
+    pShaderProgram->pShaderProgram->addShader(pPixelShader->pShader);
+    for(size_t i = 0; i < VertexShaderType.size(); i++)
+    {
+        pShaderProgram->pShaderProgram->bindAttributeLocation(GetAttributeName(VertexShaderType[i]),VertexShaderType[i]);
+    }
+    pShaderProgram->pShaderProgram->link();
+    m_vecShaderProgram[programName] = pShaderProgram;
+    return pShaderProgram;
+}
+
 RDVertexBufferHandle RDRenderDevice::CreateVertexBuffer(const std::vector<RDVertexData> &arVertexData)
 {
     QMutexLocker locker(&m_lock);
@@ -176,6 +239,78 @@ RDVertexBufferHandle RDRenderDevice::CreateVertexBuffer(const std::vector<RDVert
     return pVertexArray;
 }
 
+void RDRenderDevice::SetVertexBuffer(RDVertexBufferHandle pVertex)
+{
+    QMutexLocker locker(&m_lock);
+    glBindVertexArray(pVertex->hVertexArray);
+}
+
+void RDRenderDevice::SetShader(RDShaderProgram *pShader)
+{
+    QMutexLocker locker(&m_lock);
+    pShader->pShaderProgram->bind();
+}
+
+void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name, float value)
+{
+    QMutexLocker locker(&m_lock);
+    pShader->pShaderProgram->setUniformValue(name,value);
+}
+
+void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name, float3 &value)
+{
+    QMutexLocker locker(&m_lock);
+    pShader->pShaderProgram->setUniformValue(name,value.x(),value.y(),value.z());
+}
+
+void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name, float4 &value)
+{
+    QMutexLocker locker(&m_lock);
+    pShader->pShaderProgram->setUniformValue(name,value.x(),value.y(),value.z(),value.w());
+}
+
+void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name, HMatrixQ4F &value)
+{
+    QMutexLocker locker(&m_lock);
+    const float* data = value.data();
+    QMatrix4x4 mat(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12],data[13],data[14],data[15]);
+    pShader->pShaderProgram->setUniformValue(name,mat);
+}
+
+void RDRenderDevice::SetShaderTexture(RDShaderProgram *pShader, const char *name, RDTexHandle tex)
+{
+    QMutexLocker locker(&m_lock);
+    int pShaderHandle = pShader->pShaderProgram->programId();
+    int loc = glGetUniformLocation(pShaderHandle,name);
+    tex->SetTexture(loc);
+}
+
+void RDRenderDevice::SetShaderSample(RDTexHandle tex, RDSampleType nType)
+{
+    QMutexLocker locker(&m_lock);
+    tex->SetTextureSample(nType);
+}
+
+bool RDRenderDevice::SetRenderTarget(RDTexHandle target, RDTexHandle depth)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER,m_hFrameBuffer);
+    bool ret = target->SetRenderTarget(0);
+    ret &= depth->SetDepth();
+    return ret;
+}
+
+void RDRenderDevice::SetViewPort(QRect &viewPort)
+{
+    QMutexLocker locker(&m_lock);
+    glViewport(viewPort.left(),viewPort.right(),viewPort.width(),viewPort.height());
+}
+
+void RDRenderDevice::SetScissor(QRect &scissor)
+{
+    QMutexLocker locker(&m_lock);
+    glScissor(scissor.left(),scissor.right(),scissor.width(),scissor.height());
+}
+
 void RDRenderDevice::DumpTexture(RDTexHandle pTex)
 {
     QMutexLocker locker(&m_lock);
@@ -192,18 +327,21 @@ RDRenderDevice::RDRenderDevice(const QGLContext* renderContex)
     qDebug() << "OpenGL version "<<major<<"."<<minor;
 
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,&m_nMaxUseTexure);
+
     m_pCurState = new RDRenderState;
     m_pTempState = new RDRenderState;
+    glGenFramebuffers(1,&m_hFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER,m_hFrameBuffer);
 }
 
-QGLShader *RDRenderDevice::GetExistShader(const QString &shaderName)
+RDShader *RDRenderDevice::GetExistShader(const QString &shaderName)
 {
     QMutexLocker locker(&m_lock);
     auto it = m_vecShader.find(shaderName);
     if(it != m_vecShader.end())
     {
         it->second->nRef++;
-        return it->second->pShader;
+        return it->second;
     }
     return nullptr;
 }

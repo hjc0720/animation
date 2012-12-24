@@ -24,12 +24,27 @@ RDTexture::RDTexture(int nWidth,int nHeight,RDTexture_Type nType)
       m_nTextureType(nType)
 {
     RDRenderDevice* pManager = RDRenderDevice::GetRenderManager();
-    GLint nIndex = pManager->GetCreateTextureIndex();
-    glActiveTexture(GL_TEXTURE0 + nIndex);
-    glGenTextures(1,&m_nTexture);
-    GLenum target = GetTextureTarget(nType);
-    glBindTexture(target , m_nTexture);
-    glTexImage2D(target ,0,COLOR_TYPE,m_nWidth,m_nHeight,0,COLOR_TYPE,GL_UNSIGNED_BYTE,nullptr);
+    if(m_nTextureType == RDNormal2DTexture)
+    {
+        GLint nIndex = pManager->GetCreateTextureIndex();
+        glActiveTexture(GL_TEXTURE0 + nIndex);
+        glGenTextures(1,&m_nTexture);
+        GLenum target = GetTextureTarget(nType);
+        glBindTexture(target , m_nTexture);
+        glTexImage2D(target ,0,COLOR_TYPE,m_nWidth,m_nHeight,0,COLOR_TYPE,GL_UNSIGNED_BYTE,nullptr);
+    }
+    else if(m_nTextureType == RDDepthTexture)
+    {
+        glGenRenderbuffers(1,&m_nTexture);
+        glBindRenderbuffer(GL_RENDERBUFFER,m_nTexture);
+        glRenderbufferStorage(GL_RENDERBUFFER,GL_DEPTH_COMPONENT,nWidth,nHeight);
+    }
+    else if(m_nTextureType == RDDepthStencilTexture)
+    {
+        glGenRenderbuffers(1,&m_nTexture);
+        glBindRenderbuffer(GL_RENDERBUFFER,m_nTexture);
+        glRenderbufferStorage(GL_RENDERBUFFER,GL_DEPTH_STENCIL,nWidth,nHeight);
+    }
 }
 
 RDTexture::RDTexture(const QString &fileName)
@@ -71,6 +86,42 @@ void RDTexture::Dump(const QString &fileName)
     SAFE_DELETE_ARRAY(buffer);
 }
 
+void RDTexture::SetTexture(int loc)
+{
+    glUniform1i(loc,m_nTexture);
+}
+
+void RDTexture::SetTextureSample(RDSampleType nType)
+{
+    switch(nType)
+    {
+    case RDSample_Point:
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        break;
+    case RDSample_Liner:
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        break;
+    }
+}
+
+bool RDTexture::SetRenderTarget(int nIndex)
+{
+    if(IsTarget())
+        return false;
+    glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0 + nIndex,GetTextureTarget(m_nTextureType),m_nTexture,0);
+    return true;
+}
+
+bool RDTexture::SetDepth()
+{
+    if(!IsDepth())
+        return false;
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER,GetTextureTarget(m_nTextureType),GL_RENDERBUFFER,m_nTexture);
+    return true;
+}
+
 GLenum RDTexture::GetTextureTarget(RDTexture_Type nType)
 {
     switch(nType)
@@ -79,6 +130,20 @@ GLenum RDTexture::GetTextureTarget(RDTexture_Type nType)
         return GL_TEXTURE_2D;
     case RDReadOnly2DTexture:
         return GL_TEXTURE_2D;
+    case RDDepthTexture:
+        return GL_DEPTH_ATTACHMENT;
+    case RDDepthStencilTexture:
+        return GL_DEPTH_STENCIL_ATTACHMENT;
     }
     return GL_TEXTURE_2D;
+}
+
+bool RDTexture::IsDepth()
+{
+    return m_nTextureType == RDDepthTexture || m_nTextureType == RDDepthStencilTexture;
+}
+
+bool RDTexture::IsTarget()
+{
+    return  m_nTextureType == RDNormal2DTexture;
 }
