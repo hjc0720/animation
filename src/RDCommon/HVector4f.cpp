@@ -57,6 +57,13 @@ void float4::Normalize()
     *this *= fMode;
 }
 
+void float4::Set(float x, float y, float z, float w)
+{
+    __m128 fm;
+    fm = _mm_set_ps(w,z,y,x);
+    _mm_store_ps(m_data,fm);
+}
+
 float4& float4::operator += (const float4& m)
 {
     __m128 src = _mm_load_ps(m_data);

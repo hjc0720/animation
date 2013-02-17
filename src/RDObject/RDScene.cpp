@@ -135,7 +135,7 @@ void RDScene::Render(const RDTime& nTime,const QString& pRDName)
         return;
     }
     RDNode::Render(nTime,pRDName);
-    BlendChild(pRDName);
+    //BlendChild(pRDName);
 }
 
 void RDScene::RenderImage(RDSceneRenderData& pSceneData,unsigned long )

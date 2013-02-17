@@ -23,16 +23,113 @@
 #include "RDSpaceConvert.h"
 #include <QDebug>
 #include "RDFileDataStream.h"
+#include "HVector4f.h"
+#include "RDRenderDevice.h"
+struct RDUV
+{
+    float u;
+    float v;
+};
 
+float4 vPos[6];
+RDUV vUV[6];
+bool bInit = false;
+RDVertexBufferHandle    hVertex;
+RDShader* pVS = nullptr;
+RDShader* pPS = nullptr;
+RDShaderProgram* pShaderProgram = nullptr;
+
+const char* vs_code = "#version 400 \nlayout (location = 0) in vec4 pos; \
+        layout (location = 3) in vec2 tex; \
+        out vec2 oTex; \
+        void main(){ oTex = tex; gl_Position = pos;}";
+const char* ps_code = "#version 400 \n in vec2 oTex;layout(location = 0)out vec4 FragColor;\n \
+        void main(){FragColor = vec4(oTex,1,1);}";
 RDImageObject::RDImageObject()
     :RDObject(RDObjectImage)
 {
+    if(!bInit)
+    {
+        vPos[0].Set(-1,1,0.5,1);
+        vUV[0].u = 0;
+        vUV[0].v = 0;
+        vPos[1].Set(1,1,0.5,1);
+        vUV[1].u = 1;
+        vUV[1].v = 0;
+        vPos[2].Set(1,-1,0.5,1);
+        vUV[2].u = 1;
+        vUV[2].v = 1;
+        vPos[3].Set(-1,1,0.5,1);
+        vUV[3].u = 0;
+        vUV[3].v = 1;
+        vPos[4].Set(1,-1,0.5,1);
+        vUV[4].u = 1;
+        vUV[4].v = 1;
+        vPos[5].Set(-1,-1,0.5,1);
+        vUV[5].u = 0;
+        vUV[5].v = 1;
+        bInit = true;
+        RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
+        std::vector<RDVertexData> vertex;
+        vertex.resize(2);
+        vertex[0].nType = RDVB_Pos;
+        vertex[0].pVertexData = (float*)vPos;
+        vertex[0].nVertexCount = 6 * 4; 
+
+        vertex[1].nType = RDVB_Texcoord;
+        vertex[1].pVertexData = (float*)vUV;
+        vertex[1].nVertexCount = 6 * 2 ;
+        hVertex = pDevice->CreateVertexBuffer(vertex);
+        pVS = pDevice->CreateShader(vs_code,QString("test_vs"),VertexShader);
+        pPS = pDevice->CreateShader(ps_code,QString("test_ps"),FragmentShader);
+
+        pShaderProgram = pDevice->CreateShaderProgram(pVS,  nullptr,  pPS);
+        bInit = true;
+    }
 }
 RDImageObject::RDImageObject(const QString& fileName)
     :RDObject(RDObjectImage)
 {
     RDResourceManager* pResManger = RDResourceManager::GetResourceManager();
     m_Image = pResManger->AddResource(fileName,RDResource_Image)->GetMd5();
+    if(!bInit)
+    {
+        vPos[0].Set(-1,1,0.5,1);
+        vUV[0].u = 0;
+        vUV[0].v = 0;
+        vPos[1].Set(1,1,0.5,1);
+        vUV[1].u = 1;
+        vUV[1].v = 0;
+        vPos[2].Set(1,-1,0.5,1);
+        vUV[2].u = 1;
+        vUV[2].v = 1;
+        vPos[3].Set(-1,1,0.5,1);
+        vUV[3].u = 0;
+        vUV[3].v = 1;
+        vPos[4].Set(1,-1,0.5,1);
+        vUV[4].u = 1;
+        vUV[4].v = 1;
+        vPos[5].Set(-1,-1,0.5,1);
+        vUV[5].u = 0;
+        vUV[5].v = 1;
+        bInit = true;
+        RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
+        std::vector<RDVertexData> vertex;
+        vertex.resize(2);
+        vertex[0].nType = RDVB_Pos;
+        vertex[0].pVertexData = (float*)vPos;
+        vertex[0].nVertexCount = 6 * 4;
+
+        vertex[1].nType = RDVB_Texcoord;
+        vertex[1].pVertexData = (float*)vUV;
+        vertex[1].nVertexCount = 6 * 2 ;
+        hVertex = pDevice->CreateVertexBuffer(vertex);
+        pVS = pDevice->CreateShader(vs_code,QString("test_vs"),VertexShader);
+        pPS = pDevice->CreateShader(ps_code,QString("test_ps"),FragmentShader);
+
+        pShaderProgram = pDevice->CreateShaderProgram(pVS,  nullptr,  pPS);
+        bInit = true;
+    }
 }
 
 RDImageObject::RDImageObject(const RDMd5& image)
@@ -45,6 +142,7 @@ RDImageObject::RDImageObject(const RDMd5& image)
     m_nWidth = 0;
 }
 
+
 RDImageObject::~RDImageObject()
 {
     RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
@@ -54,6 +152,11 @@ RDImageObject::~RDImageObject()
 
 void RDImageObject::Render(unsigned long ,RDRenderData& RenderData) 
 {
+    RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
+    pDevice->SetShader(pShaderProgram);
+    pDevice->SetVertexBuffer(hVertex);
+    pDevice->Render(GL_TRIANGLES,0,6);
+    return;
     if(RenderData.GetRenderChangeLevel() >= RDRender_GraphicChange)
     {
         QRectF dst(0,0,RenderData.GetBound().width() * RenderData.GetScale(),RenderData.GetBound().height() * RenderData.GetScale());

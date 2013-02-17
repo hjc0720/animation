@@ -78,7 +78,7 @@ void MainWindow::AddCenterWidget()
     int nWidth = QApplication::desktop()->width();
     int nHeight = QApplication::desktop()->height();
     QGLFormat format;
-    format.setVersion(4,2);
+    format.setVersion(4,0);
     format.setProfile(QGLFormat::CoreProfile);
     m_pCenterWidget = new RDRenderWidget(nWidth,nHeight,format,this);
 	setCentralWidget(m_pCenterWidget);

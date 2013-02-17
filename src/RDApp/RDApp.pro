@@ -1,7 +1,7 @@
 CONFIG += qt
 CONFIG += debug
 TEMPLATE = app
-TARGET = read_google_book
+TARGET = animation
 include(../path.pri)
  QT += opengl
 

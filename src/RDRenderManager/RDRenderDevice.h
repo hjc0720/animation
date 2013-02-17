@@ -4,13 +4,19 @@
 #include <list>
 #include <map>
 #include <QString>
-#include <QGLShader>
 #include <QFlags>
 #include <vector>
 #include <QMutex>
 #include <HVector3f.h>
 #include <HVector4f.h>
 #include <HMatrixQ4F.h>
+
+enum RDShaderType
+{
+    VertexShader,
+    FragmentShader,
+    GeometryShader,
+};
 
 enum RDTexture_Type
 {
@@ -43,17 +49,19 @@ struct RDVertexData
     int nVertexCount;
 };
 
+class QRect;
 class QGLContext;
 class RDRenderState;
 class RDTexture;
 class QGLFormat;
 class RDVertexArray;
+class RDShader;
+class RDShaderProgram;
+
 typedef RDTexture* RDTexHandle ;
 typedef RDVertexArray* RDVertexBufferHandle;
 
 struct RDFileTexture;
-struct RDShader;
-struct RDShaderProgram;
 
 class RDRenderDevice
 {
@@ -64,9 +72,9 @@ public:
     //create function
     RDTexHandle CreateTexture(const QString& fileName);
     RDTexHandle CreateTexture(int nWidth,int nHeight,RDTexture_Type nType);
-    RDShader* CreateShader(const QString& fileName,QGLShader::ShaderType nType);
-    RDShader* CreateShader(const QString& code,const QString& shaderName,QGLShader::ShaderType nType);
-    RDShaderProgram* CreateShaderProgram(RDShader *pVertexShader,  RDShader*pGeometryShader,  RDShader* pPixelShader, std::vector<RDVertexBufferType> VertexShaderType);
+    RDShader* CreateShader(const QString &fileName, RDShaderType nType);
+    RDShader* CreateShader(const QString& code,const QString& shaderName,RDShaderType nType);
+    RDShaderProgram* CreateShaderProgram(RDShader *pVertexShader,  RDShader*pGeometryShader,  RDShader* pPixelShader);
     RDVertexBufferHandle     CreateVertexBuffer(const std::vector<RDVertexData> &arVertexData);
     //release function
 
@@ -80,6 +88,7 @@ public:
     void    SetShaderParam(RDShaderProgram* pShader,const char* name,HMatrixQ4F& value);
     void    SetShaderTexture(RDShaderProgram* pShader,const char* name,RDTexHandle tex);
     void    SetShaderSample(RDTexHandle tex,RDSampleType nType);
+    void    Render(GLenum mode,GLint nStart,GLsizei count);
 
     bool    SetRenderTarget(RDTexHandle target,RDTexHandle depth);
     void    SetViewPort(QRect& viewPort );

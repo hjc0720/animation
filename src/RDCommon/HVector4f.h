@@ -42,6 +42,7 @@ public:
     void SetY(float f){m_data[1] = f;}
     void SetZ(float f){m_data[2] = f;}
     void SetW(float f){m_data[3] = f;}
+    void Set(float x, float y,float z, float w = 1);
 
     void DividW();
 public:

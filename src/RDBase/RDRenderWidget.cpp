@@ -60,10 +60,15 @@ void RDRenderWidget::resizeGL(int w, int h)
     m_swapChain.Resize(w,h);
     m_document.UnLock();
     m_document.SetScale(m_fScale);
+
+    int side = w;
+    glViewport((w- side) / 2, (h- side) / 2, side, side);
+
 }
 
 void    RDRenderWidget::OnTime(void* param)
 {
+    return;
     static RenderManager* pRDManager = 0;
     if(!pRDManager)
     {
@@ -126,9 +131,10 @@ RDRenderWidget::RDRenderWidget(int nWidth, int nHeight,const QGLFormat& format,Q
      ,m_RenderTimer(20,RDRenderWidget::OnTime,this)
      ,m_swapChain(nWidth,nHeight)
 {
+    m_RenderTimer.close();
     //setAttribute(Qt::WA_PaintOutsidePaintEvent);
-    setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
-    setFocusPolicy(Qt::ClickFocus);
+    //setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
+    //setFocusPolicy(Qt::ClickFocus);
    //m_swapChain.GetFrontBuffer()->FillColor(0xff00ff00);
 }
 RDRenderWidget::~RDRenderWidget()
@@ -217,6 +223,49 @@ float3 RDRenderWidget::ClientToScene(const QPoint& pos)
 void RDRenderWidget::initializeGL()
 {
     RDRenderDevice::CreateRenderManager(context());
+}
+
+void RDRenderWidget::paintGL()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+
+    static RenderManager* pRDManager = 0;
+    if(!pRDManager)
+    {
+        pRDManager = new RenderManager;
+    }
+    RDDocument* pDoc = &m_document;
+    static double dStartTime = 0;
+    static double oldTime = GetTime();
+    dStartTime = GetTime();
+    pDoc->Lock();
+    RDScene* pScene = pDoc->GetCurScene();
+    //if(pScene->GetMaxChangeLevel(DEFAULT_RD) == RDRender_NoChange && pDoc->GetCurTime() == pScene->GetRenderData(DEFAULT_RD)->GetTime())
+    //{
+        //oldTime = dStartTime;
+        //pDoc->UnLock();
+        //if(g_bForceUpdate)
+        //{
+            //pWidget->update();
+            //g_bForceUpdate = false;
+        //}
+        //return;
+    //}
+    pRDManager->SetRenderName(DEFAULT_RD);
+    pRDManager->SetScene(pScene);
+    pRDManager->SetDstBuffer(m_swapChain.GetBackBuffer());
+    QPointF pt(m_nXOffset,m_nYOffset);
+    if(!pRDManager->RenderScene(pt,m_validRt,pDoc->GetCurTime()))
+    {
+        oldTime = dStartTime;
+        return;
+    }
+    qDebug() << "On Time :" << pDoc->GetCurTime();
+    //pWidget->update();
+    if(dStartTime - oldTime > 20)
+        qDebug() << dStartTime - oldTime;
+    oldTime = dStartTime;
 }
 
 void RDRenderWidget::keyPressEvent( QKeyEvent * event ) 

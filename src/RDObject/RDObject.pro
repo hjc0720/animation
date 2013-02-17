@@ -6,6 +6,7 @@
 
 CONFIG += console
 CONFIG += dll
+QT += opengl
 include("../path.pri")
 
 TEMPLATE = lib
@@ -22,5 +23,6 @@ HEADERS  += RDRenderManager.h
 
 
 DEPENDENCY_SHARE_LIBRARIES = RDCommon
-DEPENDENCY_SHARE_LIBRARIES = RDCommonData
+DEPENDENCY_SHARE_LIBRARIES += RDCommonData
+DEPENDENCY_SHARE_LIBRARIES += RDRenderManager
 include("../../depends.pri")
