@@ -63,6 +63,7 @@ void RDRenderWidget::resizeGL(int w, int h)
 
     int side = w;
     glViewport((w- side) / 2, (h- side) / 2, side, side);
+    m_bResize = true;
 
 }
 
@@ -126,6 +127,7 @@ RDRenderWidget::RDRenderWidget(int nWidth, int nHeight,const QGLFormat& format,Q
      ,m_nXOffset(0)
      ,m_nYOffset(0)
      ,m_fScale(1)
+    ,m_bResize(true)
      //,m_pMainWin(pMain)
      ,m_document(true)
      ,m_RenderTimer(20,RDRenderWidget::OnTime,this)
@@ -227,7 +229,10 @@ void RDRenderWidget::initializeGL()
 
 void RDRenderWidget::paintGL()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    if(m_bResize)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    m_bResize = false;
     glLoadIdentity();
 
     static RenderManager* pRDManager = 0;
