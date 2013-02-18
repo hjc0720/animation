@@ -310,7 +310,7 @@ RDRenderDevice::RDRenderDevice(const QGLContext* renderContex)
     //glBindFramebuffer(GL_FRAMEBUFFER,m_hFrameBuffer);
 }
 
-RDShader *RDRenderDevice::GetExistShader(const QString &shaderName)
+RDShader * RDRenderDevice::GetExistShader(const QString &shaderName)
 {
     QMutexLocker locker(&m_lock);
     auto it = m_vecShader.find(shaderName);
@@ -320,4 +320,15 @@ RDShader *RDRenderDevice::GetExistShader(const QString &shaderName)
         return it->second;
     }
     return nullptr;
+}
+
+void    RDRenderDevice::ReleaseVertexBuffer(RDVertexBufferHandle hVertexBuffer)
+{
+    QMutexLocker locker(&m_lock);
+    for(size_t i = 0; i < hVertexBuffer->arVertexBuffer.size();i++)
+    {
+        RDVertexBuffer& hBuffer = hVertexBuffer->arVertexBuffer[i];       
+        glDeleteBuffers(1,&hBuffer.hVertexBuffer);
+    }
+    glDeleteVertexArrays(1,&hVertexBuffer->hVertexArray);
 }

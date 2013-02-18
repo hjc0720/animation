@@ -21,5 +21,6 @@ HEADERS += RDImageResource.h RDFileDataStream.h
 HEADERS += RDSection.h RDBaseKey.h RDStory.h RDKeyList.h
 
 DEPENDENCY_SHARE_LIBRARIES = RDCommon
+DEPENDENCY_SHARE_LIBRARIES += RDRenderManager
 include("../../depends.pri")
 

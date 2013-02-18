@@ -1,8 +1,8 @@
 #ifndef RDMODEL_H
 #define RDMODEL_H
 
-#include "RDMaterial.h"
 #include <vector>
+#include "RDRenderDevice.h"
 
 class float3;
 struct RDTexcoord
@@ -15,18 +15,30 @@ struct RDSubModel
 {
     int nStart;
     int nCount;
-    RDMaterial material;
+//    RDMaterial material;
 };
 
+class float4;
 class RDModel
 {
 public:
     RDModel();
+    RDModel(int nCount);
+    
+    void UpdateRenderData();
+protected:
+    int m_nVersion;
     int m_nCount;
-    float3* m_vPos;
-    float3* m_vNormal;
-    RDTexcoord* uv;
+    float4* m_vPos;
+    float4* m_vNormal;
+    RDTexcoord* m_vUV;
     std::vector<RDSubModel*> m_arSubModel;
+
+    //render data
+    RDVertexBufferHandle m_hVertex;
+
+    //friend function
+    friend RDModel* CreateSegmentModel();
 };
 
 RDModel* CreateSegmentModel();

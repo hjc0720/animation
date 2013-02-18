@@ -64,6 +64,13 @@ void float4::Set(float x, float y, float z, float w)
     _mm_store_ps(m_data,fm);
 }
 
+float4& float4::operator = (const float4& other)
+{
+    __m128 src = _mm_load_ps(other.m_data);
+    _mm_store_ps(m_data,src);
+    return *this;
+}
+
 float4& float4::operator += (const float4& m)
 {
     __m128 src = _mm_load_ps(m_data);

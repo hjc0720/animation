@@ -60,6 +60,7 @@ class RDShaderProgram;
 
 typedef RDTexture* RDTexHandle ;
 typedef RDVertexArray* RDVertexBufferHandle;
+#define InvalidHandle nullptr
 
 struct RDFileTexture;
 
@@ -77,6 +78,7 @@ public:
     RDShaderProgram* CreateShaderProgram(RDShader *pVertexShader,  RDShader*pGeometryShader,  RDShader* pPixelShader);
     RDVertexBufferHandle     CreateVertexBuffer(const std::vector<RDVertexData> &arVertexData);
     //release function
+    void    ReleaseVertexBuffer(RDVertexBufferHandle hVertexBuffer);
 
     //modify function
     //render function

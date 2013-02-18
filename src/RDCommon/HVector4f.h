@@ -53,6 +53,7 @@ public:
     float4& operator *= (float fScale);
     float4& operator /= (float fScale);
     float4& operator == (const float4& m);
+    float4& operator = (const float4& other);
 protected:
     float m_data[4] __attribute__ ((aligned (16)));
 };
