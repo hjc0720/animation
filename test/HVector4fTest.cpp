@@ -61,10 +61,10 @@ TEST_F(HVector4fTest,Set)
     float fW = rand();
     
     float4 vec(fX,fY,fZ,fW);
-    EXPECT_FLOAT_EQ(fX,vec.GetX());
-    EXPECT_FLOAT_EQ(fY,vec.GetY());
-    EXPECT_FLOAT_EQ(fZ,vec.GetZ());
-    EXPECT_FLOAT_EQ(fW,vec.GetW());
+    EXPECT_FLOAT_EQ(fX,vec.x());
+    EXPECT_FLOAT_EQ(fY,vec.y());
+    EXPECT_FLOAT_EQ(fZ,vec.z());
+    EXPECT_FLOAT_EQ(fW,vec.w());
 }
 
 TEST_F(HVector4fTest,ModeTime)
@@ -136,9 +136,9 @@ TEST_F(HVector4fTest,Add)
 
     float4 vec2(fX,fY,fZ,fW);
     vec1 += vec2;
-    EXPECT_FLOAT_EQ(vec1.GetX(),vec2.GetX() + temp.GetX());
-    EXPECT_FLOAT_EQ(vec1.GetY(),vec2.GetY() + temp.GetY());
-    EXPECT_FLOAT_EQ(vec1.GetZ(),vec2.GetZ() + temp.GetZ());
+    EXPECT_FLOAT_EQ(vec1.x(),vec2.x() + temp.x());
+    EXPECT_FLOAT_EQ(vec1.y(),vec2.y() + temp.y());
+    EXPECT_FLOAT_EQ(vec1.z(),vec2.z() + temp.z());
 }
 
 TEST_F(HVector4fTest,DividWTime)
@@ -162,8 +162,19 @@ TEST_F(HVector4fTest,DividW)
 
     vec1.DividW();
 
-    EXPECT_FLOAT_EQ(vec1.GetX(),temp.GetX() / temp.GetW());
-    EXPECT_FLOAT_EQ(vec1.GetY(),temp.GetY() / temp.GetW());
-    EXPECT_FLOAT_EQ(vec1.GetZ(),temp.GetZ() / temp.GetW());
-    EXPECT_FLOAT_EQ(vec1.GetW(),temp.GetW() / temp.GetW());
+    EXPECT_FLOAT_EQ(vec1.x(),temp.x() / temp.w());
+    EXPECT_FLOAT_EQ(vec1.y(),temp.y() / temp.w());
+    EXPECT_FLOAT_EQ(vec1.z(),temp.z() / temp.w());
+    EXPECT_FLOAT_EQ(vec1.w(),temp.w() / temp.w());
+}
+
+TEST_F(HVector4fTest,colorConvert)
+{
+    unsigned int color = 0xffff33ff;
+    float4 vColor(color);
+
+    EXPECT_FLOAT_EQ(vColor.x(),1);
+    EXPECT_FLOAT_EQ(vColor.y(),0.2);
+    EXPECT_FLOAT_EQ(vColor.z(),1);
+    EXPECT_FLOAT_EQ(vColor.w(),1);
 }

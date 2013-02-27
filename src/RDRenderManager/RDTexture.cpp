@@ -18,10 +18,11 @@ void ConvertGLToImage(unsigned int* buffer,int nSize)
     }
 }
 
-RDTexture::RDTexture(int nWidth,int nHeight,RDTexture_Type nType)
+RDTexture::RDTexture(int nWidth,int nHeight,const uint* pBuffer,RDTexture_Type nType)
     :m_nWidth(nWidth),
       m_nHeight(nHeight),
       m_nTextureType(nType)
+      ,m_nRef(1)
 {
     RDRenderDevice* pManager = RDRenderDevice::GetRenderManager();
     if(m_nTextureType == RDNormal2DTexture)
@@ -31,7 +32,7 @@ RDTexture::RDTexture(int nWidth,int nHeight,RDTexture_Type nType)
         glGenTextures(1,&m_nTexture);
         GLenum target = GetTextureTarget(nType);
         glBindTexture(target , m_nTexture);
-        glTexImage2D(target ,0,COLOR_TYPE,m_nWidth,m_nHeight,0,COLOR_TYPE,GL_UNSIGNED_BYTE,nullptr);
+        glTexImage2D(target ,0,COLOR_TYPE,m_nWidth,m_nHeight,0,COLOR_TYPE,GL_UNSIGNED_BYTE,pBuffer);
     }
     else if(m_nTextureType == RDDepthTexture)
     {
@@ -50,6 +51,7 @@ RDTexture::RDTexture(int nWidth,int nHeight,RDTexture_Type nType)
 RDTexture::RDTexture(const QString &fileName)
     :m_strFileName(fileName)
       ,m_nTextureType(RDReadOnly2DTexture)
+      ,m_nRef(1)
 {
     QImage image = QGLWidget::convertToGLFormat(QImage(fileName));
     m_nWidth = image.bytesPerLine() / 4;
@@ -146,4 +148,18 @@ bool RDTexture::IsDepth()
 bool RDTexture::IsTarget()
 {
     return  m_nTextureType == RDNormal2DTexture;
+}
+
+bool RDTexture::Release()
+{
+    m_nRef--;
+    bool ret = (m_nRef == 0);
+    if(ret)
+        delete this;
+    return ret ;
+}
+
+RDTexture::~RDTexture()
+{
+    glDeleteTextures(1,&m_nTexture);
 }

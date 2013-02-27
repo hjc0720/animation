@@ -13,13 +13,13 @@ class RDRenderState
 {
 };
 
-struct RDFileTexture
-{
-    RDFileTexture(){nRef = 0; pTexture = 0;}
-    ~RDFileTexture(){ SAFE_DELETE(pTexture);}
-    int nRef;
-    RDTexture* pTexture;
-};
+//struct RDFileTexture
+//{
+//    RDFileTexture(){nRef = 0; pTexture = 0;}
+//    ~RDFileTexture(){ SAFE_DELETE(pTexture);}
+//    int nRef;
+//    RDTexture* pTexture;
+//};
 
 struct RDVertexBuffer
 {
@@ -55,22 +55,20 @@ RDTexHandle RDRenderDevice::CreateTexture(const QString &fileName)
     auto it = m_vecFileTex.find(fileName);
     if(it != m_vecFileTex.end())
     {
-        it->second->nRef++;
-        return it->second->pTexture;
+        it->second->AddRef();
+        return it->second;
     }
 
-    RDFileTexture* pFileTex = new RDFileTexture;
-    pFileTex->pTexture = new RDTexture(fileName);
-    pFileTex->nRef = 1;
+    RDTexture* pFileTex = new RDTexture(fileName);
     m_vecFileTex[fileName] = pFileTex;
-    return pFileTex->pTexture;
+    return pFileTex;
 }
 
-RDTexHandle RDRenderDevice::CreateTexture(int nWidth, int nHeight,  RDTexture_Type nType)
+RDTexHandle RDRenderDevice::CreateTexture(int nWidth, int nHeight,const uint* buffer,  RDTexture_Type nType)
 {
     QMutexLocker locker(&m_lock);
-    RDTexture* pTexture = new RDTexture(nWidth,nHeight,nType);
-    m_vecTex.push_back(pTexture);
+    RDTexture* pTexture = new RDTexture(nWidth,nHeight,buffer,nType);
+//    m_vecTex.push_back(pTexture);
     return pTexture;
 }
 
@@ -324,6 +322,8 @@ RDShader * RDRenderDevice::GetExistShader(const QString &shaderName)
 
 void    RDRenderDevice::ReleaseVertexBuffer(RDVertexBufferHandle hVertexBuffer)
 {
+    if(hVertexBuffer == nullptr)
+        return;
     QMutexLocker locker(&m_lock);
     for(size_t i = 0; i < hVertexBuffer->arVertexBuffer.size();i++)
     {
@@ -331,4 +331,14 @@ void    RDRenderDevice::ReleaseVertexBuffer(RDVertexBufferHandle hVertexBuffer)
         glDeleteBuffers(1,&hBuffer.hVertexBuffer);
     }
     glDeleteVertexArrays(1,&hVertexBuffer->hVertexArray);
+}
+
+void    RDRenderDevice::ReleaseTexture(RDTexHandle hTex)
+{
+    QString strFile = hTex->GetFileName();
+    bool bRelease = hTex->Release();
+    if(bRelease)
+    {
+        m_vecFileTex.erase(strFile);
+    }
 }

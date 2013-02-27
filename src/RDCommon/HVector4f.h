@@ -21,6 +21,12 @@
 class float3;
 class HMatrixQ4F;
 
+struct float2
+{
+    float x;
+    float y;
+};
+
 class float4
 {
 public:
@@ -28,6 +34,7 @@ public:
     float4(const float4& src);
     float4(float fx,float y,float z,float w);
     float4(const float3& v,float w = 1);
+    float4(unsigned int color);
 
     const float* GetData()const{return m_data;}
     float Mode()const;

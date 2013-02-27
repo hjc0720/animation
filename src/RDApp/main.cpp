@@ -17,6 +17,7 @@
 #include "mainwindow.h"
 #include "RDMainWindow.h"
 #include <QDir>
+#include "HVector4f.h"
 
 void InitEnv()
 {
@@ -47,6 +48,9 @@ void InitEnv()
 
 int main(int argc,char *argv[])
 {
+    unsigned int color = 0xffffffff;
+    float4 vColor(color);
+
     QApplication app(argc,argv);
     InitEnv();
     RDMainWindow mainWin;

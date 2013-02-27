@@ -2,6 +2,7 @@
 #include <map>
 #include <QString>
 #include "HVector4f.h"
+#include "mac_define.h"
 const int n2013_02_18 = 0;
 const int g_nVersion = n2013_02_18;
 
@@ -22,6 +23,15 @@ RDModel::RDModel(int nCount)
     m_vPos = new float4[nCount];
     m_vNormal = new float4[nCount];
     m_vUV = new RDTexcoord[nCount];
+}
+
+RDModel::~RDModel()
+{
+    RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
+    pDevice->ReleaseVertexBuffer(m_hVertex);
+    SAFE_DELETE_ARRAY(m_vPos);
+    SAFE_DELETE_ARRAY(m_vNormal);
+    SAFE_DELETE_ARRAY(m_vUV);
 }
 
 void RDModel::UpdateRenderData()
@@ -47,10 +57,35 @@ void RDModel::UpdateRenderData()
     vertex[2].nVertexCount = m_nCount * 2 ;
     m_hVertex = pDevice->CreateVertexBuffer(vertex);
 }
+
+void RDModel::AddSubModel(int nStart,int nCount)
+{
+    RDSubModel subModel = {nStart,nCount};
+    m_arSubModel.push_back(subModel);
+}
+
+void RDModel::AddSubModel(int nCount)
+{
+    int nStart = 0;
+    for(size_t i = 0; i < m_arSubModel.size();i++)
+    {
+        nStart += m_arSubModel[i].nCount;
+    }
+    AddSubModel(nStart,nCount);
+}
+
+void RDModel::DrawSubset(int nSubset)
+{
+    RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
+    const RDSubModel& subModel = m_arSubModel[nSubset];
+    pDevice->SetVertexBuffer(m_hVertex);
+    pDevice->Render(GL_TRIANGLES,subModel.nStart,subModel.nCount );
+}
+
 ////////////////////////////////////////////////////////////////////////////////
-//function
+//static function
 std::map<QString,RDModel*> g_mapModel;
-RDModel* CreateSegmentModel()
+RDModel* RDModel::CreateSegmentModel()
 {
     RDModel* pModel = new RDModel(6);
     pModel->m_vPos[0].Set(-1,1,0.5,1);
@@ -76,5 +111,7 @@ RDModel* CreateSegmentModel()
     {
         pModel->m_vNormal[i] = vNormal;
     }
+    pModel->AddSubModel(6);
+    pModel->UpdateRenderData();
     return pModel;
 }

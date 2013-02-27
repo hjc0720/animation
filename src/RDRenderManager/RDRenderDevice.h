@@ -62,8 +62,6 @@ typedef RDTexture* RDTexHandle ;
 typedef RDVertexArray* RDVertexBufferHandle;
 #define InvalidHandle nullptr
 
-struct RDFileTexture;
-
 class RDRenderDevice
 {
 public:
@@ -72,13 +70,14 @@ public:
 public:
     //create function
     RDTexHandle CreateTexture(const QString& fileName);
-    RDTexHandle CreateTexture(int nWidth,int nHeight,RDTexture_Type nType);
+    RDTexHandle CreateTexture(int nWidth, int nHeight,const uint* buffer,  RDTexture_Type nType);
     RDShader* CreateShader(const QString &fileName, RDShaderType nType);
     RDShader* CreateShader(const QString& code,const QString& shaderName,RDShaderType nType);
     RDShaderProgram* CreateShaderProgram(RDShader *pVertexShader,  RDShader*pGeometryShader,  RDShader* pPixelShader);
     RDVertexBufferHandle     CreateVertexBuffer(const std::vector<RDVertexData> &arVertexData);
     //release function
     void    ReleaseVertexBuffer(RDVertexBufferHandle hVertexBuffer);
+    void    ReleaseTexture(RDTexHandle hTex);
 
     //modify function
     //render function
@@ -110,9 +109,9 @@ protected:
     RDRenderState* m_pCurState;
     RDRenderState* m_pTempState;
 
-    std::list<RDTexHandle> m_vecTex;
+//    std::list<RDTexHandle> m_vecTex;
     std::list<RDVertexBufferHandle> m_vecVertexBuffer;
-    std::map<QString,RDFileTexture*> m_vecFileTex;
+    std::map<QString,RDTexHandle> m_vecFileTex;
     std::map<QString,RDShader*> m_vecShader;
     std::map<QString,RDShaderProgram*> m_vecShaderProgram;
     GLuint                 m_hFrameBuffer;

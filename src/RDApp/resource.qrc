@@ -7,4 +7,8 @@
     <file alias="keep">image/timeline/keep.png</file>
     <file alias="cycle">image/timeline/cycle.png</file>
 </qresource>
+
+<qresource prefix="/shader">
+    <file alias="model_vs">shader/vs/model.vs</file>
+</qresource>
 </RCC>

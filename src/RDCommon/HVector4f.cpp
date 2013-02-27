@@ -40,6 +40,18 @@ float4::float4(float x,float y,float z,float w)
     _mm_store_ps(m_data,fm);
 }
 
+float4::float4(unsigned int dwColor)
+{
+    __m128i zero = _mm_setzero_si128();
+    __m128i color = _mm_cvtsi32_si128((int)dwColor);
+    __m128i color16 = _mm_unpacklo_epi8(color,zero);
+    __m128i color32 = _mm_unpacklo_epi16(color16,zero);
+    __m128 vec = _mm_cvtepi32_ps(color32);
+    __m128 scale = _mm_set_ps1(1.f/255.f);
+    vec = _mm_mul_ps(vec,scale);
+    _mm_store_ps(m_data,vec);
+}
+
 float float4::Mode()const
 {
     float sum = 0;
