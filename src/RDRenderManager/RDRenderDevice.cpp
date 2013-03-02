@@ -338,7 +338,23 @@ void    RDRenderDevice::ReleaseTexture(RDTexHandle hTex)
     QString strFile = hTex->GetFileName();
     bool bRelease = hTex->Release();
     if(bRelease)
-    {
         m_vecFileTex.erase(strFile);
-    }
+}
+
+int    RDRenderDevice::GetTextureWidth(RDTexHandle hTex)
+{
+    return hTex->GetWidth();
+}
+
+int    RDRenderDevice::GetTextureHeight(RDTexHandle hTex)
+{
+    return hTex->GetHeight();
+}
+
+void    RDRenderDevice::ReleaseShader(RDShader* hShader)
+{
+     QString strShaderName = hShader->ShaderName();   
+     bool bRelease = hShader->Release();
+     if(bRelease)
+         m_vecShader.erase(strShaderName);
 }

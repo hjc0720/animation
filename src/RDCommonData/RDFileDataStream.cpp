@@ -28,10 +28,12 @@ RDFileDataStream::RDFileDataStream ( QIODevice * d )
 {
 
 }
+
 void RDFileDataStream::SaveResource(const QString& filePath)
 {
     m_ResourceList.append(filePath);
 }
+
 void RDFileDataStream::EndSaveResource()
 {
     m_ResourceList.removeDuplicates();

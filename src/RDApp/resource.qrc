@@ -10,5 +10,6 @@
 
 <qresource prefix="/shader">
     <file alias="model_vs">shader/vs/model.vs</file>
+    <file alias="main_ps">shader/ps/material/main.ps</file>
 </qresource>
 </RCC>

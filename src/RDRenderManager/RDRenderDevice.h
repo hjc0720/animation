@@ -78,6 +78,7 @@ public:
     //release function
     void    ReleaseVertexBuffer(RDVertexBufferHandle hVertexBuffer);
     void    ReleaseTexture(RDTexHandle hTex);
+    void    ReleaseShader(RDShader* hShader);
 
     //modify function
     //render function
@@ -96,6 +97,8 @@ public:
     void    SetScissor(QRect& scissor );
 
     //render info
+    int    GetTextureWidth(RDTexHandle hTex);
+    int    GetTextureHeight(RDTexHandle hTex);
 public:
     void DumpTexture(RDTexHandle pTex);
     //info

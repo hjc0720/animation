@@ -23,14 +23,12 @@
 #include "RDRenderDevice.h"
 
 class QString;
+
 class RDShader
 {
 public:
     RDShader(const QString &code, const QString &shaderName, RDShaderType nType);
 
-    ~RDShader() { 
-        glDeleteShader(m_hShader);
-    }
     void AddRef(){m_nRef++;}
     bool Release(){
         m_nRef--;
@@ -44,6 +42,10 @@ public:
     const QString& ShaderName()const{return m_shaderName;}
     GLuint GetGLShader()const{return m_hShader;}
 protected:
+    ~RDShader() { 
+        glDeleteShader(m_hShader);
+    }
+protected:
     int         m_nRef;
     GLuint      m_hShader;
     QString     m_shaderName;
@@ -53,7 +55,6 @@ class RDShaderProgram
 {
 public:
     RDShaderProgram(const QString& shaderName,RDShader* pVertexShader,RDShader* pGeometryShader,RDShader* pFragmentShader);
-    ~RDShaderProgram(){glDeleteProgram(m_hShaderProgram);}
     bool Release(){
         m_nRef--;
         if(m_nRef == 0) 
@@ -72,6 +73,8 @@ public:
         glUseProgram(m_hShaderProgram);
     }
     GLint GetUniformLocation( const char *name);
+protected:
+    ~RDShaderProgram(){glDeleteProgram(m_hShaderProgram);}
 protected:
     RDShader*   m_pShader[3];
     int         m_nRef;

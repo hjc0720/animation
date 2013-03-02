@@ -18,6 +18,8 @@ public:
     bool SetDepth();
     void AddRef(){m_nRef++;}
     const QString& GetFileName()const {return m_strFileName;}
+    int     GetWidth()const{return m_nWidth;}
+    int     GetHeight()const{return m_nHeight;}
 protected:
     ~RDTexture();
     GLenum GetTextureTarget(RDTexture_Type nType);
