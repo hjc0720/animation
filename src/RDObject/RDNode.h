@@ -31,14 +31,6 @@ class RDRenderData;
 class RDFileDataStream;
 class RDSection;
 
-enum RDNodeType
-{
-    RDNodeObject,
-    RDNodeGroup,
-    RDNodeLayer,
-    RDNoderScene,
-};
-
 typedef std::vector<RDSection*>::iterator RDSectionList;
 class RDScene;
 
@@ -46,6 +38,7 @@ class RDNode
 {
 public:
     RDNode();
+    RDNode(const QString& strName);
     RDNode(const QString& strName,const float3& pos,RDObject* pObj);
     virtual ~RDNode();
     void Lock(){ m_lock.lock();}
@@ -69,15 +62,17 @@ public:
     virtual void Render(const RDTime& nTime,const QString& pRDName) ;
     virtual void CalFrame(const RDTime& nTime,const QString& pRDName) ;
 
-    size_t GetChildCount()const{return m_vecChildObj.size();}
-    size_t GetTotalChildCount()const;
 
+    //child operation function
+    size_t GetTotalChildCount()const;
+    virtual size_t GetChildCount()const{return m_vecChildObj.size();}
     void AddChild(RDNode& pChild){m_vecChildObj.push_back(&pChild);pChild.m_pParent = this;}
-    RDNode* GetChild(int i){return m_vecChildObj[i];}
-    const RDNode* GetChild(int i)const{return m_vecChildObj[i];}
-    RDNode* GetChild(const QUuid& NodeId);
-    RDNode* RemoveChild(int i); 
-    void RemoveChild(const RDNode& pChild); 
+    virtual RDNode* GetChild(size_t i){return m_vecChildObj[i];}
+    virtual const RDNode* GetChild(size_t i)const{return m_vecChildObj[i];}
+    virtual RDNode* GetChild(const QUuid& NodeId);
+    virtual RDNode* RemoveChild(size_t i); 
+    virtual void RemoveChild(const RDNode& pChild); 
+
     RDNode* GetParent(){return m_pParent;}
     const RDNode* GetParent()const{return m_pParent;}
     void SetParent(RDNode* pParent){m_pParent = pParent;}
@@ -100,8 +95,6 @@ protected:
     RDScene*        GetSceneNode();
     bool            CalSpaceVector(const RDTime& nFrame,RDRenderData& RenderData);
 protected:
-    int         m_nNodeVersion;
-    RDNodeType  m_eType;
     float3      m_vPos;
     QString     m_strName;
     QUuid       m_NodeID;

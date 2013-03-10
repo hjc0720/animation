@@ -30,24 +30,32 @@ using namespace std;
 const int g_nNodeVersion = 0;
 
 RDNode::RDNode()
-    :m_nNodeVersion(g_nNodeVersion)
-     ,m_NodeID(QUuid::createUuid())
-	 ,m_pParent(0)
-     ,m_pObj(NULL)
+     :m_NodeID(QUuid::createUuid())
+	 ,m_pParent(nullptr)
+     ,m_pObj(nullptr)
      ,m_lock(QMutex::Recursive)
 {
-
 }
+
+RDNode::RDNode(const QString& strName)
+     :m_strName(strName)
+     ,m_NodeID(QUuid::createUuid())
+	 ,m_pParent(nullptr)
+     ,m_pObj(nullptr)
+     ,m_lock(QMutex::Recursive)
+{
+}
+
 RDNode::RDNode(const QString& strName,const float3& pos,RDObject* pObj)
-    :m_nNodeVersion(g_nNodeVersion)
-    ,m_vPos(pos)
+    :m_vPos(pos)
      ,m_strName(strName)
      ,m_NodeID(QUuid::createUuid())
-	 ,m_pParent(0)
+	 ,m_pParent(nullptr)
      ,m_pObj(pObj)
      ,m_lock(QMutex::Recursive)
 {
 }
+
 RDNode::~RDNode()
 {
     for(size_t i = 0; i < GetChildCount(); i++)
@@ -72,7 +80,7 @@ RDNode::~RDNode()
     SAFE_DELETE(m_pObj);
 }
 
-RDNode* RDNode::RemoveChild(int i)
+RDNode* RDNode::RemoveChild(size_t i)
 {
     RDNode* pRemove = m_vecChildObj[i];
     m_vecChildObj.erase(m_vecChildObj.begin() + i);
@@ -414,11 +422,9 @@ RDFileDataStream& operator << (RDFileDataStream& buffer,const RDNode& node)
 {
     QMutexLocker locker(&node.m_lock);
     qDebug() << "begin to save node :" << node.m_strName;
-    buffer << node.m_nNodeVersion;
     QDataStream& tmp = dynamic_cast<QDataStream&>(buffer);
     tmp << node.m_strName;
     buffer.writeRawData( (char*)&node.m_vPos,sizeof(float3));
-    buffer << node.m_eType;
     buffer << node.m_NodeID;
 
     RDObjectType nObjectType = RDObjectInvalidType;
@@ -449,9 +455,8 @@ RDFileDataStream& operator << (RDFileDataStream& buffer,const RDNode& node)
     //save child
     buffer << (quint64)node.GetChildCount();
     for(size_t i = 0; i < node.GetChildCount(); i++)
-    {
         buffer << *node.GetChild(i);
-    }
+
     qDebug() << "end to save node :" << node.m_strName;
     return buffer;
 }
@@ -459,12 +464,8 @@ RDFileDataStream& operator << (RDFileDataStream& buffer,const RDNode& node)
 RDFileDataStream& operator >> (RDFileDataStream& buffer,RDNode& node)
 {
     QMutexLocker locker(&node.m_lock);
-    buffer >> node.m_nNodeVersion;
     buffer >> node.m_strName;
     buffer.readRawData( (char*)&node.m_vPos,sizeof(float3));
-    int nType = 0;
-    buffer >> nType;
-    node.m_eType = (RDNodeType)nType;
     buffer >> node.m_NodeID;
 
     int nObjectType = RDObjectInvalidType;
