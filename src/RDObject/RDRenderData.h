@@ -38,6 +38,11 @@ class RDNode;
 class RDSection;
 class RDStory;
 
+class RDRenderPrivateData
+{
+
+};
+
 class RDRenderData 
 {
 public:
@@ -50,9 +55,9 @@ public:
     void            SetRenderChangeLevel(RDRenderChangeLevel nLevel);
     void            ResetRenderChangeLevel(){m_nRenderChangeLevel = RDRender_NoChange;}
 
-    void            SetPrivateData(void* pPrivateData){m_pPrivateData = pPrivateData;}
-    void*           GetPrivateData(){return m_pPrivateData ;}
-    const void*     GetPrivateData()const{return m_pPrivateData ;}
+    void            SetPrivateData(RDRenderPrivateData* pPrivateData){m_pPrivateData = pPrivateData;}
+    RDRenderPrivateData*        GetPrivateData(){return m_pPrivateData ;}
+    const RDRenderPrivateData*  GetPrivateData()const{return m_pPrivateData ;}
 
     const RDObject* GetObject()const;
     RDObject*       GetObject();
@@ -95,7 +100,7 @@ protected:
     RDRenderChangeLevel m_nChangeLevel;
     RDRenderChangeLevel m_nRenderChangeLevel;
     RDNode&             m_Node;
-    void*               m_pPrivateData;
+    RDRenderPrivateData*m_pPrivateData;
     RDSection*          m_pCurSection;
     RDRenderData*       m_pParent;
     const RDSceneRenderData&  m_SceneRenderData;

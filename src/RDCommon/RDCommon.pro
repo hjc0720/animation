@@ -13,7 +13,6 @@ include("../path.pri")
 QMAKE_CXXFLAGS += -msse2
 
 TEMPLATE = lib
-
 DEFINES += RDCOMMON_LIBRARY
 DEFINES += __GTEST__
 

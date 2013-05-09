@@ -35,6 +35,8 @@ enum HMatrixQ4F_TYPE
 class HMatrixQ4F
 {
 public:
+    static HMatrixQ4F CreateProjectMat(float l,float r,float t,float b,float zn,float zf);
+public:
     HMatrixQ4F();//生成单位阵
     HMatrixQ4F(const HMatrixQ4F& mat);
     HMatrixQ4F(float fX,float fY,float fZ,HMatrixQ4F_TYPE nType);

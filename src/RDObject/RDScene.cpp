@@ -27,11 +27,12 @@
 #include "RDSpaceConvert.h"
 #include "RDStory.h"
 #include <QDebug>
+#include "RDLayer.h"
 
 using namespace std;
 const int g_nSceneVersion = 0;
 
-class RDScenePrivateData
+class RDScenePrivateData : public RDRenderPrivateData
 {
 public:
     RDScenePrivateData();
@@ -91,13 +92,14 @@ void RDScene::CreateRenderData(RDRenderData& RenderData)
     RDScenePrivateData* pPrivateData = new RDScenePrivateData;
     RenderData.SetPrivateData(pPrivateData);
 }
-void RDScene::ReleaseRenderData(RDRenderData& RenderData)
-{
-    QMutexLocker locker(&m_lock);
-    RDScenePrivateData* pPrivateData = (RDScenePrivateData* )RenderData.GetPrivateData();
-    SAFE_DELETE(pPrivateData);
-    RenderData.SetPrivateData(0);
-}
+
+//void RDScene::ReleaseRenderData(RDRenderData& RenderData)
+//{
+    //QMutexLocker locker(&m_lock);
+    //RDScenePrivateData* pPrivateData = (RDScenePrivateData* )RenderData.GetPrivateData();
+    //SAFE_DELETE(pPrivateData);
+    //RenderData.SetPrivateData(0);
+//}
 
 void RDScene::SetBackType(RDScene_BackType nType,const void* pData)
 {
@@ -342,6 +344,18 @@ void RDScene::RefreshStoryLength()
 		nNowTime += nNewLen;
 	}
 }
+
+void RDScene::AddChild(RDNode& pChild)
+{
+    try{
+        RDLayer& pLayer = dynamic_cast<RDLayer&>(pChild);
+        RDNode::AddChild(pLayer);
+    }catch(bad_cast)
+    {
+        return;
+    }
+}
+
 RDFileDataStream& operator << (RDFileDataStream& buffer,const RDScene& scene)
 {
     QMutexLocker locker(&scene.m_lock);

@@ -40,6 +40,7 @@ RDRenderData::~RDRenderData()
 {
     if(m_Node.GetObject())
         m_Node.GetObject()->ReleaseRenderData(*this);
+    SAFE_DELETE(m_pPrivateData);
 }
 float RDRenderData::GetScale()const
 { 

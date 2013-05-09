@@ -66,7 +66,7 @@ public:
     //child operation function
     size_t GetTotalChildCount()const;
     virtual size_t GetChildCount()const{return m_vecChildObj.size();}
-    void AddChild(RDNode& pChild){m_vecChildObj.push_back(&pChild);pChild.m_pParent = this;}
+    virtual void AddChild(RDNode& pChild){m_vecChildObj.push_back(&pChild);pChild.m_pParent = this;}
     virtual RDNode* GetChild(size_t i){return m_vecChildObj[i];}
     virtual const RDNode* GetChild(size_t i)const{return m_vecChildObj[i];}
     virtual RDNode* GetChild(const QUuid& NodeId);
@@ -96,6 +96,7 @@ protected:
     bool            CalSpaceVector(const RDTime& nFrame,RDRenderData& RenderData);
 protected:
     float3      m_vPos;
+    float3      m_vScale;
     QString     m_strName;
     QUuid       m_NodeID;
     std::vector<RDNode*> m_vecChildObj;

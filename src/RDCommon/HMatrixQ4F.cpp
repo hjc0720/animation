@@ -26,6 +26,33 @@
 #include <emmintrin.h>
 #endif
 
+HMatrixQ4F HMatrixQ4F::CreateProjectMat(float l,float r,float t,float b,float zn,float zf)
+{
+    float r_l = 1 / (r - l);
+    float t_b = 1 / (t - b);
+    float z = zf / (zn - zf);
+    HMatrixQ4F mat;
+    mat.m[2][0] = (l + r) / (-r_l);
+    mat.m[2][1] = (t + b) / (-t_b);
+    mat.m[2][2] = -z;
+    mat.m[2][3] = 1;
+    mat.m[3][3] = 0;
+
+    __m128 m1 = _mm_set_ps(z,z,2 * t_b,2 * r_l);
+    __m128 m2 = _mm_set_ps1(zn);
+    m1 = _mm_mul_ps(m1,m2);
+
+    _mm_store_ss(&mat.m[0][0],m1);
+    
+    _mm_srli_si128((__m128i)m1,4);
+    _mm_store_ss(&mat.m[1][1],m1);
+    
+    _mm_srli_si128((__m128i)m1,4);
+    _mm_store_ss(&mat.m[3][2],m1);
+
+    return mat;
+}
+
 HMatrixQ4F::HMatrixQ4F()
 {
     Identity();

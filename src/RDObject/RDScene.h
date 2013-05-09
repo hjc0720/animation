@@ -53,7 +53,7 @@ public:
     virtual void Render(const RDTime& nTime,const QString& pRDName);
     virtual void CalFrame(const RDTime& nTime,const QString& pRDName);
     void CreateRenderData(RDRenderData& RenderData);
-    void ReleaseRenderData(RDRenderData& RenderData);
+    //void ReleaseRenderData(RDRenderData& RenderData);
     void CreateSceneNodeMap();
     void AddSceneNodeMap(const RDNode& pAddNode);
     void RemoveSceneNodeMap(const RDNode& pRemoveNode);
@@ -68,6 +68,8 @@ public:
     RDStory* GetStory(size_t nIndex);
 	RDTime  GetSceneLength()const;
 	void RefreshStoryLength();
+
+    virtual void AddChild(RDNode& pChild);
 protected:
     void RenderImage(RDSceneRenderData& pSceneData,unsigned long nTime);
     void BlendChild(const QString& pRDName);

@@ -20,8 +20,8 @@
 #include <cmath>
 #include <string.h>
 #include <emmintrin.h>
-#include "HVector3f.h"
 #include "HMatrixQ4F.h"
+#include "HVector3f.h"
 
 float4::float4()
 {

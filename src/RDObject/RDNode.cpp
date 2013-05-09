@@ -27,10 +27,12 @@
 
 using namespace std;
 
-const int g_nNodeVersion = 0;
+const int g_nFirstVersion = 0;
+const int g_nNowVersion = g_nFirstVersion;
 
 RDNode::RDNode()
-     :m_NodeID(QUuid::createUuid())
+      :m_vScale(1,1,1)
+     ,m_NodeID(QUuid::createUuid())
 	 ,m_pParent(nullptr)
      ,m_pObj(nullptr)
      ,m_lock(QMutex::Recursive)
@@ -38,7 +40,8 @@ RDNode::RDNode()
 }
 
 RDNode::RDNode(const QString& strName)
-     :m_strName(strName)
+      :m_vScale(1,1,1)
+     ,m_strName(strName)
      ,m_NodeID(QUuid::createUuid())
 	 ,m_pParent(nullptr)
      ,m_pObj(nullptr)
@@ -48,6 +51,7 @@ RDNode::RDNode(const QString& strName)
 
 RDNode::RDNode(const QString& strName,const float3& pos,RDObject* pObj)
     :m_vPos(pos)
+      ,m_vScale(1,1,1)
      ,m_strName(strName)
      ,m_NodeID(QUuid::createUuid())
 	 ,m_pParent(nullptr)
@@ -422,6 +426,7 @@ RDFileDataStream& operator << (RDFileDataStream& buffer,const RDNode& node)
 {
     QMutexLocker locker(&node.m_lock);
     qDebug() << "begin to save node :" << node.m_strName;
+    buffer << g_nNowVersion;
     QDataStream& tmp = dynamic_cast<QDataStream&>(buffer);
     tmp << node.m_strName;
     buffer.writeRawData( (char*)&node.m_vPos,sizeof(float3));
@@ -464,6 +469,8 @@ RDFileDataStream& operator << (RDFileDataStream& buffer,const RDNode& node)
 RDFileDataStream& operator >> (RDFileDataStream& buffer,RDNode& node)
 {
     QMutexLocker locker(&node.m_lock);
+    int nVersion = 0;
+    buffer >> nVersion;
     buffer >> node.m_strName;
     buffer.readRawData( (char*)&node.m_vPos,sizeof(float3));
     buffer >> node.m_NodeID;
