@@ -10,17 +10,17 @@ CONFIG += sse2 sse
 #CONFIG += debug
 include("../path.pri")
 
-QMAKE_CXXFLAGS += -msse2
+QMAKE_CXXFLAGS += -msse4
 
 TEMPLATE = lib
 DEFINES += RDCOMMON_LIBRARY
 DEFINES += __GTEST__
 
-SOURCES += HMatrixQ4F.cpp HVector3f.cpp HVector4f.cpp 
+SOURCES += HMatrixQ4F.cpp HVector4f.cpp 
 SOURCES += RDSpaceConvert.cpp
 SOURCES += RDMd5.cpp
 
-HEADERS += HMatrixQ4F.h HVector3f.h HVector4f.h 
+HEADERS += HMatrixQ4F.h HVector4f.h 
 HEADERS += RDSpaceConvert.h
 HEADERS += RDMd5.h
 

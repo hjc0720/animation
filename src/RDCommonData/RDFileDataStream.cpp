@@ -59,7 +59,7 @@ void RDFileDataStream::EndSaveResource()
 }
 
 // =====================================================================================
-#include "HVector3f.h"
+#include "HVector4f.h"
 RDFileDataStream& operator << (RDFileDataStream& buffer,const float3& vec)
 {
     buffer << vec.x();

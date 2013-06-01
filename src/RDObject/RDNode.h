@@ -17,7 +17,6 @@
 #define  RDNODE_INC
 #include <vector>
 #include <QString>
-#include "HVector3f.h"
 #include <QUuid>
 #include <QMutex>
 #include "mac_define.h"
@@ -25,6 +24,7 @@
 #include <map>
 #include <QUndoCommand>
 #include "RDRenderData.h"
+#include "HVector4f.h"
 
 class RDObject;
 class RDRenderData;
@@ -121,6 +121,7 @@ class RDUndoCommand
 {
 public:
     RDUndoCommand(const QUuid& NodeId,QString str = QString()):m_NodeId(NodeId),m_strText(str){ m_pNode = 0;}
+    virtual ~RDUndoCommand(){}
     void SetNode(RDNode* pNode){m_pNode = pNode;}
     const QUuid GetNodeID()const{return m_NodeId;}
     const QString& GetText()const{return m_strText;}

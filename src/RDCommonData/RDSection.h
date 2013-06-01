@@ -18,7 +18,7 @@
 #define  RDSECTION_INC
 #include "mac_define.h"
 #include "RDKeyList.h"
-#include "HVector3f.h"
+#include "HVector4f.h"
 
 enum RDSectionOutType
 {

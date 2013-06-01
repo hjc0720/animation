@@ -19,7 +19,7 @@
 #include "RDSpaceCell.h"
 #include "RDMd5.h"
 #include "RDRenderData.h"
-#include "HVector3f.h"
+#include "HVector4f.h"
 #include "RDNode.h"
 #include "RDDocument.h"
 RDBaseEdit::RDBaseEdit(const RDMd5& md5)

@@ -7,7 +7,6 @@
 #include <QFlags>
 #include <vector>
 #include <QMutex>
-#include <HVector3f.h>
 #include <HVector4f.h>
 #include <HMatrixQ4F.h>
 

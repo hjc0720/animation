@@ -21,7 +21,7 @@
 #include <vector>
 #include "mac_define.h"
 #include <QRectF>
-#include "HVector3f.h"
+#include "HVector4f.h"
 
 enum RDRenderChangeLevel
 {
@@ -86,6 +86,10 @@ public:
     const QRectF&   GetDirty()const{return m_rtDirty;}
     void            UnionDirty(const QRectF& dirty){m_rtDirty |= dirty;}
     void            ResetDirty(){m_rtDirty.setRect(0,0,0,0);}
+    void            SetMin(const float3& vMin){m_vMin = vMin;}
+    void            SetMax(const float3& vMax){m_vMax = vMax;}
+    const float3&   GetMin()const{return m_vMin;}
+    const float3&   GetMax()const{return m_vMax;}
 
     //space info
     const float3&    GetPos()const { return m_vPos; }
@@ -107,7 +111,11 @@ protected:
     RDTime             m_nSectionTime;
     QRectF              m_rtDirty;
     QRectF              m_rtBound;
+    float3              m_vMin;
+    float3              m_vMax;
+
     float3              m_vPos;
+    float3              m_vScale;
 };
 
 inline QRectF RDRenderData::GetScaleBound()const

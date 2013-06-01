@@ -187,8 +187,8 @@ bool RDRenderWidget::event(QEvent* e)
             float3 vMousePt(ClientToScene(pEvent->pos()));
             float3 vScenePt;
             RDBufferToScene(vScenePt,vMousePt,-m_nProjWidth / 2.f,m_nProjHeight / 2.f);
-            qDebug() << "Mouse Press Pt in Scene Buffer" << vMousePt.GetX() << vMousePt.GetY() << vMousePt.GetZ();
-            qDebug() << "Mouse Press Pt in Scene" << vScenePt.GetX() << vScenePt.GetY() << vScenePt.GetZ();
+            qDebug() << "Mouse Press Pt in Scene Buffer" << vMousePt.x() << vMousePt.y() << vMousePt.z();
+            qDebug() << "Mouse Press Pt in Scene" << vScenePt.x() << vScenePt.y() << vScenePt.z();
             bProcess = pCurTool->OnMousePress(pEvent->buttons() ,vScenePt ) ;
             if(bProcess)
                 QWidget::event(e);

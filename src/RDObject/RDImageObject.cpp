@@ -177,11 +177,11 @@ bool RDImageObject::HitTest(const float3& vScenePt,const RDNode& pNode,const QSt
 {
     float3 vBufferPt;
 	const RDRenderData* pRenderData = pNode.GetRenderData(RDName);
-    RDSceneToBuffer(vBufferPt,vScenePt,pRenderData->GetPos().GetX(),pRenderData->GetPos().GetY());
+    RDSceneToBuffer(vBufferPt,vScenePt,pRenderData->GetPos().x(),pRenderData->GetPos().y());
     //qDebug() << "Scene  pt in image hit test" << vScenePt.GetX() << vScenePt.GetY() << vScenePt.GetZ();
     //qDebug() << "buffer  pt in image hit test" << vBufferPt.GetX() << vBufferPt.GetY() << vBufferPt.GetZ();
-    if(vBufferPt.GetX() < 0 || vBufferPt.GetX() >= m_nWidth ||
-            vBufferPt.GetY() < 0 || vBufferPt.GetY() >= m_nHeight)
+    if(vBufferPt.x() < 0 || vBufferPt.x() >= m_nWidth ||
+            vBufferPt.y() < 0 || vBufferPt.y() >= m_nHeight)
         return false;
     return true;
 }
@@ -215,5 +215,5 @@ void RDImageObject::UpdateBound(const RDTime& ,RDRenderData& RenderData)
 {
     float3 bufferPos;
     RDSceneToBuffer(bufferPos,RenderData.GetPos() ,-(float)RenderData.GetSceneWidth()/ 2,RenderData.GetSceneHeight()/ 2);
-    RenderData.SetBound( QRectF(bufferPos.GetX(),bufferPos.GetY(),m_nWidth,m_nHeight));
+    RenderData.SetBound( QRectF(bufferPos.x(),bufferPos.y(),m_nWidth,m_nHeight));
 }

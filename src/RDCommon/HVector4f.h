@@ -18,8 +18,9 @@
 #ifndef __4D_VECTOR_F_H_
 #define __4D_VECTOR_F_H_
 
-class float3;
 class HMatrixQ4F;
+class float3;
+
 
 struct float2
 {
@@ -40,16 +41,16 @@ public:
     float Mode()const;
     void Normalize();
 
-    float& x(){return m_data[0];}
-    float& y(){return m_data[1];}
-    float& z(){return m_data[2];}
-    float& w(){return m_data[3];}
+    float x()const{return m_data[0];}
+    float y()const{return m_data[1];}
+    float z()const{return m_data[2];}
+    float w()const{return m_data[3];}
 
     void SetX(float f){m_data[0] = f;}
     void SetY(float f){m_data[1] = f;}
     void SetZ(float f){m_data[2] = f;}
     void SetW(float f){m_data[3] = f;}
-    void Set(float x, float y,float z, float w = 1);
+    void Set(float x, float y,float z, float w );
 
     void DividW();
 public:
@@ -59,13 +60,16 @@ public:
     float4& operator *= (const HMatrixQ4F& m);
     float4& operator *= (float fScale);
     float4& operator /= (float fScale);
-    float4& operator == (const float4& m);
+    bool operator == (const float4& m);
+    bool operator != (const float4& m)
+    {
+        return !(*this == m);
+    }
     float4& operator = (const float4& other);
 protected:
     float m_data[4] __attribute__ ((aligned (16)));
 };
 //operator
-float operator * (const float4& v1,const float4& v2);
 //inline operator
 inline float4 operator + (const float4& v1,const float4& v2)
 {
@@ -85,6 +89,14 @@ inline float4 operator * (const float4& v1,const HMatrixQ4F& mat)
     ret *= mat;
    return ret;
 }
+
+inline float4 operator * (float fScale,const float4& v)
+{
+    float4 ret(v);
+    ret *= fScale;
+    return ret;
+}
+
 inline float4 operator * (const float4& v,float fScale)
 {
     float4 ret(v);
@@ -97,4 +109,45 @@ inline float4 operator / (const float4& v,float fScale)
     ret /= fScale;
     return ret;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class float3 :public float4
+{
+public:
+    float3();
+    float3(const float3& src);
+    float3(const float4& src);
+    float3(float fx,float fy,float fz);
+    void Set(float x, float y,float z );
+
+    const float3& GetMin(const float3& vData);
+    const float3& GetMax(const float3& vData);
+public:
+    //operator overriding
+    float3& operator = (const float3& other);
+    float3& operator -= (const float3& m);
+    float3& operator *= (const HMatrixQ4F& m)
+    {
+        float4 dst(*this);
+        *this = dst * m;
+        return *this;
+    }
+    float3& operator *= (const float3& vSrc);
+};
+
+inline float3 operator - (const float3& v1,const float3& v2)
+{
+    float3 ret(v1);
+    ret -= v2;
+   return ret;
+}
+
+inline float3 operator * (const float3& v1,const float3& v2)
+{
+    float3 ret(v1);
+    ret *= v2;
+    return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #endif

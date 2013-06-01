@@ -30,6 +30,7 @@ RDRenderData::RDRenderData(RDNode& node,const RDSceneRenderData& SceneRenderData
      ,m_pPrivateData(0)
       ,m_pCurSection(0)
       ,m_SceneRenderData(SceneRenderData)
+      ,m_vScale(1,1,1)
 {
     if(m_Node.GetObject())
         m_Node.GetObject()->CreateRenderData(*this);

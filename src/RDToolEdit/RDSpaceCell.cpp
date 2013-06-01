@@ -20,7 +20,7 @@
 #include <QLineEdit>
 #include <QDoubleValidator>
 #include <QGroupBox>
-#include "HVector3f.h"
+#include "HVector4f.h"
 
 RDSpaceCell* RDSpaceCell::m_pCell = NULL;
 
@@ -67,9 +67,9 @@ const RDMd5& RDSpaceCell::GetCellMd5()
 }
 void   RDSpaceCell::SetPos(const float3& newPos)
 {
-    m_pPosX->setText(QString::number(newPos.GetX()));
-    m_pPosY->setText(QString::number(newPos.GetY()));
-    m_pPosZ->setText(QString::number(newPos.GetZ()));
+    m_pPosX->setText(QString::number(newPos.x()));
+    m_pPosY->setText(QString::number(newPos.y()));
+    m_pPosZ->setText(QString::number(newPos.z()));
 }
 
 void    RDSpaceCell::GetPos(float3& newPos)

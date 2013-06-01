@@ -16,7 +16,7 @@
 
 #include "RDKeyList.h"
 #include "RDBaseKey.h"
-#include "HVector3f.h"
+#include "HVector4f.h"
 #include <QDebug>
 
 template <typename KeyType>

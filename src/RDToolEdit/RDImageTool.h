@@ -17,7 +17,7 @@
 #ifndef  RDIMAGETOOL_INC
 #define  RDIMAGETOOL_INC
 #include "RDBaseTool.h"
-#include "HVector3f.h"
+#include "HVector4f.h"
 
 class RDImageTool : public RDBaseTool
 {

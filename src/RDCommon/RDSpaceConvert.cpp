@@ -15,17 +15,27 @@
 // =====================================================================================
 
 #include "RDSpaceConvert.h"
-#include "HVector3f.h"
+#include "HVector4f.h"
+#include "HMatrixQ4F.h"
 
 void RDSceneToBuffer(float3& pOut,const float3& pIn,float fBufferLeft,float fBufferTop)
 {
     float3 vOffset(fBufferLeft,fBufferTop,0);
     pOut = pIn - vOffset;
-    pOut.SetY(-pOut.GetY());
+    pOut.SetY(-pOut.y());
 }
 void RDBufferToScene(float3& pOut,const float3& pIn,float fBufferLeft,float fBufferTop)
 {
     float3 vOffset(fBufferLeft,-fBufferTop,0);
     pOut = pIn + vOffset;
-    pOut.SetY(-pOut.GetY());
+    pOut.SetY(-pOut.y());
+}
+
+void RDCalBoxNearFar(float& fNear,float& fFar,const float3& vMin,const float3 vFar,const HMatrixQ4F& WorldView)
+{
+    
+}
+
+void FillBox(float3 vBox[],const float3& vMin,const float3 vFar)
+{
 }

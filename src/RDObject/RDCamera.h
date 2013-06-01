@@ -28,10 +28,14 @@ enum RDProjectType
 
 class RDCamera :public RDNode
 {
-    RDCamera(const QString& strName,size_t nWidth,size_t nHeight,RDProjectType nType);
+public:
+    RDCamera(const QString& strName,uint nHeight,RDProjectType nType);
+    virtual void CalFrame(const RDTime& nTime,const QString& pRDName) ;
+    void    UpdateProject(const QString& pRDName,QRectF& rt,float fZNear,float fFar);
+protected:
+    virtual RDRenderData*  CreateRenderData(const QString& pName);
 protected:
     RDProjectType   m_nProjType;
-    float   m_fAspect;
 //    float3  m_vEyePos;
     float3  m_vUp;
     float3  m_vLookAt;

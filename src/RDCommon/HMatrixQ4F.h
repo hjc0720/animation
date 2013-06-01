@@ -23,6 +23,7 @@
 #include "gtest/gtest_prod.h"
 #endif
 
+class float3;
 ////////////////////////////////////////////////////////////////////////////////
 //常量定义
 enum HMatrixQ4F_TYPE
@@ -35,7 +36,8 @@ enum HMatrixQ4F_TYPE
 class HMatrixQ4F
 {
 public:
-    static HMatrixQ4F CreateProjectMat(float l,float r,float t,float b,float zn,float zf);
+    static const HMatrixQ4F& CreateProjectMat(HMatrixQ4F& mat,float l,float r,float t,float b,float zn,float zf);
+    static const HMatrixQ4F& CreateViewMat(HMatrixQ4F& mat,const float3& vEyePos,const float3& vUp,const float3& vLookAt);
 public:
     HMatrixQ4F();//生成单位阵
     HMatrixQ4F(const HMatrixQ4F& mat);

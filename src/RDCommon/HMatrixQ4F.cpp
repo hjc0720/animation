@@ -19,23 +19,61 @@
 #include <string.h>
 #include <cmath>
 #include "HMath.h"
+#include "HVector4f.h"
 //#include <iostream>
 //using namespace std;
 
 #ifdef __SSE2__
-#include <emmintrin.h>
+#include <smmintrin.h>
 #endif
 
-HMatrixQ4F HMatrixQ4F::CreateProjectMat(float l,float r,float t,float b,float zn,float zf)
+inline __m128 CrossProduct(__m128 a, __m128 b)
+{
+  return _mm_sub_ps(
+    _mm_mul_ps(_mm_shuffle_ps(a, a, _MM_SHUFFLE(3, 0, 2, 1)), _mm_shuffle_ps(b, b, _MM_SHUFFLE(3, 1, 0, 2))), 
+    _mm_mul_ps(_mm_shuffle_ps(a, a, _MM_SHUFFLE(3, 1, 0, 2)), _mm_shuffle_ps(b, b, _MM_SHUFFLE(3, 0, 2, 1)))
+  );
+}
+
+const HMatrixQ4F& HMatrixQ4F::CreateViewMat(HMatrixQ4F& mat,const float3& vEyePos,const float3& vUp,const float3& vLookAt)
+{
+    __m128 eye = _mm_load_ps(vEyePos.GetData());
+    __m128 up = _mm_load_ps(vUp.GetData());
+    __m128 look = _mm_load_ps(vLookAt.GetData());
+
+    __m128 one = _mm_set_ps1(1);
+    __m128 vZ = _mm_sub_ps(eye,look);
+    vZ = _mm_mul_ps(vZ,_mm_div_ps(one,_mm_dp_ps(vZ,vZ,0xff)));
+
+    __m128 vX = CrossProduct(up,vZ);
+    vX = _mm_mul_ps(vX,_mm_div_ps(one,_mm_dp_ps(vX,vX,0xff)));
+
+    __m128 vY = CrossProduct(vZ,vX);
+
+    _mm_store_ps(mat.m[0],vX);
+    _mm_store_ps(mat.m[1],vY);
+    _mm_store_ps(mat.m[2],vZ);
+
+    __m128 dp1 = _mm_dp_ps(vX,eye,0x71);
+    __m128 dp2 = _mm_dp_ps(vY,eye,0x72);
+    __m128 dp3 = _mm_dp_ps(vZ,eye,0x74);
+    dp1 = _mm_add_ps(dp1,dp2);
+    dp1 = _mm_add_ps(dp1,dp3);
+    _mm_store_ps(mat.m[3],dp1);
+    mat.m[3][3] = 1;
+
+    return mat;
+}
+
+const HMatrixQ4F& HMatrixQ4F::CreateProjectMat(HMatrixQ4F& mat,float l,float r,float t,float b,float zn,float zf)
 {
     float r_l = 1 / (r - l);
     float t_b = 1 / (t - b);
     float z = zf / (zn - zf);
-    HMatrixQ4F mat;
-    mat.m[2][0] = (l + r) / (-r_l);
-    mat.m[2][1] = (t + b) / (-t_b);
-    mat.m[2][2] = -z;
-    mat.m[2][3] = 1;
+    mat.m[2][0] = (l + r) / (r_l);
+    mat.m[2][1] = (t + b) / (t_b);
+    mat.m[2][2] = z;
+    mat.m[2][3] = -1;
     mat.m[3][3] = 0;
 
     __m128 m1 = _mm_set_ps(z,z,2 * t_b,2 * r_l);

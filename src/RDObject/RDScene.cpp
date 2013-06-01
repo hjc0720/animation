@@ -231,7 +231,7 @@ void RDScene::BlendChild(const QString& pRDName)
         RDBuffer& pChildBuffer = GetChild(i)->GetRenderData(pRDName)->m_RenderBuffer;
         float3 bufferPos;
         RDSceneToBuffer(bufferPos,pRenderData->GetPos() * pSceneData.GetScale(),-pSceneData.GetNowWidth()/ 2,pSceneData.GetNowHeight()/ 2);
-        QRectF dst(bufferPos.GetX(),bufferPos.GetY(),pChildBuffer.GetWidth(),pChildBuffer.GetHeight());
+        QRectF dst(bufferPos.x(),bufferPos.y(),pChildBuffer.GetWidth(),pChildBuffer.GetHeight());
         QRectF src(0,0,pChildBuffer.GetWidth(),pChildBuffer.GetHeight());
         pSceneData.m_RenderBuffer.Draw(dst,pChildBuffer,src);
     }

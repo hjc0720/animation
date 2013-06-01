@@ -25,6 +25,8 @@ enum RDLayerType
     RD3DLayer,
 };
 
+class RDCamera;
+class RDLayerRenderData;
 class RDLayer : public RDNode
 {
 public:
@@ -37,15 +39,20 @@ public:
     virtual RDNode* RemoveChild(size_t i); 
     virtual void RemoveChild(const RDNode& pChild); 
 
-    void    AddCamera(RDNode* pCameraNode){ m_vecCameraObj.push_back(pCameraNode);}
+    void    AddCamera(RDCamera* pCameraNode){ m_vecCameraObj.push_back(pCameraNode);}
     size_t  GetCameraCount()const{return m_vecCameraObj.size();}
-    const RDNode* GetCamera(size_t i)const{return m_vecCameraObj[i];}
-    RDNode* GetCamera(size_t i){return m_vecCameraObj[i];}
-    RDNode* RemoveCamera(size_t i);
+    const RDCamera* GetCamera(size_t i)const{return m_vecCameraObj[i];}
+    RDCamera* GetCamera(size_t i){return m_vecCameraObj[i];}
+    RDCamera* RemoveCamera(size_t i);
 
-
+    RDCamera*   GetCurCamera(const QString& pRDName);
+    void        SetCurCamera(const QString& pRDName,size_t nIndex);
+    virtual void CalFrame(const RDTime& nTime,const QString& pRDName) ;
+protected:
+    RDCamera* GetCurCamera(const RDLayerRenderData& pLayerRD);
+    void        CalObjMinMax(const QString& pRDName);
 protected:
     RDLayerType m_nType;
-    std::vector<RDNode*> m_vecCameraObj;
+    std::vector<RDCamera*> m_vecCameraObj;
 };
 #endif
