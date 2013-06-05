@@ -318,14 +318,39 @@ void  RDNode::SetRenderScale(float fScale,const QString& pName)
         GetChild(i)->SetRenderScale(fScale,pName);
     }   
 }
-RDRenderChangeLevel RDNode::GetMaxChangeLevel(const QString& pName)const
+
+RDRenderChangeLevel RDNode::GetChangeLevel(const QString& pName)const
 {
     const RDRenderData* pRD = GetRenderData(pName);
-    RDRenderChangeLevel maxC = RDRender_New;
     if(pRD)
-        maxC = pRD->GetChangeLevel();
+        return pRD->GetChangeLevel();
     else
-        return maxC;
+        return RDRender_NoChange;
+}
+
+RDRenderChangeLevel RDNode::GetRenderChangeLevel(const QString& pName)const
+{
+    const RDRenderData* pRD = GetRenderData(pName);
+    if(pRD)
+        return pRD->GetRenderChangeLevel();
+    else
+        return RDRender_NoChange;
+}
+
+RDRenderChangeLevel RDNode::GetMaxRenderChangeLevel(const QString& pName)const
+{
+    RDRenderChangeLevel maxC = GetRenderChangeLevel(pName);
+    for(size_t i = 0 ;i < GetChildCount();i++)
+    {
+        RDRenderChangeLevel childMax = GetChild(i)->GetMaxRenderChangeLevel(pName);
+        maxC = maxC > childMax ? maxC : childMax;
+    }
+    return maxC;
+}
+
+RDRenderChangeLevel RDNode::GetMaxChangeLevel(const QString& pName)const
+{
+    RDRenderChangeLevel maxC = GetChangeLevel(pName);
     for(size_t i = 0 ;i < GetChildCount();i++)
     {
         RDRenderChangeLevel childMax = GetChild(i)->GetMaxChangeLevel(pName);
@@ -333,6 +358,7 @@ RDRenderChangeLevel RDNode::GetMaxChangeLevel(const QString& pName)const
     }
     return maxC;
 }
+
 void RDNode::SetChangeLevel(RDRenderChangeLevel nLevel)
 {
     for(auto it = m_vecRenderData.begin();it != m_vecRenderData.end();it++)

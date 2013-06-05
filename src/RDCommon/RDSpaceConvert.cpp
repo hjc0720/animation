@@ -17,6 +17,8 @@
 #include "RDSpaceConvert.h"
 #include "HVector4f.h"
 #include "HMatrixQ4F.h"
+#include <cfloat>
+#include <algorithm>
 
 void RDSceneToBuffer(float3& pOut,const float3& pIn,float fBufferLeft,float fBufferTop)
 {
@@ -31,11 +33,27 @@ void RDBufferToScene(float3& pOut,const float3& pIn,float fBufferLeft,float fBuf
     pOut.SetY(-pOut.y());
 }
 
-void RDCalBoxNearFar(float& fNear,float& fFar,const float3& vMin,const float3 vFar,const HMatrixQ4F& WorldView)
+void RDCalBoxNearFar(float& fNear,float& fFar,const float3& vMin,const float3& vMax,const HMatrixQ4F& WorldView)
 {
-    
+    float3 vBox[8];
+    FillBox(vBox,vMin,vMax);
+    for(int i = 0; i < 8; i++)
+    {
+        float fZValue = (vBox[i] * WorldView).z();
+        fNear = std::min(fNear,fZValue);
+        fFar = std::max(fFar,fZValue);
+    }
 }
 
-void FillBox(float3 vBox[],const float3& vMin,const float3 vFar)
+void FillBox(float3 vBox[],const float3& vMin,const float3& vMax)
 {
+    vBox[0] = vMin;
+    vBox[1].Set(vMax.x(),vMin.y(),vMin.z());
+    vBox[2].Set(vMax.x(),vMin.y(),vMax.z());
+    vBox[3].Set(vMin.x(),vMin.y(),vMax.z());
+                               
+    vBox[4].Set(vMin.x(),vMax.y(),vMin.z());
+    vBox[1].Set(vMax.x(),vMax.y(),vMin.z());
+    vBox[2] = vMax;           
+    vBox[3].Set(vMin.x(),vMax.y(),vMax.z());
 }

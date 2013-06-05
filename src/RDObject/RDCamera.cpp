@@ -115,3 +115,10 @@ void    RDCamera::UpdateProject(const QString& pRDName,QRectF& rt,float fZNear,f
     QRectF sceneRT(0,0,pRenderData->GetSceneWidth(),pRenderData->GetSceneHeight());
     pRenderData->CalProjectMat(sceneRT,true);
 }
+
+const HMatrixQ4F&    RDCamera::GetViewMatrix(const QString& pRDName)
+{
+    RDCameraRenderData* pRenderData = dynamic_cast<RDCameraRenderData*>( GetRenderData(pRDName));
+    return pRenderData->m_matView;
+
+}

@@ -17,6 +17,9 @@
  */
 #include "RDLayer.h"
 #include "RDCamera.h"
+#include <stack>
+#include <cfloat>
+#include "RDSpaceConvert.h"
 
 class RDLayerRenderData :public RDRenderData
 {
@@ -96,18 +99,19 @@ RDCamera* RDLayer::RemoveCamera(size_t i)
 float2      RDLayer::CalObjMinMax(const QString& pRDName)
 {
     std::stack<RDNode*> nodeSt;
-    size_t nCount = GetChildCount();
 
     float3 vMin(FLT_MAX,FLT_MAX,FLT_MAX),vMax(FLT_MIN,FLT_MIN,FLT_MIN);
     RDLayerRenderData* pLayerRD = dynamic_cast<RDLayerRenderData*>(GetRenderData(pRDName));
     float2 vNearFar;
+    vNearFar.x = FLT_MAX;
+    vNearFar.y = FLT_MIN;
 
     size_t nCount = GetChildCount();
     for(size_t i = 0;i < nCount;i++)
     {
         nodeSt.push(GetChild(i));
     }
-
+    RDCamera* pCamera = GetCurCamera(*pLayerRD);
     do
     {
         RDNode* pNode = nodeSt.top();
@@ -117,11 +121,10 @@ float2      RDLayer::CalObjMinMax(const QString& pRDName)
         {
             nodeSt.push(GetChild(i));
         }
+        RDCalBoxNearFar(vNearFar.x,vNearFar.y,pRD->GetMin(),pRD->GetMax(),pCamera->GetViewMatrix(pRDName));
         nodeSt.pop();
     }while(!nodeSt.empty());
-
-    pLayerRD->SetMin(vMin);
-    pLayerRD->SetMax(vMax);
+    return vNearFar;
 }
 
 void RDLayer::CalFrame(const RDTime& nTime,const QString& pRDName) 
@@ -130,10 +133,12 @@ void RDLayer::CalFrame(const RDTime& nTime,const QString& pRDName)
     RDCamera* pCamera = GetCurCamera(*pLayerRD);
     pCamera->CalFrame(nTime,pRDName);
     RDNode::CalFrame(nTime,pRDName);
-    CalObjMinMax(pRDName);
+    float2 vNearFar = CalObjMinMax(pRDName);
 
-    QRectF sceneRT(0,0,pRenderData->GetSceneWidth(),pRenderData->GetSceneHeight());
-    pCamera->UpdateProject(pRDName,pLayerRD->GetMin
+    QRectF sceneRT(0,0,pLayerRD->GetSceneWidth(),pLayerRD->GetSceneHeight());
+    pCamera->UpdateProject(pRDName,sceneRT,vNearFar.x,vNearFar.y);
+    if(pCamera->GetRenderChangeLevel(pRDName) > RDRender_NoChange)
+        pLayerRD->UnionDirty(sceneRT);
 }
 
 RDCamera* RDLayer::GetCurCamera(const RDLayerRenderData& pLayerRD)

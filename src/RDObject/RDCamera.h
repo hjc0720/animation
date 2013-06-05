@@ -32,6 +32,8 @@ public:
     RDCamera(const QString& strName,uint nHeight,RDProjectType nType);
     virtual void CalFrame(const RDTime& nTime,const QString& pRDName) ;
     void    UpdateProject(const QString& pRDName,QRectF& rt,float fZNear,float fFar);
+
+    const HMatrixQ4F&    GetViewMatrix(const QString& pRDName);
 protected:
     virtual RDRenderData*  CreateRenderData(const QString& pName);
 protected:

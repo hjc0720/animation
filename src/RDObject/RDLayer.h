@@ -50,7 +50,7 @@ public:
     virtual void CalFrame(const RDTime& nTime,const QString& pRDName) ;
 protected:
     RDCamera* GetCurCamera(const RDLayerRenderData& pLayerRD);
-    void        CalObjMinMax(const QString& pRDName);
+    float2      CalObjMinMax(const QString& pRDName);
 protected:
     RDLayerType m_nType;
     std::vector<RDCamera*> m_vecCameraObj;

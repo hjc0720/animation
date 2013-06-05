@@ -81,8 +81,12 @@ public:
     const RDRenderData*   GetRenderData(const QString& pName)const;
     void            RemoveRenderData();
     void            SetRenderScale(float fScale,const QString& pName);
+
     RDRenderChangeLevel GetMaxChangeLevel(const QString& pName)const;
+    RDRenderChangeLevel GetMaxRenderChangeLevel(const QString& pName)const;
     void SetChangeLevel(RDRenderChangeLevel nLevel);
+    RDRenderChangeLevel GetChangeLevel(const QString& pName)const;
+    RDRenderChangeLevel GetRenderChangeLevel(const QString& pName)const;
 
     size_t GetSectionCount(const QUuid& idStory)const;
     RDSection* GetSection(const QUuid& idStory,size_t nIndex);

@@ -21,6 +21,6 @@ class HMatrixQ4F;
 void RDSceneToBuffer(float3& pOut,const float3& pIn,float fBufferLeft,float fBufferTop);
 void RDBufferToScene(float3& pOut,const float3& pIn,float fBufferLeft,float fBufferTop);
 
-void FillBox(float3 vBox[],const float3& vMin,const float3 vFar);
-void RDCalBoxNearFar(float& fNear,float& fFar,const float3& vMin,const float3 vFar,const HMatrixQ4F& view,const HMatrixQ4F& world);
+void FillBox(float3 vBox[],const float3& vMin,const float3& vMax);
+void RDCalBoxNearFar(float& fNear,float& fFar,const float3& vMin,const float3& vMax,const HMatrixQ4F& WorldView);
 #endif   // ----- #ifndef RD_SPACE_CONVERT_INC  -----
