@@ -23,6 +23,7 @@ class RDResource
 {
 public:
     RDResource(const RDMd5& md5Id);
+    RDResource(){};
     virtual ~RDResource();
     void AddRef()const{m_nRef++;}
     void SubRef()const{m_nRef--;}

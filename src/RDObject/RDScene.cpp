@@ -145,10 +145,10 @@ void RDScene::RenderImage(RDSceneRenderData& pSceneData,unsigned long )
     RDScenePrivateData* pData = (RDScenePrivateData*)pSceneData.GetPrivateData();
     RDImageResource* pResource = dynamic_cast<RDImageResource*>(pData->GetResource());
     //Render Image;
-    const RDBuffer* pImage = pResource->GetBuffer();
-    QRectF dst(0,0,pSceneData.GetNowWidth(),pSceneData.GetNowHeight());
-    QRectF src(0,0,pImage->GetWidth(),pImage->GetHeight());
-    pSceneData.m_RenderBuffer.Draw(dst,*pResource->GetBuffer(),src);
+    //const RDTexture* pImage = pResource->GetBuffer();
+    //QRectF dst(0,0,pSceneData.GetNowWidth(),pSceneData.GetNowHeight());
+    //QRectF src(0,0,pImage->GetWidth(),pImage->GetHeight());
+    //pSceneData.m_RenderBuffer.Draw(dst,*pResource->GetBuffer(),src);
 }
 
 void RDScene::CalFrame(const RDTime& nTime,const QString& pRDName)

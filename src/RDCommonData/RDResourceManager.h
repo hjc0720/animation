@@ -28,6 +28,7 @@ enum RDResouceType
     RDResource_Image,
     RDResource_Movie,
     RDResource_Buffer,
+    RDResource_Model,
 };
 
 class RDResource;
@@ -39,6 +40,8 @@ public:
     static void ReleaseResourceManager();
     ~RDResourceManager();
     RDResource* AddResource(const QString& resPath,RDResouceType nType);
+    RDResource* AddImageResource(const QString& resPath){return AddResource(resPath,RDResource_Image);}
+    RDResource* AddModelResource(const QString& modelName);
     RDResource* AddResource(const RDMd5& pMd5);
     RDResource* GetResource(const RDMd5& pMd5);
     bool RemoveResource(const RDMd5* pMd5);

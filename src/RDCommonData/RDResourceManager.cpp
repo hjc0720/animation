@@ -23,11 +23,13 @@
 #include <QMutexLocker>
 #include <QDir>
 #include <QDebug>
+#include "RDModelResource.h"
 using namespace std;
 
 const char* g_fileDir[] = {
     "Image/",
-    "Movie/"
+    "Movie/",
+    "Model/"
 };
 
 
@@ -94,6 +96,7 @@ RDResource* RDResourceManager::AddResource(const QString& resPath,RDResouceType 
     RDResource* pResource = GetResource(*pMd5);
     if(pResource)
     {
+        SAFE_DELETE(pMd5);
         pResource->AddRef();
         return pResource;
     }
@@ -161,6 +164,7 @@ RDResource* RDResourceManager::AddResource(const RDMd5& pMd5)
     }
     return NULL;
 }
+
 bool RDResourceManager::RemoveResource(const RDMd5* pMd5)
 {
     QMutexLocker locker(&m_lock);
@@ -177,4 +181,20 @@ bool RDResourceManager::RemoveResource(const RDMd5* pMd5)
         SAFE_DELETE(pGetMd5);
     }
     return true;
+}
+
+RDResource* RDResourceManager::AddModelResource(const QString& modelName)
+{
+    RDMd5* pMd5 = new RDMd5(modelName.toAscii().data(),modelName.toAscii().size());
+    QMutexLocker locker(&m_lock);
+
+    RDResource* pResource = GetResource(*pMd5);
+    if(pResource)
+    {
+        SAFE_DELETE(pMd5);
+        pResource->AddRef();
+        return pResource;
+    }
+    RDModelResource* pNewResource = new RDModelResource(*pMd5);
+    m_resource[pMd5] = pNewResource; 
 }

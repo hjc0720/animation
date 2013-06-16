@@ -148,7 +148,7 @@ void RDSetSceneDlg::accept()
     else if(backImag->isChecked())
     {
         RDResourceManager* pManager = RDResourceManager::GetResourceManager();
-        RDImageResource* pResource = dynamic_cast<RDImageResource*>(pManager->AddResource(filePath->text(),RDResource_Image));
+        RDImageResource* pResource = dynamic_cast<RDImageResource*>(pManager->AddImageResource(filePath->text()));
 
         if(pResource)
         {

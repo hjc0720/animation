@@ -4,6 +4,11 @@
 #include <vector>
 #include "RDRenderDevice.h"
 
+enum RDModelType
+{
+    RDSegmentModel,
+};
+
 class float3;
 struct RDTexcoord
 {
@@ -30,6 +35,7 @@ public:
     void DrawSubset(int nSubset);
     void AddSubModel(int nCount);
     void AddSubModel(int nStart,int nCount);
+    size_t GetSubsetCount()const{return m_arSubModel.size();};
 protected:
     int m_nVersion;
     int m_nCount;
@@ -43,6 +49,7 @@ protected:
 
     //static create function
 public:
+    static RDModel* CreateModel(RDModelType nType);
     static RDModel* CreateSegmentModel();
 };
 

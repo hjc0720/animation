@@ -28,7 +28,7 @@ public:
     RDImageObject(const RDMd5& image);
     RDImageObject(const QString& fileName);
     ~RDImageObject();
-    virtual void CreateRenderData(RDRenderData& ){};
+    virtual void CreateRenderData(RDRenderData& );
     virtual void ReleaseRenderData(RDRenderData& ){};
 
     const RDMd5& GetObjMd5()const ;

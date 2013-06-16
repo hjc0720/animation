@@ -57,4 +57,10 @@ inline double GetTime()
     gettimeofday(&time,&zone);
     return time.tv_sec * 1000.0 + time.tv_usec / 1000.0;
 }
+
+template <class T>
+size_t GetArrayLen(T& array)
+{
+    return (sizeof(array) / sizeof(array[0]));
+}
 #endif   // ----- #ifndef hmath_h_INC  -----

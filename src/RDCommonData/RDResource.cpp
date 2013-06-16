@@ -17,10 +17,11 @@
 #include "RDResource.h"
 
 RDResource::RDResource(const RDMd5& md5Id)
+    :m_md5Id(md5Id)
+     ,m_nRef(1)
 {
-    memcpy(&m_md5Id,&md5Id,16 * sizeof(unsigned char));
-    m_nRef = 1;
 }
+
 RDResource::~RDResource()
 {
 

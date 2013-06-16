@@ -17,15 +17,16 @@
 #include "mac_define.h"
 #include <QDebug>
 #include "RDBuffer.h"
-#include <QImage>
+#include "RDTexture.h"
 
 RDImageResource::RDImageResource(const QString& imagePath,const RDMd5& md5Id)
     :RDResource(md5Id)
      ,m_ImagePath(imagePath)
 {
-    m_pImage = new RDBuffer(QImage(imagePath).convertToFormat(QImage::Format_ARGB32));
+    m_pImage = new RDTexture(imagePath);
 }
 RDImageResource::~RDImageResource()
 {
-    SAFE_DELETE(m_pImage);
+    m_pImage->Release();
+    m_pImage = nullptr;
 }

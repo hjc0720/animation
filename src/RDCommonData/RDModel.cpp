@@ -84,7 +84,16 @@ void RDModel::DrawSubset(int nSubset)
 
 ////////////////////////////////////////////////////////////////////////////////
 //static function
-std::map<QString,RDModel*> g_mapModel;
+RDModel* RDModel::CreateModel(RDModelType nType)
+{
+    switch(nType)
+    {
+    case RDSegmentModel:
+        return CreateSegmentModel();
+    }
+    return nullptr;
+}
+
 RDModel* RDModel::CreateSegmentModel()
 {
     RDModel* pModel = new RDModel(6);

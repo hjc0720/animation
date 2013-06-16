@@ -25,6 +25,20 @@
 #include "RDFileDataStream.h"
 #include "HVector4f.h"
 #include "RDRenderDevice.h"
+#include "RDModel.h"
+#include "RDTexture.h"
+
+class RDModel;
+class RDImagePrivateData: public RDRenderPrivateData
+{
+public:
+    RDModel*            m_pSegModel;
+    RDTexture*          m_pImage; 
+    RDShader*           m_pVertexShader;    
+    RDShader*           m_pPixelShader;    
+    RDShaderProgram*    m_pShaderProgram;
+};
+
 struct RDUV
 {
     float u;
@@ -163,9 +177,9 @@ void RDImageObject::Render(unsigned long ,RDRenderData& RenderData)
         RenderData.m_RenderBuffer.ResizeBuffer(dst.width() ,dst.height());
         RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
         RDImageResource* pResource = dynamic_cast<RDImageResource*>(pResManager->GetResource(m_Image));
-        const RDBuffer* pImage = pResource->GetBuffer();
-        QRectF src(0,0,pImage->GetWidth(),pImage->GetHeight());
-        RenderData.m_RenderBuffer.Draw(dst,*pImage,src);
+        const RDTexture* pImage = pResource->GetBuffer();
+        //QRectF src(0,0,pImage->GetWidth(),pImage->GetHeight());
+        //RenderData.m_RenderBuffer.Draw(dst,*pImage,src);
         qDebug() << "image render";
     }
 }
@@ -216,4 +230,15 @@ void RDImageObject::UpdateBound(const RDTime& ,RDRenderData& RenderData)
     float3 bufferPos;
     RDSceneToBuffer(bufferPos,RenderData.GetPos() ,-(float)RenderData.GetSceneWidth()/ 2,RenderData.GetSceneHeight()/ 2);
     RenderData.SetBound( QRectF(bufferPos.x(),bufferPos.y(),m_nWidth,m_nHeight));
+}
+
+void RDImageObject::CreateRenderData(RDRenderData& pRD)
+{
+    
+    if(!pRD.GetPrivateData())
+    {
+        RDImagePrivateData* pPrivateData = new RDImagePrivateData;
+        pPrivateData->m_pSegModel = RDModel::CreateSegmentModel();
+        //pPrivateData->m_pImage = RDTexture();
+    }
 }
