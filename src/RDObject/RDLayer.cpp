@@ -20,6 +20,8 @@
 #include <stack>
 #include <cfloat>
 #include "RDSpaceConvert.h"
+#include "RDScene.h"
+#include "RDSceneRenderData.h"
 
 class RDLayerRenderData :public RDRenderData
 {
@@ -39,6 +41,9 @@ RDLayer::RDLayer(RDLayerType nType,const QString& strName)
      ,m_nType(nType)
 {
      m_strName = strName;
+     RDCamera* pCamera = new RDCamera("camera",1080,PerspectiveProject);
+     pCamera->SetParent(this);
+     m_vecCameraObj.push_back(pCamera);
 }
 
 RDNode* RDLayer::GetChild(size_t i)
@@ -52,7 +57,7 @@ const RDNode* RDLayer::GetChild(size_t i)const
 {
     if(i < m_vecCameraObj.size())
         return GetCamera(i);
-    return RDNode::GetChild(i);
+    return RDNode::GetChild(i - m_vecCameraObj.size());
 }
 
 RDNode* RDLayer::GetChild(const QUuid& NodeId)
@@ -116,15 +121,24 @@ float2      RDLayer::CalObjMinMax(const QString& pRDName)
     {
         RDNode* pNode = nodeSt.top();
         RDRenderData* pRD = pNode->GetRenderData(pRDName);
-        size_t nChildCount = GetChildCount();
+        size_t nChildCount = pNode->GetChildCount();
         for(size_t i = 0;i < nChildCount;i++)
         {
-            nodeSt.push(GetChild(i));
+            nodeSt.push(pNode->GetChild(i));
         }
         RDCalBoxNearFar(vNearFar.x,vNearFar.y,pRD->GetMin(),pRD->GetMax(),pCamera->GetViewMatrix(pRDName));
         nodeSt.pop();
     }while(!nodeSt.empty());
     return vNearFar;
+}
+
+RDRenderData *RDLayer::CreateRenderData(const QString &pName)
+{
+    QMutexLocker locker(&m_lock);
+    RDScene* pScene = GetSceneNode();
+    RDRenderData* pRenderData = new RDLayerRenderData(*this,*dynamic_cast<RDSceneRenderData*>(pScene->GetRenderData(pName)));
+    m_vecRenderData[pName] = pRenderData;
+    return pRenderData;
 }
 
 void RDLayer::CalFrame(const RDTime& nTime,const QString& pRDName) 

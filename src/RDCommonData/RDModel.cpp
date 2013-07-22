@@ -74,7 +74,7 @@ void RDModel::AddSubModel(int nCount)
     AddSubModel(nStart,nCount);
 }
 
-void RDModel::DrawSubset(int nSubset)
+void RDModel::DrawSubset(size_t nSubset) const
 {
     RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
     const RDSubModel& subModel = m_arSubModel[nSubset];

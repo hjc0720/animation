@@ -233,7 +233,7 @@ void RDNode::UpdateSection(const RDTime& nFrame,RDRenderData& pRD)
         }
     }
     RDSection* pLastSection = GetLastSectionBefore(pScene.GetCurStoryIndex(pSceneRD));
-    if(pLastSection->GetType() == RDSectionFinish)
+    if(pLastSection && pLastSection->GetType() == RDSectionFinish)
         pRD.SetCurSection(0);
     else
         pRD.SetCurSection(pLastSection);

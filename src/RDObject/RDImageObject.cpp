@@ -27,31 +27,40 @@
 #include "RDRenderDevice.h"
 #include "RDModel.h"
 #include "RDTexture.h"
+#include "RDModelResource.h"
 
 class RDModel;
 class RDImagePrivateData: public RDRenderPrivateData
 {
 public:
-    RDModel*            m_pSegModel;
-    RDTexture*          m_pImage; 
+    RDImagePrivateData(){
+        m_pSegModel = nullptr;
+        m_pImage = nullptr;
+        m_pVertexShader = nullptr;
+        m_pPixelShader = nullptr;
+        m_pShaderProgram = nullptr;
+    }
+public:
+    RDModelResource*            m_pSegModel;
+    const RDTexture*    m_pImage; 
     RDShader*           m_pVertexShader;    
     RDShader*           m_pPixelShader;    
     RDShaderProgram*    m_pShaderProgram;
 };
 
-struct RDUV
-{
-    float u;
-    float v;
-};
+//struct RDUV
+//{
+    //float u;
+    //float v;
+//};
 
-float4 vPos[6];
-RDUV vUV[6];
-bool bInit = false;
-RDVertexBufferHandle    hVertex;
-RDShader* pVS = nullptr;
-RDShader* pPS = nullptr;
-RDShaderProgram* pShaderProgram = nullptr;
+//float4 vPos[6];
+//RDUV vUV[6];
+//bool bInit = false;
+//RDVertexBufferHandle    hVertex;
+//RDShader* pVS = nullptr;
+//RDShader* pPS = nullptr;
+//RDShaderProgram* pShaderProgram = nullptr;
 
 const char* vs_code = "#version 400 \nlayout (location = 0) in vec4 pos; \
         layout (location = 3) in vec2 tex; \
@@ -62,88 +71,51 @@ const char* ps_code = "#version 400 \n in vec2 oTex;layout(location = 0)out vec4
 RDImageObject::RDImageObject()
     :RDObject(RDObjectImage)
 {
-    if(!bInit)
-    {
-        vPos[0].Set(-1,1,0.5,1);
-        vUV[0].u = 0;
-        vUV[0].v = 0;
-        vPos[1].Set(1,1,0.5,1);
-        vUV[1].u = 1;
-        vUV[1].v = 0;
-        vPos[2].Set(1,-1,0.5,1);
-        vUV[2].u = 1;
-        vUV[2].v = 1;
-        vPos[3].Set(-1,1,0.5,1);
-        vUV[3].u = 0;
-        vUV[3].v = 1;
-        vPos[4].Set(1,-1,0.5,1);
-        vUV[4].u = 1;
-        vUV[4].v = 1;
-        vPos[5].Set(-1,-1,0.5,1);
-        vUV[5].u = 0;
-        vUV[5].v = 1;
-        bInit = true;
-        RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
-        std::vector<RDVertexData> vertex;
-        vertex.resize(2);
-        vertex[0].nType = RDVB_Pos;
-        vertex[0].pVertexData = (float*)vPos;
-        vertex[0].nVertexCount = 6 * 4; 
-
-        vertex[1].nType = RDVB_Texcoord;
-        vertex[1].pVertexData = (float*)vUV;
-        vertex[1].nVertexCount = 6 * 2 ;
-        hVertex = pDevice->CreateVertexBuffer(vertex);
-        pVS = pDevice->CreateShader(vs_code,QString("test_vs"),VertexShader);
-        pPS = pDevice->CreateShader(ps_code,QString("test_ps"),FragmentShader);
-
-        pShaderProgram = pDevice->CreateShaderProgram(pVS,  nullptr,  pPS);
-        bInit = true;
-    }
 }
+
 RDImageObject::RDImageObject(const QString& fileName)
     :RDObject(RDObjectImage)
 {
     RDResourceManager* pResManger = RDResourceManager::GetResourceManager();
     m_Image = pResManger->AddResource(fileName,RDResource_Image)->GetMd5();
-    if(!bInit)
-    {
-        vPos[0].Set(-1,1,0.5,1);
-        vUV[0].u = 0;
-        vUV[0].v = 0;
-        vPos[1].Set(1,1,0.5,1);
-        vUV[1].u = 1;
-        vUV[1].v = 0;
-        vPos[2].Set(1,-1,0.5,1);
-        vUV[2].u = 1;
-        vUV[2].v = 1;
-        vPos[3].Set(-1,1,0.5,1);
-        vUV[3].u = 0;
-        vUV[3].v = 1;
-        vPos[4].Set(1,-1,0.5,1);
-        vUV[4].u = 1;
-        vUV[4].v = 1;
-        vPos[5].Set(-1,-1,0.5,1);
-        vUV[5].u = 0;
-        vUV[5].v = 1;
-        bInit = true;
-        RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
-        std::vector<RDVertexData> vertex;
-        vertex.resize(2);
-        vertex[0].nType = RDVB_Pos;
-        vertex[0].pVertexData = (float*)vPos;
-        vertex[0].nVertexCount = 6 * 4;
+    //if(!bInit)
+    //{
+        //vPos[0].Set(-1,1,0.5,1);
+        //vUV[0].u = 0;
+        //vUV[0].v = 0;
+        //vPos[1].Set(1,1,0.5,1);
+        //vUV[1].u = 1;
+        //vUV[1].v = 0;
+        //vPos[2].Set(1,-1,0.5,1);
+        //vUV[2].u = 1;
+        //vUV[2].v = 1;
+        //vPos[3].Set(-1,1,0.5,1);
+        //vUV[3].u = 0;
+        //vUV[3].v = 1;
+        //vPos[4].Set(1,-1,0.5,1);
+        //vUV[4].u = 1;
+        //vUV[4].v = 1;
+        //vPos[5].Set(-1,-1,0.5,1);
+        //vUV[5].u = 0;
+        //vUV[5].v = 1;
+        //bInit = true;
+        //RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
+        //std::vector<RDVertexData> vertex;
+        //vertex.resize(2);
+        //vertex[0].nType = RDVB_Pos;
+        //vertex[0].pVertexData = (float*)vPos;
+        //vertex[0].nVertexCount = 6 * 4;
 
-        vertex[1].nType = RDVB_Texcoord;
-        vertex[1].pVertexData = (float*)vUV;
-        vertex[1].nVertexCount = 6 * 2 ;
-        hVertex = pDevice->CreateVertexBuffer(vertex);
-        pVS = pDevice->CreateShader(vs_code,QString("test_vs"),VertexShader);
-        pPS = pDevice->CreateShader(ps_code,QString("test_ps"),FragmentShader);
+        //vertex[1].nType = RDVB_Texcoord;
+        //vertex[1].pVertexData = (float*)vUV;
+        //vertex[1].nVertexCount = 6 * 2 ;
+        //hVertex = pDevice->CreateVertexBuffer(vertex);
+        //pVS = pDevice->CreateShader(vs_code,QString("test_vs"),VertexShader);
+        //pPS = pDevice->CreateShader(ps_code,QString("test_ps"),FragmentShader);
 
-        pShaderProgram = pDevice->CreateShaderProgram(pVS,  nullptr,  pPS);
-        bInit = true;
-    }
+        //pShaderProgram = pDevice->CreateShaderProgram(pVS,  nullptr,  pPS);
+        //bInit = true;
+    //}
 }
 
 RDImageObject::RDImageObject(const RDMd5& image)
@@ -166,22 +138,29 @@ RDImageObject::~RDImageObject()
 
 void RDImageObject::Render(unsigned long ,RDRenderData& RenderData) 
 {
+    RDImagePrivateData* pPrivateData = dynamic_cast<RDImagePrivateData*>( RenderData.GetPrivateData());
     RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
-    pDevice->SetShader(pShaderProgram);
-    pDevice->SetVertexBuffer(hVertex);
-    pDevice->Render(GL_TRIANGLES,0,6);
-    return;
-    if(RenderData.GetRenderChangeLevel() >= RDRender_GraphicChange)
+    pDevice->SetShader(pPrivateData->m_pShaderProgram);
+    const RDModel* pModel = pPrivateData->m_pSegModel->GetModel();
+    for(size_t i = 0; i <  pModel->GetSubsetCount(); i++)
     {
-        QRectF dst(0,0,RenderData.GetBound().width() * RenderData.GetScale(),RenderData.GetBound().height() * RenderData.GetScale());
-        RenderData.m_RenderBuffer.ResizeBuffer(dst.width() ,dst.height());
-        RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
-        RDImageResource* pResource = dynamic_cast<RDImageResource*>(pResManager->GetResource(m_Image));
-        const RDTexture* pImage = pResource->GetBuffer();
-        //QRectF src(0,0,pImage->GetWidth(),pImage->GetHeight());
-        //RenderData.m_RenderBuffer.Draw(dst,*pImage,src);
-        qDebug() << "image render";
+        pDevice->SetShaderTexture(pPrivateData->m_pShaderProgram,"DiffuseTex",pPrivateData->m_pImage);
+        pModel->DrawSubset(i);
     }
+    qDebug() << "image render";
+    return;
+
+    //if(RenderData.GetRenderChangeLevel() >= RDRender_GraphicChange)
+    //{
+        //QRectF dst(0,0,RenderData.GetBound().width() * RenderData.GetScale(),RenderData.GetBound().height() * RenderData.GetScale());
+        //RenderData.m_RenderBuffer.ResizeBuffer(dst.width() ,dst.height());
+        //RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
+        //RDImageResource* pResource = dynamic_cast<RDImageResource*>(pResManager->GetResource(m_Image));
+        //const RDTexture* pImage = pResource->GetBuffer();
+        ////QRectF src(0,0,pImage->GetWidth(),pImage->GetHeight());
+        ////RenderData.m_RenderBuffer.Draw(dst,*pImage,src);
+        //qDebug() << "image render";
+    //}
 }
 void RDImageObject::CalFrame(const RDTime& ,RDRenderData& ) 
 {
@@ -234,11 +213,19 @@ void RDImageObject::UpdateBound(const RDTime& ,RDRenderData& RenderData)
 
 void RDImageObject::CreateRenderData(RDRenderData& pRD)
 {
-    
-    if(!pRD.GetPrivateData())
+    RDImagePrivateData* pPrivateData = dynamic_cast<RDImagePrivateData*>( pRD.GetPrivateData());
+    if(!pPrivateData)
     {
-        RDImagePrivateData* pPrivateData = new RDImagePrivateData;
-        pPrivateData->m_pSegModel = RDModel::CreateSegmentModel();
-        //pPrivateData->m_pImage = RDTexture();
+        pPrivateData = new RDImagePrivateData;
+        pRD.SetPrivateData(pPrivateData);
     }
+    RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
+    pPrivateData->m_pSegModel = dynamic_cast<RDModelResource*>(pResManager->AddModelResource("segment"));
+    RDImageResource* pResource = dynamic_cast<RDImageResource*>(pResManager->GetResource(m_Image));
+    pPrivateData->m_pImage = pResource->GetBuffer();
+
+    RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
+    pPrivateData->m_pVertexShader = pDevice->CreateShader(":/shader/model_vs",VertexShader);    
+    pPrivateData->m_pPixelShader = pDevice->CreateShader(":/shader/main_ps",FragmentShader);    
+    pPrivateData->m_pShaderProgram = pDevice->CreateShaderProgram(pPrivateData->m_pVertexShader,nullptr,pPrivateData->m_pPixelShader);
 }

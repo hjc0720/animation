@@ -197,4 +197,5 @@ RDResource* RDResourceManager::AddModelResource(const QString& modelName)
     }
     RDModelResource* pNewResource = new RDModelResource(*pMd5);
     m_resource[pMd5] = pNewResource; 
+    return pNewResource;
 }

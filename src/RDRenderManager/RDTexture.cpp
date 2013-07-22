@@ -88,7 +88,7 @@ void RDTexture::Dump(const QString &fileName)
     SAFE_DELETE_ARRAY(buffer);
 }
 
-void RDTexture::SetTexture(int loc)
+void RDTexture::SetTexture(int loc)const
 {
     glUniform1i(loc,m_nTexture);
 }

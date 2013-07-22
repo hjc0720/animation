@@ -45,7 +45,7 @@ void MainWindow::InitGUI()
 void MainWindow::InitData()
 {
     QString m_strCachePath = QDir::homePath();
-    m_strCachePath += "/.ReadGoogleBook/temp_cache/";
+    m_strCachePath += "/.Animation/temp_cache/";
     RDResourceManager::GetResourceManager()->SetResPath(m_strCachePath);
 
     //RDDocument* pDocument = new RDDocument(true);

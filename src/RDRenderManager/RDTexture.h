@@ -12,7 +12,7 @@ public:
     
     bool Release();
     void Dump(const QString& fileName);
-    void SetTexture(int loc);
+    void SetTexture(int loc) const;
     void SetTextureSample(RDSampleType nType);
     bool SetRenderTarget(int nIndex);
     bool SetDepth();

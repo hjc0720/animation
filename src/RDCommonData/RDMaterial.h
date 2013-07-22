@@ -21,7 +21,7 @@ public:
     RDMatTexture();
     RDMatTexture(const QString& strFileName);
     RDMatTexture(const uint* pBuffer,int nWidth,int nHeight);
-    RDMatTexture(RDTexHandle hTex,const QRectF& texBound);
+    RDMatTexture(RDTexture* hTex,const QRectF& texBound);
     ~RDMatTexture();
     const QString& GetFileName()const{return m_strFile;}
 protected:
@@ -35,7 +35,7 @@ protected:
     float       m_fRotate;
 
     //临时数据
-    RDTexHandle m_hTex;
+    RDTexture*  m_hTex;
     HMatrixQ4F  m_matTex;
     bool        m_bReleaseTex;
 };
@@ -53,7 +53,7 @@ public:
     RDMaterial(bool bEnableLight,unsigned int color);
     void AddTex(RDMatTextureType nTexType,const QString& fileName);
     void AddTex(RDMatTextureType nTexType,const uint* pBuffer,int nWidth,int nHeight);
-    void AddTex(RDMatTextureType nTexType,RDTexHandle hTex,const QRectF& texBount);
+    void AddTex(RDMatTextureType nTexType,RDTexture*  hTex,const QRectF& texBount);
     bool UpdateFrame(const RDTime& time,char m_nPointLightNum,char m_nLineLightNum,char m_nSpotLightNum);
 
     int  SetChange(int nChangeType);

@@ -32,7 +32,7 @@ RDMatTexture::RDMatTexture(const uint* pBuffer,int nWidth,int nHeight)
     m_hTex = pDevice->CreateTexture(nWidth,nHeight,pBuffer,RDNormal2DTexture);
 }
 
-RDMatTexture::RDMatTexture(RDTexHandle hTex,const QRectF& texBound)
+RDMatTexture::RDMatTexture(RDTexture*  hTex,const QRectF& texBound)
     :m_hTex(hTex)
      ,m_bReleaseTex(false)
 {
@@ -100,7 +100,7 @@ void RDMaterial::AddTex(RDMatTextureType nTexType,const uint* pBuffer,int nWidth
     SetChange(MT_ADD_TEXTURE);
 }
 
-void RDMaterial::AddTex(RDMatTextureType nTexType,RDTexHandle hTex,const QRectF& texBound)
+void RDMaterial::AddTex(RDMatTextureType nTexType,RDTexture*  hTex,const QRectF& texBound)
 {
     if(m_MatTexture[nTexType])
         SAFE_DELETE(m_MatTexture[nTexType]);

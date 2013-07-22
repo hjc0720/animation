@@ -51,6 +51,7 @@ public:
 protected:
     RDCamera* GetCurCamera(const RDLayerRenderData& pLayerRD);
     float2      CalObjMinMax(const QString& pRDName);
+    virtual RDRenderData*  CreateRenderData(const QString& pName);
 protected:
     RDLayerType m_nType;
     std::vector<RDCamera*> m_vecCameraObj;

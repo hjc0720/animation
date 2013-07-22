@@ -67,7 +67,7 @@ RDScene::RDScene()
 }
 RDScene::RDScene(const QString& strName)
     :RDNode(strName,float3(0,0,0),NULL)
-     ,m_nSceneVersion(g_nSceneVersion)
+     //,m_nSceneVersion(g_nSceneVersion)
 {
     unsigned long newColor = 0xffffffff;
     m_BackData.pImage = new RDMd5;
@@ -361,7 +361,8 @@ RDFileDataStream& operator << (RDFileDataStream& buffer,const RDScene& scene)
     QMutexLocker locker(&scene.m_lock);
 	qDebug() <<"begin to save scene" ;
     buffer << *(RDNode*)&scene;
-    buffer << scene.m_nSceneVersion;
+    int nVersion = 0;
+    buffer << nVersion;
     buffer.writeRawData( (char*)&scene.m_BackData.m_nBackType,sizeof(scene.m_BackData.m_nBackType));
     switch(scene.m_BackData.m_nBackType)
     {
@@ -397,7 +398,8 @@ RDFileDataStream& operator >> (RDFileDataStream& buffer,RDScene& scene)
 {
     QMutexLocker locker(&scene.m_lock);
     buffer >> *(RDNode*)&scene;
-    buffer >> scene.m_nSceneVersion;
+    int nVersion = 0;
+    buffer >> nVersion ;
     buffer.readRawData( (char*)&scene.m_BackData.m_nBackType,sizeof(scene.m_BackData.m_nBackType));
     switch(scene.m_BackData.m_nBackType)
     {

@@ -22,10 +22,10 @@
 void InitEnv()
 {
     QDir homeDir(QDir::home());
-    if(!homeDir.cd(".ReadGoogleBook"))
+    if(!homeDir.cd(".Animation"))
     {
-        homeDir.mkdir(".ReadGoogleBook");
-        homeDir.cd(".ReadGoogleBook");
+        homeDir.mkdir(".Animation");
+        homeDir.cd(".Animation");
     }
     if(!homeDir.exists("cache"))
     {

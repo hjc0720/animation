@@ -49,7 +49,7 @@ RDRenderDevice* RDRenderDevice::GetRenderManager()
     return g_pRenderManager;
 }
 
-RDTexHandle RDRenderDevice::CreateTexture(const QString &fileName)
+RDTexture*  RDRenderDevice::CreateTexture(const QString &fileName)
 {
     QMutexLocker locker(&m_lock);
     auto it = m_vecFileTex.find(fileName);
@@ -64,7 +64,7 @@ RDTexHandle RDRenderDevice::CreateTexture(const QString &fileName)
     return pFileTex;
 }
 
-RDTexHandle RDRenderDevice::CreateTexture(int nWidth, int nHeight,const uint* buffer,  RDTexture_Type nType)
+RDTexture*  RDRenderDevice::CreateTexture(int nWidth, int nHeight,const uint* buffer,  RDTexture_Type nType)
 {
     QMutexLocker locker(&m_lock);
     RDTexture* pTexture = new RDTexture(nWidth,nHeight,buffer,nType);
@@ -245,14 +245,14 @@ void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name, 
     glUniformMatrix4fv(hLocation,1,false,value.data());
 }
 
-void RDRenderDevice::SetShaderTexture(RDShaderProgram *pShader, const char *name, RDTexHandle tex)
+void RDRenderDevice::SetShaderTexture(RDShaderProgram *pShader, const char *name, const RDTexture*  tex)
 {
     QMutexLocker locker(&m_lock);
     GLint hLocation = pShader->GetUniformLocation(name);
     tex->SetTexture(hLocation);
 }
 
-void RDRenderDevice::SetShaderSample(RDTexHandle tex, RDSampleType nType)
+void RDRenderDevice::SetShaderSample(RDTexture*  tex, RDSampleType nType)
 {
     QMutexLocker locker(&m_lock);
     tex->SetTextureSample(nType);
@@ -264,7 +264,7 @@ void RDRenderDevice::Render(GLenum mode, GLint nStart, GLsizei count)
     glDrawArrays(mode,nStart,count);
 }
 
-bool RDRenderDevice::SetRenderTarget(RDTexHandle target, RDTexHandle depth)
+bool RDRenderDevice::SetRenderTarget(RDTexture*  target, RDTexture*  depth)
 {
     glBindFramebuffer(GL_FRAMEBUFFER,m_hFrameBuffer);
     bool ret = target->SetRenderTarget(0);
@@ -284,7 +284,7 @@ void RDRenderDevice::SetScissor(QRect &scissor)
     glScissor(scissor.left(),scissor.right(),scissor.width(),scissor.height());
 }
 
-void RDRenderDevice::DumpTexture(RDTexHandle pTex)
+void RDRenderDevice::DumpTexture(RDTexture*  pTex)
 {
     QMutexLocker locker(&m_lock);
     RDTexture* pTexture = (RDTexture*)pTex;
@@ -333,7 +333,7 @@ void    RDRenderDevice::ReleaseVertexBuffer(RDVertexBufferHandle hVertexBuffer)
     glDeleteVertexArrays(1,&hVertexBuffer->hVertexArray);
 }
 
-void    RDRenderDevice::ReleaseTexture(RDTexHandle hTex)
+void    RDRenderDevice::ReleaseTexture(RDTexture*  hTex)
 {
     QString strFile = hTex->GetFileName();
     bool bRelease = hTex->Release();
@@ -341,12 +341,12 @@ void    RDRenderDevice::ReleaseTexture(RDTexHandle hTex)
         m_vecFileTex.erase(strFile);
 }
 
-int    RDRenderDevice::GetTextureWidth(RDTexHandle hTex)
+int    RDRenderDevice::GetTextureWidth(RDTexture*  hTex)
 {
     return hTex->GetWidth();
 }
 
-int    RDRenderDevice::GetTextureHeight(RDTexHandle hTex)
+int    RDRenderDevice::GetTextureHeight(RDTexture*  hTex)
 {
     return hTex->GetHeight();
 }

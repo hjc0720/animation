@@ -69,7 +69,6 @@ void RDRenderWidget::resizeGL(int w, int h)
 
 void    RDRenderWidget::OnTime(void* param)
 {
-    return;
     static RenderManager* pRDManager = 0;
     if(!pRDManager)
     {
@@ -97,22 +96,23 @@ void    RDRenderWidget::OnTime(void* param)
     pRDManager->SetScene(pScene);
     pRDManager->SetDstBuffer(pWidget->m_swapChain.GetBackBuffer());
     QPointF pt(pWidget->m_nXOffset,pWidget->m_nYOffset);
-    if(!pRDManager->RenderScene(pt,pWidget->m_validRt,pDoc->GetCurTime()))
-    {
-        oldTime = dStartTime;
-        pDoc->UnLock();
-        if(g_bForceUpdate)
-        {
-            pWidget->update();
-            g_bForceUpdate = false;
-        }
-        return;
-    }
-    qDebug() << "On Time :" << pDoc->GetCurTime();
-    pWidget->m_swapChain.SwapChain();
+//    if(!pRDManager->RenderScene(pt,pWidget->m_validRt,pDoc->GetCurTime()))
+//    {
+//        oldTime = dStartTime;
+//        pDoc->UnLock();
+//        if(g_bForceUpdate)
+//        {
+//            pWidget->update();
+//            g_bForceUpdate = false;
+//        }
+//        return;
+//    }
+//    qDebug() << "On Time :" << pDoc->GetCurTime();
+//    pWidget->m_swapChain.SwapChain();
 
-    RDRenderData* pSceneRD = pScene->GetRenderData(DEFAULT_RD);
-    pWidget->update(pSceneRD->GetDirty().translated(pt).toAlignedRect());
+ //   RDRenderData* pSceneRD = pScene->GetRenderData(DEFAULT_RD);
+//    pWidget->update(pSceneRD->GetDirty().translated(pt).toAlignedRect());
+    pWidget->update();
     pDoc->UnLock();
     //pWidget->update();
     if(dStartTime - oldTime > 20)
@@ -264,6 +264,7 @@ void RDRenderWidget::paintGL()
     if(!pRDManager->RenderScene(pt,m_validRt,pDoc->GetCurTime()))
     {
         oldTime = dStartTime;
+        pDoc->UnLock();
         return;
     }
     qDebug() << "On Time :" << pDoc->GetCurTime();
@@ -271,6 +272,7 @@ void RDRenderWidget::paintGL()
     if(dStartTime - oldTime > 20)
         qDebug() << dStartTime - oldTime;
     oldTime = dStartTime;
+    pDoc->UnLock();
 }
 
 void RDRenderWidget::keyPressEvent( QKeyEvent * event ) 

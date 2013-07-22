@@ -25,6 +25,7 @@
 #include "RDResourceManager.h"
 #include <QDebug>
 #include "RDStory.h"
+#include "RDLayer.h"
 
 // =====================================================================================
 class RDUndoRedo :public QUndoCommand
@@ -72,6 +73,11 @@ RDDocument::RDDocument(bool bCreateNewProj)
     {
         m_pProject = new RDProject(720,576,50);
         SetCurScene(0);
+        RDLayer* pLayer = new RDLayer(RD3DLayer,"");
+        pLayer->SetParent(GetCurScene());
+        GetCurScene()->AddChild(*pLayer);
+        PushTopNode(pLayer);
+
         CreateTempProjDir();
     }
 #ifdef _DEBUG
@@ -178,7 +184,7 @@ void RDDocument::SetCurScene(int nSceneIndex)
 void RDDocument::CreateTempProjDir()
 {
     m_strCachePath = QDir::homePath();
-    m_strCachePath += "/.ReadGoogleBook/cache/";
+    m_strCachePath += "/.Animation/cache/";
     m_strCachePath += m_DocUUID.toString();
     QString cmdStr("mkdir ");
     cmdStr += m_strCachePath;

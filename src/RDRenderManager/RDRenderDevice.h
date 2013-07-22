@@ -57,7 +57,7 @@ class RDVertexArray;
 class RDShader;
 class RDShaderProgram;
 
-typedef RDTexture* RDTexHandle ;
+//typedef RDTexture* RDTexHandle ;
 typedef RDVertexArray* RDVertexBufferHandle;
 #define InvalidHandle nullptr
 
@@ -68,15 +68,15 @@ public:
     static RDRenderDevice* GetRenderManager();
 public:
     //create function
-    RDTexHandle CreateTexture(const QString& fileName);
-    RDTexHandle CreateTexture(int nWidth, int nHeight,const uint* buffer,  RDTexture_Type nType);
+    RDTexture* CreateTexture(const QString& fileName);
+    RDTexture* CreateTexture(int nWidth, int nHeight,const uint* buffer,  RDTexture_Type nType);
     RDShader* CreateShader(const QString &fileName, RDShaderType nType);
     RDShader* CreateShader(const QString& code,const QString& shaderName,RDShaderType nType);
     RDShaderProgram* CreateShaderProgram(RDShader *pVertexShader,  RDShader*pGeometryShader,  RDShader* pPixelShader);
     RDVertexBufferHandle     CreateVertexBuffer(const std::vector<RDVertexData> &arVertexData);
     //release function
     void    ReleaseVertexBuffer(RDVertexBufferHandle hVertexBuffer);
-    void    ReleaseTexture(RDTexHandle hTex);
+    void    ReleaseTexture(RDTexture* hTex);
     void    ReleaseShader(RDShader* hShader);
 
     //modify function
@@ -87,19 +87,19 @@ public:
     void    SetShaderParam(RDShaderProgram* pShader,const char* name,float3& value);
     void    SetShaderParam(RDShaderProgram* pShader,const char* name,float4& value);
     void    SetShaderParam(RDShaderProgram* pShader,const char* name,HMatrixQ4F& value);
-    void    SetShaderTexture(RDShaderProgram* pShader,const char* name,RDTexHandle tex);
-    void    SetShaderSample(RDTexHandle tex,RDSampleType nType);
+    void    SetShaderTexture(RDShaderProgram* pShader,const char* name,const RDTexture* tex);
+    void    SetShaderSample(RDTexture* tex,RDSampleType nType);
     void    Render(GLenum mode,GLint nStart,GLsizei count);
 
-    bool    SetRenderTarget(RDTexHandle target,RDTexHandle depth);
+    bool    SetRenderTarget(RDTexture* target,RDTexture* depth);
     void    SetViewPort(QRect& viewPort );
     void    SetScissor(QRect& scissor );
 
     //render info
-    int    GetTextureWidth(RDTexHandle hTex);
-    int    GetTextureHeight(RDTexHandle hTex);
+    int    GetTextureWidth(RDTexture* hTex);
+    int    GetTextureHeight(RDTexture*  hTex);
 public:
-    void DumpTexture(RDTexHandle pTex);
+    void DumpTexture(RDTexture*  pTex);
     //info
 public:
     GLint GetMaxUseTexture()const{return m_nMaxUseTexure - 1;}
@@ -113,7 +113,7 @@ protected:
 
 //    std::list<RDTexHandle> m_vecTex;
     std::list<RDVertexBufferHandle> m_vecVertexBuffer;
-    std::map<QString,RDTexHandle> m_vecFileTex;
+    std::map<QString,RDTexture* > m_vecFileTex;
     std::map<QString,RDShader*> m_vecShader;
     std::map<QString,RDShaderProgram*> m_vecShaderProgram;
     GLuint                 m_hFrameBuffer;

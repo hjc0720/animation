@@ -40,6 +40,9 @@ class RDStory;
 
 class RDRenderPrivateData
 {
+public:
+    RDRenderPrivateData(){};
+    virtual ~RDRenderPrivateData(){};
 
 };
 
@@ -55,7 +58,7 @@ public:
     void            SetRenderChangeLevel(RDRenderChangeLevel nLevel);
     void            ResetRenderChangeLevel(){m_nRenderChangeLevel = RDRender_NoChange;}
 
-    void            SetPrivateData(RDRenderPrivateData* pPrivateData){m_pPrivateData = pPrivateData;}
+    void            SetPrivateData(RDRenderPrivateData* pPrivateData){SAFE_DELETE(m_pPrivateData);m_pPrivateData = pPrivateData;}
     RDRenderPrivateData*        GetPrivateData(){return m_pPrivateData ;}
     const RDRenderPrivateData*  GetPrivateData()const{return m_pPrivateData ;}
 

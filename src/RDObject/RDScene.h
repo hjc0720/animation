@@ -75,7 +75,7 @@ protected:
     void BlendChild(const QString& pRDName);
     RDRenderData*  CreateRenderData(const QString& pName);
 protected:
-    int   m_nSceneVersion;
+    //int   m_nSceneVersion;
     RDSceneData m_BackData;
     std::map<QUuid,const RDNode*> m_NodeMap;
     std::list<RDStory*> m_StoryList;

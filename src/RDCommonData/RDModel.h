@@ -32,7 +32,7 @@ public:
     ~RDModel();
     
     void UpdateRenderData();
-    void DrawSubset(int nSubset);
+    void DrawSubset(size_t nSubset)const;
     void AddSubModel(int nCount);
     void AddSubModel(int nStart,int nCount);
     size_t GetSubsetCount()const{return m_arSubModel.size();};
