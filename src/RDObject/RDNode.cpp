@@ -102,6 +102,13 @@ void RDNode::Render(const RDTime& nTime,const QString& pRDName)
         m_pObj->Render(nTime,RenderData);
     RenderData.ResetRenderChangeLevel();
 }
+
+void RDNode::CalNodeMatrix(RDRenderData& RenderData)
+{
+    const float3& vPos = RenderData.GetPos();
+    RenderData.SetItemMatrix(HMatrixQ4F(vPos.x(),vPos.y(),vPos.z(),HMatrixQ4F_POS));
+}
+
 void RDNode::CalFrame(const RDTime& nTime,const QString& pRDName) 
 {
     QMutexLocker locker(&m_lock);
@@ -116,6 +123,9 @@ void RDNode::CalFrame(const RDTime& nTime,const QString& pRDName)
     qDebug() << "cal frame: section time:"<<nSectionTime;
     if(CalSpaceVector(nSectionTime,RenderData))
         SetChangeLevel(RDRender_TransChange);
+
+    if(RenderData.GetChangeLevel() >= RDRender_TransChange)
+
     for(size_t i = 0; i < GetChildCount(); i++)
     {
         GetChild(i)->CalFrame(nTime,pRDName);

@@ -22,6 +22,7 @@
 #include "mac_define.h"
 #include <QRectF>
 #include "HVector4f.h"
+#include "HMatrixQ4F.h"
 
 enum RDRenderChangeLevel
 {
@@ -97,6 +98,11 @@ public:
     //space info
     const float3&    GetPos()const { return m_vPos; }
     void             SetPos(const float3& vPos){m_vPos = vPos;}
+
+    const HMatrixQ4F& GetItemMatrix()const{return m_vItemMatrix;}
+    const HMatrixQ4F& GetGlobalMatrix()const{return m_vGlobalMatrix;}
+    void             SetItemMatrix(const HMatrixQ4F& matrix){m_vItemMatrix = matrix;}
+    void            SetGlobalMatrix(const HMatrixQ4F& matrix){m_vGlobalMatrix = matrix;}
 protected:
     void Lock()const;
     void UnLock()const;
@@ -119,6 +125,8 @@ protected:
 
     float3              m_vPos;
     float3              m_vScale;
+    HMatrixQ4F          m_vItemMatrix;
+    HMatrixQ4F          m_vGlobalMatrix;
 };
 
 inline QRectF RDRenderData::GetScaleBound()const

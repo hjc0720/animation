@@ -140,10 +140,10 @@ void RDScene::Render(const RDTime& nTime,const QString& pRDName)
     //BlendChild(pRDName);
 }
 
-void RDScene::RenderImage(RDSceneRenderData& pSceneData,unsigned long )
+void RDScene::RenderImage(RDSceneRenderData& /*pSceneData*/,unsigned long )
 {
-    RDScenePrivateData* pData = (RDScenePrivateData*)pSceneData.GetPrivateData();
-    RDImageResource* pResource = dynamic_cast<RDImageResource*>(pData->GetResource());
+//    RDScenePrivateData* pData = (RDScenePrivateData*)pSceneData.GetPrivateData();
+ //   RDImageResource* pResource = dynamic_cast<RDImageResource*>(pData->GetResource());
     //Render Image;
     //const RDTexture* pImage = pResource->GetBuffer();
     //QRectF dst(0,0,pSceneData.GetNowWidth(),pSceneData.GetNowHeight());

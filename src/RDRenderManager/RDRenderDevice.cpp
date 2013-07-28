@@ -238,7 +238,7 @@ void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name, 
     glUniform4f(hLocation,value.x(),value.y(),value.z(),value.w());
 }
 
-void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name, HMatrixQ4F &value)
+void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name,const HMatrixQ4F &value)
 {
     QMutexLocker locker(&m_lock);
     GLint hLocation = pShader->GetUniformLocation(name);
@@ -300,7 +300,8 @@ RDRenderDevice::RDRenderDevice(const QGLContext* renderContex)
     glGetIntegerv(GL_MINOR_VERSION, &minor);
     qDebug() << "OpenGL version "<<major<<"."<<minor;
 
-    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,&m_nMaxUseTexure);
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,&m_nMaxUseTexture);
+    m_nMaxUseTexture = 32;
 
     m_pCurState = new RDRenderState;
     m_pTempState = new RDRenderState;

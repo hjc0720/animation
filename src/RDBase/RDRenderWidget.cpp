@@ -233,7 +233,7 @@ void RDRenderWidget::paintGL()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_bResize = false;
-    glLoadIdentity();
+    //glLoadIdentity();
 
     static RenderManager* pRDManager = 0;
     if(!pRDManager)

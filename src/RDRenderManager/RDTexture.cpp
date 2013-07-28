@@ -70,7 +70,6 @@ RDTexture::RDTexture(const QString &fileName)
     {
         qDebug() << "create mip map error";
     }
-
 }
 
 void RDTexture::Dump(const QString &fileName)
@@ -90,7 +89,10 @@ void RDTexture::Dump(const QString &fileName)
 
 void RDTexture::SetTexture(int loc)const
 {
-    glUniform1i(loc,m_nTexture);
+    glActiveTexture(GL_TEXTURE0 + loc);
+    GLenum target = GetTextureTarget(m_nTextureType);
+    glBindTexture(target , m_nTexture);
+    glUniform1i(loc,loc);
 }
 
 void RDTexture::SetTextureSample(RDSampleType nType)
@@ -124,7 +126,7 @@ bool RDTexture::SetDepth()
     return true;
 }
 
-GLenum RDTexture::GetTextureTarget(RDTexture_Type nType)
+GLenum RDTexture::GetTextureTarget(RDTexture_Type nType)const
 {
     switch(nType)
     {

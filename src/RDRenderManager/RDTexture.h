@@ -22,7 +22,7 @@ public:
     int     GetHeight()const{return m_nHeight;}
 protected:
     ~RDTexture();
-    GLenum GetTextureTarget(RDTexture_Type nType);
+    GLenum GetTextureTarget(RDTexture_Type nType)const;
     bool IsDepth();
     bool IsTarget();
 protected:

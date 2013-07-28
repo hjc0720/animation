@@ -48,7 +48,7 @@ public:
     bool IsIdentity();
     bool Inverse_Test();
     const float* GetLine(int i)const{return m[i];}
-    const float* data(){return m[0];}
+    const float* data()const{return m[0];}
 
 public:
     //运算符

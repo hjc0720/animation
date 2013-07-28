@@ -98,6 +98,7 @@ protected:
     virtual RDRenderData*  CreateRenderData(const QString& pName);
     RDScene*        GetSceneNode();
     bool            CalSpaceVector(const RDTime& nFrame,RDRenderData& RenderData);
+    void            CalNodeMatrix(RDRenderData& RenderData);
 protected:
     float3      m_vPos;
     float3      m_vScale;

@@ -11,6 +11,10 @@ uniform sampler2D DiffuseTex;
 void main()
 {
     vColor = texture(DiffuseTex,oUv);
+    //vColor.r = 1;
+    //vColor.g = 0;
+    //vColor.b = 1;
+    //vColor.a = 1;
    // vec4 fDiffContrib = 1.f,fSpecContrib = 0.f;
    // vec4 fAmbient = 0.f;
    // vec3 vNorm = oNormal, ViewDir = normalize( EyeWorld - oWorldPos);

@@ -86,7 +86,7 @@ public:
     void    SetShaderParam(RDShaderProgram* pShader,const char* name,float value);
     void    SetShaderParam(RDShaderProgram* pShader,const char* name,float3& value);
     void    SetShaderParam(RDShaderProgram* pShader,const char* name,float4& value);
-    void    SetShaderParam(RDShaderProgram* pShader,const char* name,HMatrixQ4F& value);
+    void    SetShaderParam(RDShaderProgram* pShader,const char* name,const HMatrixQ4F& value);
     void    SetShaderTexture(RDShaderProgram* pShader,const char* name,const RDTexture* tex);
     void    SetShaderSample(RDTexture* tex,RDSampleType nType);
     void    Render(GLenum mode,GLint nStart,GLsizei count);
@@ -102,8 +102,8 @@ public:
     void DumpTexture(RDTexture*  pTex);
     //info
 public:
-    GLint GetMaxUseTexture()const{return m_nMaxUseTexure - 1;}
-    GLint GetCreateTextureIndex()const{return m_nMaxUseTexure - 1;}
+    GLint GetMaxUseTexture()const{return m_nMaxUseTexture - 1;}
+    GLint GetCreateTextureIndex()const{return m_nMaxUseTexture - 1;}
 protected:
     RDRenderDevice(const QGLContext *renderContex);
     RDShader* GetExistShader(const QString& shaderName);
@@ -122,7 +122,7 @@ protected:
 
     mutable QMutex m_lock;
     //info
-    GLint           m_nMaxUseTexure;
+    GLint           m_nMaxUseTexture;
 };
 
 #endif // RDRENDERMANAGER_H
