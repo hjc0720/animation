@@ -301,7 +301,7 @@ RDRenderDevice::RDRenderDevice(const QGLContext* renderContex)
     qDebug() << "OpenGL version "<<major<<"."<<minor;
 
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,&m_nMaxUseTexture);
-    m_nMaxUseTexture = 32;
+//    m_nMaxUseTexture = 32;
 
     m_pCurState = new RDRenderState;
     m_pTempState = new RDRenderState;

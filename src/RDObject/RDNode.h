@@ -30,6 +30,7 @@ class RDObject;
 class RDRenderData;
 class RDFileDataStream;
 class RDSection;
+class RDLayer;
 
 typedef std::vector<RDSection*>::iterator RDSectionList;
 class RDScene;
@@ -90,6 +91,8 @@ public:
 
     size_t GetSectionCount(const QUuid& idStory)const;
     RDSection* GetSection(const QUuid& idStory,size_t nIndex);
+
+    virtual const HMatrixQ4F&     GetViewProjMat(const QString& RDName);
 protected:
     void            MoveSection(const RDTime& nSteps, RDSectionList pStart,RDSectionList pEnd );
     void            UpdateSection(const RDTime& nFrame /*global frame*/,RDRenderData& pRD);
@@ -97,6 +100,7 @@ protected:
     RDSection*      GetSection(const QUuid& nStoryId,const RDTime& nStoryFrame);
     virtual RDRenderData*  CreateRenderData(const QString& pName);
     RDScene*        GetSceneNode();
+    RDLayer*        GetLayerNode();
     bool            CalSpaceVector(const RDTime& nFrame,RDRenderData& RenderData);
     void            CalNodeMatrix(RDRenderData& RenderData);
 protected:
@@ -107,7 +111,6 @@ protected:
     std::vector<RDNode*> m_vecChildObj;
     std::map<QUuid,std::vector<RDSection*>> m_vecSetctionListMap;
     std::map<QString,RDRenderData*> m_vecRenderData;
-    //std::list<RDParagraph*> m_vecParagraph;
 
     RDNode*     m_pParent;
     RDObject*   m_pObj;

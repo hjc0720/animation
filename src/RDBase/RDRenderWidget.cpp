@@ -45,7 +45,6 @@ void RDRenderWidget::setVisible(bool visible)
 
 void RDRenderWidget::resizeGL(int w, int h)
 {
-
     m_document.Lock();
     g_bForceUpdate = true;
     m_fScale = min(w / (float)m_nProjWidth,h / (float)m_nProjHeight);
@@ -61,10 +60,8 @@ void RDRenderWidget::resizeGL(int w, int h)
     m_document.UnLock();
     m_document.SetScale(m_fScale);
 
-    int side = w;
-    glViewport((w- side) / 2, (h- side) / 2, side, side);
+    glViewport(m_nXOffset, m_nYOffset, GetRealPorjWidth(),GetRealPorjHeight());
     m_bResize = true;
-
 }
 
 void    RDRenderWidget::OnTime(void* param)
@@ -148,23 +145,6 @@ QSize RDRenderWidget::hintSize()const
 {
     return QSize(m_nProjWidth,m_nProjHeight);
 }
-
-//void RDRenderWidget::paintEvent(QPaintEvent* event)
-//{
-//    static double startTime = GetTime();
-//    double nowTime = GetTime();
-//    qDebug() << nowTime - startTime;
-//    startTime = nowTime;
-//    QPainter painter(this);
-//    m_swapChain.Lock();
-//    RDBuffer* pBuffer = m_swapChain.GetFrontBuffer();
-//    QImage* pPixmap = pBuffer->GetBuffer();
-//    QRectF target(event->rect());
-//    qDebug() << "target" << target;
-//    painter.drawImage(target,*pPixmap,target);
-//    m_swapChain.UnLock();
-//}
-
 
 bool RDRenderWidget::event(QEvent* e)
 {

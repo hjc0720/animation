@@ -97,25 +97,25 @@ RDModel* RDModel::CreateModel(RDModelType nType)
 RDModel* RDModel::CreateSegmentModel()
 {
     RDModel* pModel = new RDModel(6);
-    pModel->m_vPos[0].Set(-1,1,0.5,1);
+    pModel->m_vPos[0].Set(-1,1,0,1);
     pModel->m_vUV[0].u = 0;
     pModel->m_vUV[0].v = 0;
-    pModel->m_vPos[1].Set(1,1,0.5,1);
+    pModel->m_vPos[1].Set(1,1,0,1);
     pModel->m_vUV[1].u = 1;
     pModel->m_vUV[1].v = 0;
-    pModel->m_vPos[2].Set(1,-1,0.5,1);
+    pModel->m_vPos[2].Set(1,-1,0,1);
     pModel->m_vUV[2].u = 1;
     pModel->m_vUV[2].v = 1;
-    pModel->m_vPos[3].Set(-1,1,0.5,1);
+    pModel->m_vPos[3].Set(-1,1,0,1);
     pModel->m_vUV[3].u = 0;
     pModel->m_vUV[3].v = 0;
-    pModel->m_vPos[4].Set(1,-1,0.5,1);
+    pModel->m_vPos[4].Set(1,-1,0,1);
     pModel->m_vUV[4].u = 1;
     pModel->m_vUV[4].v = 1;
-    pModel->m_vPos[5].Set(-1,-1,0.5,1);
+    pModel->m_vPos[5].Set(-1,-1,0,1);
     pModel->m_vUV[5].u = 0;
     pModel->m_vUV[5].v = 1;
-    float4 vNormal(0,0,-1,0);
+    float4 vNormal(0,0,1,0);
     for(int i = 0; i < pModel->m_nCount; i++)
     {
         pModel->m_vNormal[i] = vNormal;

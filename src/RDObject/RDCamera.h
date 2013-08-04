@@ -34,6 +34,7 @@ public:
     void    UpdateProject(const QString& pRDName,QRectF& rt,float fZNear,float fFar);
 
     const HMatrixQ4F&    GetViewMatrix(const QString& pRDName);
+    virtual const HMatrixQ4F&    GetViewProjMat(const QString& pRDName);
 protected:
     virtual RDRenderData*  CreateRenderData(const QString& pName);
 protected:

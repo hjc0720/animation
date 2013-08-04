@@ -41,7 +41,7 @@ RDLayer::RDLayer(RDLayerType nType,const QString& strName)
      ,m_nType(nType)
 {
      m_strName = strName;
-     RDCamera* pCamera = new RDCamera("camera",1080,PerspectiveProject);
+     RDCamera* pCamera = new RDCamera("camera",576,PerspectiveProject);
      pCamera->SetParent(this);
      m_vecCameraObj.push_back(pCamera);
 }
@@ -112,12 +112,12 @@ float2      RDLayer::CalObjMinMax(const QString& pRDName)
     vNearFar.y = FLT_MIN;
 
     size_t nCount = GetChildCount();
-    for(size_t i = 0;i < nCount;i++)
+    for(size_t i = GetCameraCount();i < nCount;i++)
     {
         nodeSt.push(GetChild(i));
     }
     RDCamera* pCamera = GetCurCamera(*pLayerRD);
-    do
+    while(!nodeSt.empty())
     {
         RDNode* pNode = nodeSt.top();
         RDRenderData* pRD = pNode->GetRenderData(pRDName);
@@ -128,7 +128,11 @@ float2      RDLayer::CalObjMinMax(const QString& pRDName)
         }
         RDCalBoxNearFar(vNearFar.x,vNearFar.y,pRD->GetMin(),pRD->GetMax(),pCamera->GetViewMatrix(pRDName));
         nodeSt.pop();
-    }while(!nodeSt.empty());
+    }
+    vNearFar.x = max(0.001,vNearFar.x);
+    vNearFar.y = min(vNearFar.x * 10e7,vNearFar.y);
+    if(vNearFar.y <= vNearFar.x)
+        vNearFar.y = vNearFar.x + 0.001;
     return vNearFar;
 }
 

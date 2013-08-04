@@ -100,8 +100,10 @@ public:
     void             SetPos(const float3& vPos){m_vPos = vPos;}
 
     const HMatrixQ4F& GetItemMatrix()const{return m_vItemMatrix;}
+    const HMatrixQ4F& GetMVPMatrix()const{return m_vMVPMatrix;}
     const HMatrixQ4F& GetGlobalMatrix()const{return m_vGlobalMatrix;}
     void             SetItemMatrix(const HMatrixQ4F& matrix){m_vItemMatrix = matrix;}
+    void            SetMVPMatrix(const HMatrixQ4F& matrix){m_vMVPMatrix = matrix;}
     void            SetGlobalMatrix(const HMatrixQ4F& matrix){m_vGlobalMatrix = matrix;}
 protected:
     void Lock()const;
@@ -126,6 +128,7 @@ protected:
     float3              m_vPos;
     float3              m_vScale;
     HMatrixQ4F          m_vItemMatrix;
+    HMatrixQ4F          m_vMVPMatrix;
     HMatrixQ4F          m_vGlobalMatrix;
 };
 

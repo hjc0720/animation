@@ -24,6 +24,8 @@
 #include <QDebug>
 #include "RDScene.h"
 #include "RDStory.h"
+#include "RDLayer.h"
+#include "RDCamera.h"
 
 using namespace std;
 
@@ -107,6 +109,7 @@ void RDNode::CalNodeMatrix(RDRenderData& RenderData)
 {
     const float3& vPos = RenderData.GetPos();
     RenderData.SetItemMatrix(HMatrixQ4F(vPos.x(),vPos.y(),vPos.z(),HMatrixQ4F_POS));
+    RenderData.SetGlobalMatrix(RenderData.GetItemMatrix());
 }
 
 void RDNode::CalFrame(const RDTime& nTime,const QString& pRDName) 
@@ -125,6 +128,8 @@ void RDNode::CalFrame(const RDTime& nTime,const QString& pRDName)
         SetChangeLevel(RDRender_TransChange);
 
     if(RenderData.GetChangeLevel() >= RDRender_TransChange)
+        CalNodeMatrix(RenderData);
+    RenderData.SetMVPMatrix(RenderData.GetGlobalMatrix() * GetViewProjMat(pRDName));
 
     for(size_t i = 0; i < GetChildCount(); i++)
     {
@@ -453,9 +458,25 @@ size_t RDNode::GetSectionCount(const QUuid& idStory)const
     else
         return 0;
 }
+
 RDSection* RDNode::GetSection(const QUuid& idStory,size_t nIndex)
 {
     return m_vecSetctionListMap[idStory].at(nIndex);
+}
+
+const HMatrixQ4F&     RDNode::GetViewProjMat(const QString& RDName)
+{
+    RDLayer* pLayer = GetLayerNode();
+    RDCamera* pCamera = pLayer->GetCurCamera(RDName);
+    return pCamera->GetViewProjMat(RDName);
+}
+
+RDLayer*        RDNode::GetLayerNode()
+{
+    RDLayer* pLayer = dynamic_cast<RDLayer*>(this);
+    if(!pLayer && m_pParent)
+        return m_pParent->GetLayerNode();
+    return pLayer;
 }
 //================================================================================
 RDFileDataStream& operator << (RDFileDataStream& buffer,const RDNode& node)

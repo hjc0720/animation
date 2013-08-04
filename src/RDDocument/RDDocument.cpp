@@ -26,6 +26,7 @@
 #include <QDebug>
 #include "RDStory.h"
 #include "RDLayer.h"
+#include "RDCamera.h"
 
 // =====================================================================================
 class RDUndoRedo :public QUndoCommand
@@ -76,6 +77,15 @@ RDDocument::RDDocument(bool bCreateNewProj)
         RDLayer* pLayer = new RDLayer(RD3DLayer,"");
         pLayer->SetParent(GetCurScene());
         GetCurScene()->AddChild(*pLayer);
+
+        RDRenderData* pRenderData = GetCurScene()->GetRenderData(DEFAULT_RD);
+        auto pStory = pRenderData->GetCurStory();
+        pLayer->AddSection(m_nCurFrame - pStory->GetStartTime(false),1000000000,pStory->GetStoryId());
+        for(size_t i = 0; i < pLayer->GetCameraCount(); i++)
+        {
+            pLayer->GetCamera(i)->AddSection(m_nCurFrame - pStory->GetStartTime(false),1000000000,pStory->GetStoryId());
+        }
+
         PushTopNode(pLayer);
 
         CreateTempProjDir();

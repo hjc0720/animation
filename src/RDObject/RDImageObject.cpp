@@ -46,6 +46,7 @@ public:
     RDShader*           m_pVertexShader;    
     RDShader*           m_pPixelShader;    
     RDShaderProgram*    m_pShaderProgram;
+    HMatrixQ4F          m_vRenderMatrix;
 };
 
 RDImageObject::RDImageObject()
@@ -67,7 +68,7 @@ RDImageObject::RDImageObject(const RDMd5& image)
     RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
     pResManager->AddResource(m_Image);
     m_nWidth = 0;
-    m_nWidth = 0;
+    m_nHeight = 0;
 }
 
 
@@ -86,6 +87,11 @@ void RDImageObject::Render(unsigned long ,RDRenderData& RenderData)
     const RDModel* pModel = pPrivateData->m_pSegModel->GetModel();
 
     pDevice->SetShaderTexture(pPrivateData->m_pShaderProgram,"DiffuseTex",pPrivateData->m_pImage);
+    
+    HMatrixQ4F WVP = pPrivateData->m_vRenderMatrix * RenderData.GetMVPMatrix();
+    float4 vTemp(-1,1,0,1);
+    vTemp *= WVP;
+    vTemp.DividW();
     pDevice->SetShaderParam(pPrivateData->m_pShaderProgram,"MVP",HMatrixQ4F());
 
     for(size_t i = 0; i <  pModel->GetSubsetCount(); i++)
@@ -93,8 +99,13 @@ void RDImageObject::Render(unsigned long ,RDRenderData& RenderData)
     qDebug() << "image render";
     return;
 }
-void RDImageObject::CalFrame(const RDTime& ,RDRenderData& ) 
+void RDImageObject::CalFrame(const RDTime& ,RDRenderData& RenderData) 
 {
+    RDImagePrivateData* pPrivateData = dynamic_cast<RDImagePrivateData*>( RenderData.GetPrivateData());
+    if(RenderData.GetChangeLevel() >= RDRender_TransChange)
+    {
+        pPrivateData->m_vRenderMatrix = HMatrixQ4F(m_nWidth / 2,m_nHeight / 2,1,HMatrixQ4F_Scale);
+    }
 }
 
 bool RDImageObject::HitTest(const float3& vScenePt,const RDNode& pNode,const QString& RDName) const
@@ -135,11 +146,15 @@ const RDMd5& RDImageObject::GetObjMd5()const
     static RDMd5 ImageMd5("RDImageObject", -1);
     return ImageMd5;
 }
+
 void RDImageObject::UpdateBound(const RDTime& ,RDRenderData& RenderData) 
 {
     float3 bufferPos;
     RDSceneToBuffer(bufferPos,RenderData.GetPos() ,-(float)RenderData.GetSceneWidth()/ 2,RenderData.GetSceneHeight()/ 2);
     RenderData.SetBound( QRectF(bufferPos.x(),bufferPos.y(),m_nWidth,m_nHeight));
+
+    RenderData.SetMin(float3(-m_nWidth / 2,-m_nHeight / 2,0));
+    RenderData.SetMax(float3(m_nWidth / 2,m_nHeight / 2,0));
 }
 
 void RDImageObject::CreateRenderData(RDRenderData& pRD)

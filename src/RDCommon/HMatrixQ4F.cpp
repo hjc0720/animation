@@ -43,10 +43,10 @@ const HMatrixQ4F& HMatrixQ4F::CreateViewMat(HMatrixQ4F& mat,const float3& vEyePo
 
     __m128 one = _mm_set_ps1(1);
     __m128 vZ = _mm_sub_ps(eye,look);
-    vZ = _mm_mul_ps(vZ,_mm_div_ps(one,_mm_dp_ps(vZ,vZ,0xff)));
+    vZ = _mm_mul_ps(vZ,_mm_div_ps(one,_mm_sqrt_ps(_mm_dp_ps(vZ,vZ,0xff))));
 
     __m128 vX = CrossProduct(up,vZ);
-    vX = _mm_mul_ps(vX,_mm_div_ps(one,_mm_dp_ps(vX,vX,0xff)));
+    vX = _mm_mul_ps(vX,_mm_div_ps(one,_mm_sqrt_ps(_mm_dp_ps(vX,vX,0xff))));
 
     __m128 vY = CrossProduct(vZ,vX);
 
@@ -220,7 +220,7 @@ void HMatrixQ4F::ScaleMat(float fX,float fY,float fZ)
     __m128 fm;
     fm = _mm_setzero_ps();
                
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < 4; i++)
     {
         _mm_store_ps(m[i],fm);
     }

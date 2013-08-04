@@ -21,8 +21,7 @@
 const int g_nObjVersion = 0;
 
 RDObject::RDObject(RDObjectType nType)
-    :m_nObjectVersion(g_nObjVersion)
-     ,m_ObjID(QUuid::createUuid())
+     :m_ObjID(QUuid::createUuid())
 {
 	m_nType = nType;
 }
@@ -38,12 +37,12 @@ void RDObject::UnLock()const
 
 void RDObject::Save(RDFileDataStream& buffer)
 {
-    buffer << m_nObjectVersion;
+    buffer << g_nObjVersion;
     buffer << m_ObjID;
 }
 void RDObject::Load(RDFileDataStream& buffer)
 {
-    buffer >> m_nObjectVersion;
+    int nObjVersion = g_nObjVersion;
+    buffer >> nObjVersion;
     buffer >> m_ObjID;
-    m_nObjectVersion = g_nObjVersion;
 }

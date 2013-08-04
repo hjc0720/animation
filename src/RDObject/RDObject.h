@@ -61,7 +61,6 @@ public:
     virtual bool HitTest(const float3& vScenePt,const RDNode& pNode,const QString& RDName)const = 0;
 
 protected:
-    int m_nObjectVersion;
     QUuid  m_ObjID;
     RDNode* m_pParent;
 private:
