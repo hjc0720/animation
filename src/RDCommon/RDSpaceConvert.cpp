@@ -16,6 +16,7 @@
 
 #include "RDSpaceConvert.h"
 #include "HVector4f.h"
+#include "HVector3f.h"
 #include "HMatrixQ4F.h"
 #include <cfloat>
 #include <algorithm>
@@ -33,15 +34,15 @@ void RDBufferToScene(float3& pOut,const float3& pIn,float fBufferLeft,float fBuf
     pOut.SetY(-pOut.y());
 }
 
-void RDCalBoxNearFar(float& fNear,float& fFar,const float3& vMin,const float3& vMax,const HMatrixQ4F& WorldView)
+void RDCalBoxMinMax(float& fMin,float& fMax,const float3& vMin,const float3& vMax,const HMatrixQ4F& WorldView)
 {
     float3 vBox[8];
     FillBox(vBox,vMin,vMax);
     for(int i = 0; i < 8; i++)
     {
         float fZValue = (vBox[i] * WorldView).z();
-        fNear = std::min(fNear,fZValue);
-        fFar = std::max(fFar,fZValue);
+        fMin = std::min(fMin,fZValue);
+        fMax = std::max(fMax,fZValue);
     }
 }
 

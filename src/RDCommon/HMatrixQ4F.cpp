@@ -20,6 +20,7 @@
 #include <cmath>
 #include "HMath.h"
 #include "HVector4f.h"
+#include "HVector3f.h"
 //#include <iostream>
 //using namespace std;
 
@@ -57,8 +58,10 @@ const HMatrixQ4F& HMatrixQ4F::CreateViewMat(HMatrixQ4F& mat,const float3& vEyePo
     __m128 dp1 = _mm_dp_ps(vX,eye,0x71);
     __m128 dp2 = _mm_dp_ps(vY,eye,0x72);
     __m128 dp3 = _mm_dp_ps(vZ,eye,0x74);
-    dp1 = _mm_add_ps(dp1,dp2);
-    dp1 = _mm_add_ps(dp1,dp3);
+    __m128 zero = _mm_setzero_ps();
+    dp1 = _mm_sub_ps(zero,dp1);
+    dp1 = _mm_sub_ps(dp1,dp2);
+    dp1 = _mm_sub_ps(dp1,dp3);
     _mm_store_ps(mat.m[3],dp1);
     mat.m[3][3] = 1;
 
@@ -69,23 +72,23 @@ const HMatrixQ4F& HMatrixQ4F::CreateProjectMat(HMatrixQ4F& mat,float l,float r,f
 {
     float r_l = 1 / (r - l);
     float t_b = 1 / (t - b);
-    float z = zf / (zn - zf);
-    mat.m[2][0] = (l + r) / (r_l);
-    mat.m[2][1] = (t + b) / (t_b);
-    mat.m[2][2] = z;
+    float z = 1 / (zn - zf);
+    mat.m[2][0] = (l + r) * (r_l);
+    mat.m[2][1] = (t + b) * (t_b);
+    mat.m[2][2] = (zn +zf) * z;
     mat.m[2][3] = -1;
     mat.m[3][3] = 0;
 
-    __m128 m1 = _mm_set_ps(z,z,2 * t_b,2 * r_l);
+    __m128 m1 = _mm_set_ps(z,2 * zf * z,2 * t_b,2 * r_l);
     __m128 m2 = _mm_set_ps1(zn);
     m1 = _mm_mul_ps(m1,m2);
 
     _mm_store_ss(&mat.m[0][0],m1);
     
-    _mm_srli_si128((__m128i)m1,4);
+    m1 = (__m128)_mm_srli_si128((__m128i)m1,4);
     _mm_store_ss(&mat.m[1][1],m1);
     
-    _mm_srli_si128((__m128i)m1,4);
+    m1 = (__m128)_mm_srli_si128((__m128i)m1,4);
     _mm_store_ss(&mat.m[3][2],m1);
 
     return mat;

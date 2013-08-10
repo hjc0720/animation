@@ -41,7 +41,7 @@ RDLayer::RDLayer(RDLayerType nType,const QString& strName)
      ,m_nType(nType)
 {
      m_strName = strName;
-     RDCamera* pCamera = new RDCamera("camera",576,PerspectiveProject);
+     RDCamera* pCamera = new RDCamera("camera",1080,PerspectiveProject);
      pCamera->SetParent(this);
      m_vecCameraObj.push_back(pCamera);
 }
@@ -105,11 +105,11 @@ float2      RDLayer::CalObjMinMax(const QString& pRDName)
 {
     std::stack<RDNode*> nodeSt;
 
-    float3 vMin(FLT_MAX,FLT_MAX,FLT_MAX),vMax(FLT_MIN,FLT_MIN,FLT_MIN);
+    float3 vMin(FLT_MAX,FLT_MAX,FLT_MAX),vMax(-FLT_MAX,-FLT_MAX,-FLT_MAX);
     RDLayerRenderData* pLayerRD = dynamic_cast<RDLayerRenderData*>(GetRenderData(pRDName));
     float2 vNearFar;
-    vNearFar.x = FLT_MAX;
-    vNearFar.y = FLT_MIN;
+    vNearFar.x = -FLT_MAX;
+    vNearFar.y = FLT_MAX;
 
     size_t nCount = GetChildCount();
     for(size_t i = GetCameraCount();i < nCount;i++)
@@ -117,6 +117,12 @@ float2      RDLayer::CalObjMinMax(const QString& pRDName)
         nodeSt.push(GetChild(i));
     }
     RDCamera* pCamera = GetCurCamera(*pLayerRD);
+    if(nodeSt.empty())
+    {
+        vNearFar.x = -100;
+        vNearFar.y = -10000;
+        return vNearFar;
+    }
     while(!nodeSt.empty())
     {
         RDNode* pNode = nodeSt.top();
@@ -126,13 +132,13 @@ float2      RDLayer::CalObjMinMax(const QString& pRDName)
         {
             nodeSt.push(pNode->GetChild(i));
         }
-        RDCalBoxNearFar(vNearFar.x,vNearFar.y,pRD->GetMin(),pRD->GetMax(),pCamera->GetViewMatrix(pRDName));
+        RDCalBoxMinMax(vNearFar.y,vNearFar.x,pRD->GetMin(),pRD->GetMax(),pCamera->GetViewMatrix(pRDName));
         nodeSt.pop();
     }
-    vNearFar.x = max(0.001,vNearFar.x);
-    vNearFar.y = min(vNearFar.x * 10e7,vNearFar.y);
-    if(vNearFar.y <= vNearFar.x)
-        vNearFar.y = vNearFar.x + 0.001;
+    vNearFar.x = min(-0.001,vNearFar.x + 0.1);
+    vNearFar.y = max(vNearFar.x * 10e7,vNearFar.y - 0.1);
+    if(vNearFar.y >= vNearFar.x)
+        vNearFar.y = vNearFar.x + 100;
     return vNearFar;
 }
 
@@ -153,7 +159,7 @@ void RDLayer::CalFrame(const RDTime& nTime,const QString& pRDName)
     RDNode::CalFrame(nTime,pRDName);
     float2 vNearFar = CalObjMinMax(pRDName);
 
-    QRectF sceneRT(0,0,pLayerRD->GetSceneWidth(),pLayerRD->GetSceneHeight());
+    QRectF sceneRT(-(pLayerRD->GetSceneWidth() / 2.f),-(pLayerRD->GetSceneHeight() / 2.f),pLayerRD->GetSceneWidth(),pLayerRD->GetSceneHeight());
     pCamera->UpdateProject(pRDName,sceneRT,vNearFar.x,vNearFar.y);
     if(pCamera->GetRenderChangeLevel(pRDName) > RDRender_NoChange)
         pLayerRD->UnionDirty(sceneRT);

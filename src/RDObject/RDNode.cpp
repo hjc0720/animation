@@ -101,7 +101,10 @@ void RDNode::Render(const RDTime& nTime,const QString& pRDName)
     }
     RDRenderData& RenderData = *GetRenderData(pRDName);
     if(m_pObj)
+    {
+        RenderData.SetMVPMatrix(RenderData.GetGlobalMatrix() * GetViewProjMat(pRDName));
         m_pObj->Render(nTime,RenderData);
+    }
     RenderData.ResetRenderChangeLevel();
 }
 
@@ -129,7 +132,7 @@ void RDNode::CalFrame(const RDTime& nTime,const QString& pRDName)
 
     if(RenderData.GetChangeLevel() >= RDRender_TransChange)
         CalNodeMatrix(RenderData);
-    RenderData.SetMVPMatrix(RenderData.GetGlobalMatrix() * GetViewProjMat(pRDName));
+
 
     for(size_t i = 0; i < GetChildCount(); i++)
     {

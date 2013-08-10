@@ -20,7 +20,7 @@
 #include <QLineEdit>
 #include <QDoubleValidator>
 #include <QGroupBox>
-#include "HVector4f.h"
+#include "HVector3f.h"
 
 RDSpaceCell* RDSpaceCell::m_pCell = NULL;
 

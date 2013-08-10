@@ -72,7 +72,7 @@ RDDocument::RDDocument(bool bCreateNewProj)
 {
     if(bCreateNewProj)
     {
-        m_pProject = new RDProject(720,576,50);
+        m_pProject = new RDProject(1920,1080,50);
         SetCurScene(0);
         RDLayer* pLayer = new RDLayer(RD3DLayer,"");
         pLayer->SetParent(GetCurScene());

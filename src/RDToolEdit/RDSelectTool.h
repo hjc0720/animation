@@ -18,7 +18,7 @@
 #define  RD_SELECT_TOOL_INC
 
 #include "RDBaseTool.h"
-#include "HVector4f.h"
+#include "HVector3f.h"
 
 class RDSelectTool :public RDBaseTool
 {

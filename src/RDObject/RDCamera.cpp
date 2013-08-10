@@ -40,7 +40,7 @@ public:
         m_fZero = nHeight / m_vScale.x(); 
 
         QRectF rtNear(rt.topLeft() * m_fZNear / m_fZero,rt.bottomRight() * m_fZNear / m_fZero);
-        HMatrixQ4F::CreateProjectMat(bEditProj?m_matEditProj:m_matRenderProj,rtNear.left(),rtNear.right(),rtNear.top(),rtNear.bottom(),m_fZNear,m_fZFar);
+        HMatrixQ4F::CreateProjectMat(bEditProj?m_matEditProj:m_matRenderProj,rtNear.left(),rtNear.right(),-rtNear.top(),-rtNear.bottom(),m_fZNear,m_fZFar);
     }
     void UpdateMatrix()
     {
@@ -109,8 +109,8 @@ void RDCamera::CalFrame(const RDTime& nTime,const QString& pRDName)
 void    RDCamera::UpdateProject(const QString& pRDName,QRectF& rt,float fZNear,float fFar)
 {
     RDCameraRenderData* pRenderData = dynamic_cast<RDCameraRenderData*>( GetRenderData(pRDName));
-    pRenderData->m_fZNear = fZNear;
-    pRenderData->m_fZFar = fFar;
+    pRenderData->m_fZNear = fabs(fZNear);
+    pRenderData->m_fZFar = fabs(fFar);
     pRenderData->CalProjectMat(rt,false);
     QRectF sceneRT(0,0,pRenderData->GetSceneWidth(),pRenderData->GetSceneHeight());
     pRenderData->CalProjectMat(sceneRT,true);

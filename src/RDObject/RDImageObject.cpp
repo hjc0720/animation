@@ -92,7 +92,7 @@ void RDImageObject::Render(unsigned long ,RDRenderData& RenderData)
     float4 vTemp(-1,1,0,1);
     vTemp *= WVP;
     vTemp.DividW();
-    pDevice->SetShaderParam(pPrivateData->m_pShaderProgram,"MVP",HMatrixQ4F());
+    pDevice->SetShaderParam(pPrivateData->m_pShaderProgram,"MVP",WVP);
 
     for(size_t i = 0; i <  pModel->GetSubsetCount(); i++)
         pModel->DrawSubset(i);

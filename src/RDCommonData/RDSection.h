@@ -19,6 +19,7 @@
 #include "mac_define.h"
 #include "RDKeyList.h"
 #include "HVector4f.h"
+#include "HVector3f.h"
 
 enum RDSectionOutType
 {

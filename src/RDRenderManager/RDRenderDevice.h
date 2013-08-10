@@ -8,6 +8,7 @@
 #include <vector>
 #include <QMutex>
 #include <HVector4f.h>
+#include <HVector3f.h>
 #include <HMatrixQ4F.h>
 
 enum RDShaderType

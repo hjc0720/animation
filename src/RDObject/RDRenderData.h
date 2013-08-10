@@ -21,6 +21,7 @@
 #include <vector>
 #include "mac_define.h"
 #include <QRectF>
+#include "HVector3f.h"
 #include "HVector4f.h"
 #include "HMatrixQ4F.h"
 
