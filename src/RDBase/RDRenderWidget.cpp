@@ -61,7 +61,6 @@ void RDRenderWidget::resizeGL(int w, int h)
     m_document.SetScale(m_fScale);
 
     glViewport(m_nXOffset, m_nYOffset, GetRealPorjWidth(),GetRealPorjHeight());
-    m_bResize = true;
 }
 
 void    RDRenderWidget::OnTime(void* param)
@@ -124,8 +123,6 @@ RDRenderWidget::RDRenderWidget(int nWidth, int nHeight,const QGLFormat& format,Q
      ,m_nXOffset(0)
      ,m_nYOffset(0)
      ,m_fScale(1)
-    ,m_bResize(true)
-     //,m_pMainWin(pMain)
      ,m_document(true)
      ,m_RenderTimer(20,RDRenderWidget::OnTime,this)
      ,m_swapChain(nWidth,nHeight)
@@ -209,11 +206,7 @@ void RDRenderWidget::initializeGL()
 
 void RDRenderWidget::paintGL()
 {
-    if(m_bResize)
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_bResize = false;
-    //glLoadIdentity();
 
     static RenderManager* pRDManager = 0;
     if(!pRDManager)
@@ -226,17 +219,18 @@ void RDRenderWidget::paintGL()
     dStartTime = GetTime();
     pDoc->Lock();
     RDScene* pScene = pDoc->GetCurScene();
-    //if(pScene->GetMaxChangeLevel(DEFAULT_RD) == RDRender_NoChange && pDoc->GetCurTime() == pScene->GetRenderData(DEFAULT_RD)->GetTime())
-    //{
-        //oldTime = dStartTime;
-        //pDoc->UnLock();
+    if(pScene->GetMaxChangeLevel(DEFAULT_RD) == RDRender_NoChange && pDoc->GetCurTime() == pScene->GetRenderData(DEFAULT_RD)->GetTime())
+    {
+        oldTime = dStartTime;
+        pDoc->UnLock();
         //if(g_bForceUpdate)
         //{
             //pWidget->update();
             //g_bForceUpdate = false;
         //}
-        //return;
-    //}
+        return;
+    }
+    RDRenderDevice::GetRenderManager()->ClearScreen(float4(0,0,0,0),1,RDClearColor | RDClearDepth | RDClearStencil);
     pRDManager->SetRenderName(DEFAULT_RD);
     pRDManager->SetScene(pScene);
     pRDManager->SetDstBuffer(m_swapChain.GetBackBuffer());

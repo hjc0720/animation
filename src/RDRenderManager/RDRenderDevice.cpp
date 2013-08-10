@@ -284,6 +284,27 @@ void RDRenderDevice::SetScissor(QRect &scissor)
     glScissor(scissor.left(),scissor.right(),scissor.width(),scissor.height());
 }
 
+void RDRenderDevice::ClearScreen(float4 vColor, float vDepth, RDClearTypes types)
+{
+    GLbitfield field = 0;
+    if(types.testFlag(RDClearColor))
+    {
+        field |= GL_COLOR_BUFFER_BIT;
+        glClearColor(vColor.x(),vColor.y(),vColor.z(),vColor.w());
+    }
+    if(types.testFlag(RDClearDepth))
+    {
+        field |= GL_DEPTH_BUFFER_BIT;
+        glClearDepthf(vDepth);
+    }
+    if(types.testFlag(RDClearStencil))
+    {
+        field |= GL_STENCIL_BUFFER_BIT;
+        glClearStencil(0);
+    }
+    glClear(field);
+}
+
 void RDRenderDevice::DumpTexture(RDTexture*  pTex)
 {
     QMutexLocker locker(&m_lock);

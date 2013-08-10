@@ -57,8 +57,6 @@ protected:
     int     m_nXOffset;//after scene scale;
     int     m_nYOffset;//after scene scale;
     float   m_fScale;//real show size divide projSize;
-    bool    m_bResize;
-    //MainWindow* m_pMainWin;
     RDDocument m_document;
     RDTimer m_RenderTimer;
     RDSwapChain m_swapChain;

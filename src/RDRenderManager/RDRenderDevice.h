@@ -42,6 +42,16 @@ enum RDSampleType
     RDSample_Liner,
 };
 
+enum RDClearType
+{
+    RDClearColor = 1,
+    RDClearDepth = 2,
+    RDClearStencil = 4,
+};
+
+ Q_DECLARE_FLAGS(RDClearTypes, RDClearType)
+Q_DECLARE_OPERATORS_FOR_FLAGS(RDClearTypes)
+
 struct RDVertexData
 {
     RDVertexBufferType nType;
@@ -81,6 +91,7 @@ public:
     void    ReleaseShader(RDShader* hShader);
 
     //modify function
+    //void    ClearTexture(RDTexture* pTexture, );
     //render function
     void    SetVertexBuffer(RDVertexBufferHandle pVertex);
     void    SetShader(RDShaderProgram* pShader);
@@ -95,6 +106,7 @@ public:
     bool    SetRenderTarget(RDTexture* target,RDTexture* depth);
     void    SetViewPort(QRect& viewPort );
     void    SetScissor(QRect& scissor );
+    void    ClearScreen(float4 vColor,float vDepth,RDClearTypes types);
 
     //render info
     int    GetTextureWidth(RDTexture* hTex);

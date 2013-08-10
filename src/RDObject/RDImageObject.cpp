@@ -112,6 +112,8 @@ bool RDImageObject::HitTest(const float3& vScenePt,const RDNode& pNode,const QSt
 {
     float3 vBufferPt;
 	const RDRenderData* pRenderData = pNode.GetRenderData(RDName);
+    if(!pRenderData)
+        return false;
     RDSceneToBuffer(vBufferPt,vScenePt,pRenderData->GetPos().x(),pRenderData->GetPos().y());
     //qDebug() << "Scene  pt in image hit test" << vScenePt.GetX() << vScenePt.GetY() << vScenePt.GetZ();
     //qDebug() << "buffer  pt in image hit test" << vBufferPt.GetX() << vBufferPt.GetY() << vBufferPt.GetZ();
