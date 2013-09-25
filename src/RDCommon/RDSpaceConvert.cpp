@@ -58,3 +58,29 @@ void FillBox(float3 vBox[],const float3& vMin,const float3& vMax)
     vBox[2] = vMax;           
     vBox[3].Set(vMin.x(),vMax.y(),vMax.z());
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+float3 RDSpaceParam::Convert3DTo2D(const float3 &vPos)
+{
+    float4 vTmpPos(vPos);
+    vTmpPos *= *m_pWorldMat * *m_pViewMat * *m_pProjMat;
+    vTmpPos.DividW();
+
+    return float3((vTmpPos.x() + 1) * 0.5f * m_rtViewPort.width() + m_rtViewPort.left(),
+                  (1 - vTmpPos.y()) * 0.5f * m_rtViewPort.height() + m_rtViewPort.top(),
+                  0);
+}
+
+float3 RDSpaceParam::Convert2DTo3D(const float3 &vPoint)
+{
+    float4 vOut;
+    vOut.SetX((vPoint.x() -  m_rtViewPort.left())/m_rtViewPort.width()*2 - 1);
+    vOut.SetY(1 - (vPoint.x() - m_rtViewPort.top())/m_rtViewPort.height() * 2) ;
+    vOut.SetZ(-1);
+
+    HMatrixQ4F mat = *m_pWorldMat * *m_pViewMat * *m_pProjMat;
+    mat.Inverse();
+    vOut = vOut * mat;
+    vOut.DividW();
+    return vOut;
+}

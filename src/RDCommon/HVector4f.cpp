@@ -101,6 +101,7 @@ float4::float4()
 {
     __m128 fm = _mm_setzero_ps();
     _mm_store_ps(m_data,fm);
+    m_data[3] = 1;
 }
 float4::float4(const float4& src)
 {
