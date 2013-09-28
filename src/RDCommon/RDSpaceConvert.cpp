@@ -60,6 +60,16 @@ void FillBox(float3 vBox[],const float3& vMin,const float3& vMax)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
+struct RDRay
+{
+    float3 vStart;
+    float3 vDir;
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/// \brief RDSpaceParam::Convert3DTo2D
+/// \param vPos
+/// \return 2D pos
 float3 RDSpaceParam::Convert3DTo2D(const float3 &vPos)
 {
     float4 vTmpPos(vPos);
@@ -83,4 +93,51 @@ float3 RDSpaceParam::Convert2DTo3D(const float3 &vPoint)
     vOut = vOut * mat;
     vOut.DividW();
     return vOut;
+}
+
+bool RDSpaceParam::HitSphere(const float3 &vPt, float fRadius, float3 &vHitPt)
+{
+    RDRay ray;
+    GetRay(vPt,ray);
+    float fB = 2 * ray.vStart ^ ray.vDir;
+    float fC = ray.vStart.Mode2() - fRadius * fRadius;
+    float det = fB * fB - 4 * fC;
+    if(det < 0)
+        return false;
+    float t = (-fB - sqrtf(det)) * 0.5;
+    if(t > 0)
+    {
+        vHitPt = ray.vStart + ray.vDir * t;
+    }
+    else
+    {
+        t = (-fB + sqrtf(det)) * 0.5;
+        vHitPt = ray.vStart + ray.vDir * t;
+    }
+    return true;
+}
+
+void RDSpaceParam::GetRay(const float3 &vPt, RDRay &ray)
+{
+    float3 vNearPt = Convert2DTo3D(vPt);
+    ray.vStart = m_vEyePos;
+    ray.vDir = vNearPt - m_vEyePos;
+    ray.vDir.Normalize();
+}
+
+
+RDSpaceParam::RDSpaceParam()
+    :m_pWorldMat(nullptr)
+    ,m_pViewMat(nullptr)
+    ,m_pProjMat(nullptr)
+{
+}
+
+RDSpaceParam::RDSpaceParam(const HMatrixQ4F *pWorld, const HMatrixQ4F *pViewMat, const HMatrixQ4F *pProjMat, const QRectF &viewPort)
+    :m_pWorldMat(pWorld)
+    ,m_pViewMat(pViewMat)
+    ,m_pProjMat(pProjMat)
+    ,m_rtViewPort(viewPort)
+{
+    m_vEyePos = float3::GetZero() * *pViewMat;
 }

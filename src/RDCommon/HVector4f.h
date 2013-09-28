@@ -39,6 +39,7 @@ public:
 
     const float* GetData()const{return m_data;}
     float Mode()const;
+    float Mode2()const;
     void Normalize();
 
     float x()const{return m_data[0];}
@@ -66,6 +67,7 @@ public:
         return !(*this == m);
     }
     float4& operator = (const float4& other);
+    float operator ^ (const float4& vSrc);
 protected:
     float m_data[4] __attribute__ ((aligned (16)));
 };
@@ -109,45 +111,4 @@ inline float4 operator / (const float4& v,float fScale)
     ret /= fScale;
     return ret;
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//class float3 :public float4
-//{
-//public:
-//    float3();
-//    float3(const float3& src);
-//    float3(const float4& src);
-//    float3(float fx,float fy,float fz);
-//    void Set(float x, float y,float z );
-//
-//    const float3& GetMin(const float3& vData);
-//    const float3& GetMax(const float3& vData);
-//public:
-//    //operator overriding
-//    float3& operator = (const float3& other);
-//    float3& operator -= (const float3& m);
-//    float3& operator *= (const HMatrixQ4F& m)
-//    {
-//        float4 dst(*this);
-//        *this = dst * m;
-//        return *this;
-//    }
-//    float3& operator *= (const float3& vSrc);
-//};
-//
-//inline float3 operator - (const float3& v1,const float3& v2)
-//{
-//    float3 ret(v1);
-//    ret -= v2;
-//   return ret;
-//}
-//
-//inline float3 operator * (const float3& v1,const float3& v2)
-//{
-//    float3 ret(v1);
-//    ret *= v2;
-//    return ret;
-//}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #endif

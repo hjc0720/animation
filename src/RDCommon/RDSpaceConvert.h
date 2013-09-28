@@ -27,6 +27,7 @@ void RDBufferToScene(float3& pOut,const float3& pIn,float fBufferLeft,float fBuf
 void FillBox(float3 vBox[],const float3& vMin,const float3& vMax);
 void RDCalBoxMinMax(float& fNear,float& fFar,const float3& vMin,const float3& vMax,const HMatrixQ4F& WorldView);
 
+struct RDRay;
 class RDSpaceParam
 {
 public:
@@ -40,14 +41,18 @@ public:
     
     float3 Convert3DTo2D(const float3& vPos);
     float3 Convert2DTo3D(const float3& vPoint);
+
+    bool HitSphere(const float3& vPt,float fRadius,float3& vHitPt);
+protected:
+    void GetRay(const float3& vPt,RDRay& ray);
 protected:
     const HMatrixQ4F* m_pWorldMat;
     const HMatrixQ4F* m_pViewMat;
     const HMatrixQ4F* m_pProjMat;
     QRectF m_rtViewPort;
     
-    float3 m_vEypPos;
-    float2 m_vNearFar;
+    float3 m_vEyePos;
+    //float2 m_vNearFar;
 };
 
 #endif   // ----- #ifndef RD_SPACE_CONVERT_INC  -----

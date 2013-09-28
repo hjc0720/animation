@@ -26,11 +26,14 @@ class float4;
 class float3
 {
 public:
+    static const float3& GetZero();
+public:
     float3();
     float3(const float3& src);
     float3(const float4& src);
     float3(float fx,float fy,float fz);
     float Mode()const;
+    float Mode2()const;
     void Normalize();
 	
     inline const float* GetData()const{return m_data;}
@@ -58,6 +61,7 @@ public:
     float3& operator *= (const float3& vSrc);
     bool operator == (const float3& vSrc);
     bool operator != (const float3& vSrc);
+    float operator ^ (const float3& vSrc);
 protected:
     float m_data[4] __attribute__ ((aligned (16)));
 };

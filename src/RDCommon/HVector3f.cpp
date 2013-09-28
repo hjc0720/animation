@@ -21,6 +21,12 @@
 #include <cmath>
 #include <smmintrin.h>
 
+const float3 vZero;
+const float3& float3::GetZero()
+{
+    return vZero;
+}
+
 float3::float3()
 {
     memset(m_data,0,3 * sizeof(float));
@@ -53,10 +59,13 @@ void float3::Set(float fx,float fy,float fz)
 
 float float3::Mode ()const
 {
-	float sum = 0;
-    for(int i  = 0; i < 3; i++)
-        sum += m_data[i] * m_data[i];
-    return sqrtf(sum);
+    return sqrtf(Mode2());
+}
+
+float float3::Mode2() const
+{
+    float4 tmp(*this,0);
+    return tmp.Mode2();
 }		// -----  end of method float3::Mode  -----
 
 void float3::Normalize ()
@@ -117,9 +126,8 @@ float3& float3::operator *= (const float3& vSrc)
     return *this;
 }
 
-
-//float operator * (const float3& v1,const float3& v2)
-//{
-//    float4 vec1(v1,0),vec2(v2,0);
-//    return vec1 * vec2;
-//}
+float float3::operator ^(const float3 &vSrc)
+{
+    float4 vec1(*this,0),vec2(vSrc,0);
+    return vec1 ^ vec2;
+}
