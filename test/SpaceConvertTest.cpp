@@ -62,3 +62,13 @@ TEST_F(SpaceConvertTest,T2D_3D)
         EXPECT_NEAR(vSrc[i].y(),v3D.y(),0.0001);
     }
 }
+
+TEST_F(SpaceConvertTest,Tri)
+{
+    RDSpaceParam param(&WorldMat,&ViewMat,&ProjMat,QRect(0,0,1920,1080));
+    float3 vHitPt;
+    bool bHit = param.HitTriangle(float3(960,540,0),float3(0,100,0),float3(100,-100,0),float3(-100,-100,0),vHitPt);
+    EXPECT_TRUE(bHit);
+    EXPECT_EQ(vHitPt.x(),0);
+    EXPECT_EQ(vHitPt.y(),0);
+}
