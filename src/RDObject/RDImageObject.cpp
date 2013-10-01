@@ -46,7 +46,7 @@ public:
     RDShader*           m_pVertexShader;    
     RDShader*           m_pPixelShader;    
     RDShaderProgram*    m_pShaderProgram;
-    HMatrixQ4F          m_vRenderMatrix;
+    matrix4x4          m_vRenderMatrix;
 };
 
 RDImageObject::RDImageObject()
@@ -88,7 +88,7 @@ void RDImageObject::Render(unsigned long ,RDRenderData& RenderData)
 
     pDevice->SetShaderTexture(pPrivateData->m_pShaderProgram,"DiffuseTex",pPrivateData->m_pImage);
     
-    HMatrixQ4F WVP = pPrivateData->m_vRenderMatrix * RenderData.GetMVPMatrix();
+    matrix4x4 WVP = pPrivateData->m_vRenderMatrix * RenderData.GetMVPMatrix();
     float4 vTemp(-1,1,0,1);
     vTemp *= WVP;
     vTemp.DividW();
@@ -104,7 +104,7 @@ void RDImageObject::CalFrame(const RDTime& ,RDRenderData& RenderData)
     RDImagePrivateData* pPrivateData = dynamic_cast<RDImagePrivateData*>( RenderData.GetPrivateData());
     if(RenderData.GetChangeLevel() >= RDRender_TransChange)
     {
-        pPrivateData->m_vRenderMatrix = HMatrixQ4F(m_nWidth / 2,m_nHeight / 2,1,HMatrixQ4F_Scale);
+        pPrivateData->m_vRenderMatrix = matrix4x4(m_nWidth / 2,m_nHeight / 2,1,HMatrixQ4F_Scale);
     }
 }
 

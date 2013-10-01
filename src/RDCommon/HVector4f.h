@@ -18,7 +18,7 @@
 #ifndef __4D_VECTOR_F_H_
 #define __4D_VECTOR_F_H_
 
-class HMatrixQ4F;
+class matrix4x4;
 class float3;
 
 
@@ -58,7 +58,7 @@ public:
     //operator overriding
     float4& operator += (const float4& m);
     float4& operator -= (const float4& m);
-    float4& operator *= (const HMatrixQ4F& m);
+    float4& operator *= (const matrix4x4& m);
     float4& operator *= (float fScale);
     float4& operator /= (float fScale);
     bool operator == (const float4& m);
@@ -85,7 +85,7 @@ inline float4 operator - (const float4& v1,const float4& v2)
     ret -= v2;
    return ret;
 }
-inline float4 operator * (const float4& v1,const HMatrixQ4F& mat)
+inline float4 operator * (const float4& v1,const matrix4x4& mat)
 {
     float4 ret(v1);
     ret *= mat;

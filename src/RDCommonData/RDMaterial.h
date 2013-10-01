@@ -36,7 +36,7 @@ protected:
 
     //临时数据
     RDTexture*  m_hTex;
-    HMatrixQ4F  m_matTex;
+    matrix4x4  m_matTex;
     bool        m_bReleaseTex;
 };
 

@@ -100,12 +100,12 @@ public:
     const float3&    GetPos()const { return m_vPos; }
     void             SetPos(const float3& vPos){m_vPos = vPos;}
 
-    const HMatrixQ4F& GetItemMatrix()const{return m_vItemMatrix;}
-    const HMatrixQ4F& GetMVPMatrix()const{return m_vMVPMatrix;}
-    const HMatrixQ4F& GetGlobalMatrix()const{return m_vGlobalMatrix;}
-    void             SetItemMatrix(const HMatrixQ4F& matrix){m_vItemMatrix = matrix;}
-    void            SetMVPMatrix(const HMatrixQ4F& matrix){m_vMVPMatrix = matrix;}
-    void            SetGlobalMatrix(const HMatrixQ4F& matrix){m_vGlobalMatrix = matrix;}
+    const matrix4x4& GetItemMatrix()const{return m_vItemMatrix;}
+    const matrix4x4& GetMVPMatrix()const{return m_vMVPMatrix;}
+    const matrix4x4& GetGlobalMatrix()const{return m_vGlobalMatrix;}
+    void             SetItemMatrix(const matrix4x4& matrix){m_vItemMatrix = matrix;}
+    void            SetMVPMatrix(const matrix4x4& matrix){m_vMVPMatrix = matrix;}
+    void            SetGlobalMatrix(const matrix4x4& matrix){m_vGlobalMatrix = matrix;}
 protected:
     void Lock()const;
     void UnLock()const;
@@ -128,9 +128,9 @@ protected:
 
     float3              m_vPos;
     float3              m_vScale;
-    HMatrixQ4F          m_vItemMatrix;
-    HMatrixQ4F          m_vMVPMatrix;
-    HMatrixQ4F          m_vGlobalMatrix;
+    matrix4x4          m_vItemMatrix;
+    matrix4x4          m_vMVPMatrix;
+    matrix4x4          m_vGlobalMatrix;
 };
 
 inline QRectF RDRenderData::GetScaleBound()const

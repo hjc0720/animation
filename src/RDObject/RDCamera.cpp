@@ -31,7 +31,7 @@ public:
     { }
     void CalViewMat()
     {
-        HMatrixQ4F::CreateViewMat(m_matView,GetPos(),m_vUp,m_vLookAt);
+        matrix4x4::CreateViewMat(m_matView,GetPos(),m_vUp,m_vLookAt);
     }
     void CalProjectMat(QRectF& rt,bool bEditProj)
     {
@@ -40,7 +40,7 @@ public:
         m_fZero = nHeight / m_vScale.x(); 
 
         QRectF rtNear(rt.topLeft() * m_fZNear / m_fZero,rt.bottomRight() * m_fZNear / m_fZero);
-        HMatrixQ4F::CreateProjectMat(bEditProj?m_matEditProj:m_matRenderProj,rtNear.left(),rtNear.right(),-rtNear.top(),-rtNear.bottom(),m_fZNear,m_fZFar);
+        matrix4x4::CreateProjectMat(bEditProj?m_matEditProj:m_matRenderProj,rtNear.left(),rtNear.right(),-rtNear.top(),-rtNear.bottom(),m_fZNear,m_fZFar);
     }
     void UpdateMatrix()
     {
@@ -56,11 +56,11 @@ public:
     float3      m_vLookAt;
     float3      m_vUp;
 
-    HMatrixQ4F  m_matView;
-    HMatrixQ4F  m_matRenderProj;
-    HMatrixQ4F  m_matEditProj;
-    HMatrixQ4F  m_matEditViewProj;
-    HMatrixQ4F  m_matRenderViewProj;
+    matrix4x4  m_matView;
+    matrix4x4  m_matRenderProj;
+    matrix4x4  m_matEditProj;
+    matrix4x4  m_matEditViewProj;
+    matrix4x4  m_matRenderViewProj;
 };
 
 RDCamera::RDCamera(const QString& strName,uint nHeight,RDProjectType nType)
@@ -117,12 +117,12 @@ void    RDCamera::UpdateProject(const QString& pRDName,QRectF& rt,float fZNear,f
     pRenderData->UpdateMatrix();
 }
 
-const HMatrixQ4F&    RDCamera::GetViewMatrix(const QString& pRDName)
+const matrix4x4&    RDCamera::GetViewMatrix(const QString& pRDName)
 {
     RDCameraRenderData* pRenderData = dynamic_cast<RDCameraRenderData*>( GetRenderData(pRDName));
     return pRenderData->m_matView;
 }
-const HMatrixQ4F&    RDCamera::GetViewProjMat(const QString& pRDName)
+const matrix4x4&    RDCamera::GetViewProjMat(const QString& pRDName)
 {
     RDCameraRenderData* pRenderData = dynamic_cast<RDCameraRenderData*>( GetRenderData(pRDName));
     return pRenderData->m_matRenderViewProj;

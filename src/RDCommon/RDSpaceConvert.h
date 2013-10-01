@@ -19,36 +19,38 @@
 #include "HVector3f.h"
 #include "HVector4f.h"
 #include <QRectF>
+
 class float3;
-class HMatrixQ4F;
+class matrix4x4;
 void RDSceneToBuffer(float3& pOut,const float3& pIn,float fBufferLeft,float fBufferTop);
 void RDBufferToScene(float3& pOut,const float3& pIn,float fBufferLeft,float fBufferTop);
 
 void FillBox(float3 vBox[],const float3& vMin,const float3& vMax);
-void RDCalBoxMinMax(float& fNear,float& fFar,const float3& vMin,const float3& vMax,const HMatrixQ4F& WorldView);
+void RDCalBoxMinMax(float& fNear,float& fFar,const float3& vMin,const float3& vMax,const matrix4x4& WorldView);
 
 struct RDRay;
 class RDSpaceParam
 {
 public:
     RDSpaceParam();
-    RDSpaceParam(const HMatrixQ4F* pWorld,const HMatrixQ4F* pViewMat,const HMatrixQ4F* pProjMat,const QRectF& viewPort);
+    RDSpaceParam(const matrix4x4* pWorld,const matrix4x4* pViewMat,const matrix4x4* pProjMat,const QRectF& viewPort);
     
     void SetViewPort(const QRectF& viewPort){m_rtViewPort = viewPort;}
-    void SetWorldMat(const HMatrixQ4F* pWorldMat){m_pWorldMat = pWorldMat;}
-    void SetViewMat(const HMatrixQ4F* pViewMat){m_pViewMat = pViewMat;}
-    void SetProjMat(const HMatrixQ4F* pProjMat){m_pProjMat = pProjMat;}
+    void SetWorldMat(const matrix4x4* pWorldMat){m_pWorldMat = pWorldMat;}
+    void SetViewMat(const matrix4x4* pViewMat){m_pViewMat = pViewMat;}
+    void SetProjMat(const matrix4x4* pProjMat){m_pProjMat = pProjMat;}
     
     float3 Convert3DTo2D(const float3& vPos);
     float3 Convert2DTo3D(const float3& vPoint);
 
     bool HitSphere(const float3& vPt,float fRadius,float3& vHitPt);
+    bool HitTriangle(const float3& vPt,const float3& vP0,const float3& vPt1,const float3& vPt2,float3& vHitPt,bool bCull = true);
 protected:
     void GetRay(const float3& vPt,RDRay& ray);
 protected:
-    const HMatrixQ4F* m_pWorldMat;
-    const HMatrixQ4F* m_pViewMat;
-    const HMatrixQ4F* m_pProjMat;
+    const matrix4x4* m_pWorldMat;
+    const matrix4x4* m_pViewMat;
+    const matrix4x4* m_pProjMat;
     QRectF m_rtViewPort;
     
     float3 m_vEyePos;

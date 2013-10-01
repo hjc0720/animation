@@ -238,7 +238,7 @@ void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name, 
     glUniform4f(hLocation,value.x(),value.y(),value.z(),value.w());
 }
 
-void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name,const HMatrixQ4F &value)
+void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name,const matrix4x4 &value)
 {
     QMutexLocker locker(&m_lock);
     GLint hLocation = pShader->GetUniformLocation(name);

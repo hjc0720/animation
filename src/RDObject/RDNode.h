@@ -92,7 +92,7 @@ public:
     size_t GetSectionCount(const QUuid& idStory)const;
     RDSection* GetSection(const QUuid& idStory,size_t nIndex);
 
-    virtual const HMatrixQ4F&     GetViewProjMat(const QString& RDName);
+    virtual const matrix4x4&     GetViewProjMat(const QString& RDName);
 protected:
     void            MoveSection(const RDTime& nSteps, RDSectionList pStart,RDSectionList pEnd );
     void            UpdateSection(const RDTime& nFrame /*global frame*/,RDRenderData& pRD);

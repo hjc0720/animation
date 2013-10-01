@@ -30,14 +30,14 @@ TEST_F(HMatrixQ4F_Test,ConstructorTime)
 {
     for(int i = 0; i < TEST_COUNT; i++)
     {
-        HMatrixQ4F testMat;
+        matrix4x4 testMat;
  }
 }
 TEST_F(HMatrixQ4F_Test,Constructor)
 {
     for(int i = 0; i < 1; i++)
     {
-        HMatrixQ4F testMat;
+        matrix4x4 testMat;
        for(int j = 0; j < 4;j++)
             EXPECT_FLOAT_EQ(1,testMat.m[j][j]);
    }
@@ -45,7 +45,7 @@ TEST_F(HMatrixQ4F_Test,Constructor)
 
 TEST_F(HMatrixQ4F_Test,RotateTime)
 {
-        HMatrixQ4F testMat;
+        matrix4x4 testMat;
     for(int i = 0; i < TEST_COUNT; i++)
     {
         testMat.RotateMat(0,0,0);
@@ -56,8 +56,8 @@ TEST_F(HMatrixQ4F_Test,RotateTime)
 
 TEST_F(HMatrixQ4F_Test,Rotate)
 {
-    HMatrixQ4F testMat;
-    HMatrixQ4F resMat;
+    matrix4x4 testMat;
+    matrix4x4 resMat;
     for(int i = 0; i < 36; i++)
     {
         float fx = i / PAI/ 180;
@@ -94,7 +94,7 @@ TEST_F(HMatrixQ4F_Test,Rotate)
 
 TEST_F(HMatrixQ4F_Test,PosTime)
 {
-    HMatrixQ4F testMat;
+    matrix4x4 testMat;
     for(int i = 0; i < TEST_COUNT; i++)
     {
         testMat.PosMat(i,i / 2,i / 3);
@@ -103,7 +103,7 @@ TEST_F(HMatrixQ4F_Test,PosTime)
 
 TEST_F(HMatrixQ4F_Test,Pos)
 {
-    HMatrixQ4F testMat;
+    matrix4x4 testMat;
     for(int i = 0; i < 100; i++)
     {
         testMat.PosMat(i,i / 2.f,i / 3.f);
@@ -115,7 +115,7 @@ TEST_F(HMatrixQ4F_Test,Pos)
 
 TEST_F(HMatrixQ4F_Test,ScaleTime)
 {
-    HMatrixQ4F testMat;
+    matrix4x4 testMat;
     for(int i = 0; i < TEST_COUNT; i++)
     {
         testMat.ScaleMat(i,i / 2,i / 3);
@@ -124,7 +124,7 @@ TEST_F(HMatrixQ4F_Test,ScaleTime)
 
 TEST_F(HMatrixQ4F_Test,Scale)
 {
-    HMatrixQ4F testMat;
+    matrix4x4 testMat;
     for(int i = 0; i < 100; i++)
     {
         testMat.ScaleMat(i,i / 2.f,i / 3.f);
@@ -136,7 +136,7 @@ TEST_F(HMatrixQ4F_Test,Scale)
 
 TEST_F(HMatrixQ4F_Test,TransposeTime)
 {
-    HMatrixQ4F testMat;
+    matrix4x4 testMat;
     for(int i = 0; i < TEST_COUNT; i++)
     {
         testMat.Transpose();
@@ -145,8 +145,8 @@ TEST_F(HMatrixQ4F_Test,TransposeTime)
 
 TEST_F(HMatrixQ4F_Test,Transpose)
 {
-    HMatrixQ4F testMat;
-    HMatrixQ4F srcMat;
+    matrix4x4 testMat;
+    matrix4x4 srcMat;
     srand(time(NULL));
     for(int i = 0; i < 4; i++)
     {
@@ -168,17 +168,17 @@ TEST_F(HMatrixQ4F_Test,Transpose)
 
 TEST_F(HMatrixQ4F_Test,AddTime)
 {
-    HMatrixQ4F testMat;
-    HMatrixQ4F srcMat;
+    matrix4x4 testMat;
+    matrix4x4 srcMat;
     for(int i = 0; i < TEST_COUNT; i++)
         testMat += srcMat;
 }
 
 TEST_F(HMatrixQ4F_Test,Add)
 {
-    HMatrixQ4F testMat;
-    HMatrixQ4F srcMat;
-    HMatrixQ4F destMat;
+    matrix4x4 testMat;
+    matrix4x4 srcMat;
+    matrix4x4 destMat;
     srand(time(NULL));
     for(int i = 0; i < 4; i++)
     {
@@ -201,17 +201,17 @@ TEST_F(HMatrixQ4F_Test,Add)
 
 TEST_F(HMatrixQ4F_Test,SubTime)
 {
-    HMatrixQ4F testMat;
-    HMatrixQ4F srcMat;
+    matrix4x4 testMat;
+    matrix4x4 srcMat;
     for(int i = 0; i < TEST_COUNT; i++)
         testMat -= srcMat;
 }
 
 TEST_F(HMatrixQ4F_Test,Sub)
 {
-    HMatrixQ4F testMat;
-    HMatrixQ4F srcMat;
-    HMatrixQ4F destMat;
+    matrix4x4 testMat;
+    matrix4x4 srcMat;
+    matrix4x4 destMat;
     srand(time(NULL));
     for(int i = 0; i < 4; i++)
     {
@@ -233,17 +233,17 @@ TEST_F(HMatrixQ4F_Test,Sub)
 }
 TEST_F(HMatrixQ4F_Test,MulTime)
 {
-    HMatrixQ4F testMat;
-    HMatrixQ4F srcMat;
+    matrix4x4 testMat;
+    matrix4x4 srcMat;
     for(int i = 0; i < TEST_COUNT; i++)
         testMat *= srcMat;
 }
 
 TEST_F(HMatrixQ4F_Test,Mul)
 {
-    HMatrixQ4F testMat;
-    HMatrixQ4F srcMat;
-    HMatrixQ4F destMat;
+    matrix4x4 testMat;
+    matrix4x4 srcMat;
+    matrix4x4 destMat;
     srand(time(NULL));
     for(int i = 0; i < 4; i++)
     {
@@ -268,7 +268,7 @@ TEST_F(HMatrixQ4F_Test,Mul)
 
 TEST_F(HMatrixQ4F_Test,IsIdentityTime)
 {
-    HMatrixQ4F testMat;
+    matrix4x4 testMat;
     bool test = false;
     for(int i = 0; i < TEST_COUNT; i++)
         test = testMat.IsIdentity();
@@ -276,11 +276,11 @@ TEST_F(HMatrixQ4F_Test,IsIdentityTime)
 
 TEST_F(HMatrixQ4F_Test,IsIdentity)
 {
-    HMatrixQ4F testMat;
-    HMatrixQ4F srcMat(0.30,0.29,0.000040,HMatrixQ4F_POS);
-    HMatrixQ4F destMat(0.30,0.29,0.000040,HMatrixQ4F_Rotate);
-    HMatrixQ4F scaleMat(0.30,0.29,0.000040,HMatrixQ4F_Scale);
-    HMatrixQ4F lastMat ;
+    matrix4x4 testMat;
+    matrix4x4 srcMat(0.30,0.29,0.000040,HMatrixQ4F_POS);
+    matrix4x4 destMat(0.30,0.29,0.000040,HMatrixQ4F_Rotate);
+    matrix4x4 scaleMat(0.30,0.29,0.000040,HMatrixQ4F_Scale);
+    matrix4x4 lastMat ;
     lastMat *= srcMat;
     lastMat *= destMat;
     lastMat *= scaleMat;
@@ -293,7 +293,7 @@ TEST_F(HMatrixQ4F_Test,IsIdentity)
 
 TEST_F(HMatrixQ4F_Test,InverseTime)
 {
-    HMatrixQ4F testMat(0.30,0.29,0.000040,HMatrixQ4F_Rotate);
+    matrix4x4 testMat(0.30,0.29,0.000040,HMatrixQ4F_Rotate);
     for(int i = 0; i < TEST_COUNT; i++)
         testMat.Inverse();
 }
@@ -306,9 +306,9 @@ TEST_F(HMatrixQ4F_Test,Inverse)
     fY = rand();
     fZ = rand();
  
-    HMatrixQ4F testMat(fX,fY,fZ,HMatrixQ4F_Rotate);
-    HMatrixQ4F testMat1(fX,fY,fZ,HMatrixQ4F_Rotate);
-    HMatrixQ4F srcMat(fX,fY,fZ,HMatrixQ4F_Rotate);
+    matrix4x4 testMat(fX,fY,fZ,HMatrixQ4F_Rotate);
+    matrix4x4 testMat1(fX,fY,fZ,HMatrixQ4F_Rotate);
+    matrix4x4 srcMat(fX,fY,fZ,HMatrixQ4F_Rotate);
     testMat.Inverse();
     srcMat *= testMat ;
     EXPECT_TRUE(srcMat.IsIdentity());

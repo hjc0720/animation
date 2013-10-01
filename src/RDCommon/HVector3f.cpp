@@ -105,7 +105,7 @@ float3& float3::operator /= (float fScale)
     return *this;
 }
 
-float3& float3::operator *= (const HMatrixQ4F& m)
+float3& float3::operator *= (const matrix4x4& m)
 {
     float4 dst(*this);
     *this = dst * m;

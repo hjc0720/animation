@@ -36,7 +36,7 @@ inline __m128 CrossProduct(__m128 a, __m128 b)
   );
 }
 
-const HMatrixQ4F& HMatrixQ4F::CreateViewMat(HMatrixQ4F& mat,const float3& vEyePos,const float3& vUp,const float3& vLookAt)
+const matrix4x4& matrix4x4::CreateViewMat(matrix4x4& mat,const float3& vEyePos,const float3& vUp,const float3& vLookAt)
 {
     __m128 eye = _mm_load_ps(vEyePos.GetData());
     __m128 up = _mm_load_ps(vUp.GetData());
@@ -68,7 +68,7 @@ const HMatrixQ4F& HMatrixQ4F::CreateViewMat(HMatrixQ4F& mat,const float3& vEyePo
     return mat;
 }
 
-const HMatrixQ4F& HMatrixQ4F::CreateProjectMat(HMatrixQ4F& mat,float l,float r,float t,float b,float zn,float zf)
+const matrix4x4& matrix4x4::CreateProjectMat(matrix4x4& mat,float l,float r,float t,float b,float zn,float zf)
 {
     float r_l = 1 / (r - l);
     float t_b = 1 / (t - b);
@@ -94,12 +94,12 @@ const HMatrixQ4F& HMatrixQ4F::CreateProjectMat(HMatrixQ4F& mat,float l,float r,f
     return mat;
 }
 
-HMatrixQ4F::HMatrixQ4F()
+matrix4x4::matrix4x4()
 {
     Identity();
 }
 
-void HMatrixQ4F::Identity()
+void matrix4x4::Identity()
 {
 #ifdef __SSE2__
     __m128 fm;
@@ -120,7 +120,7 @@ void HMatrixQ4F::Identity()
 #endif
 }
 
-HMatrixQ4F::HMatrixQ4F(float fX,float fY,float fZ,HMatrixQ4F_TYPE nType)
+matrix4x4::matrix4x4(float fX,float fY,float fZ,HMatrixQ4F_TYPE nType)
 {
     switch(nType)
     {
@@ -138,7 +138,7 @@ HMatrixQ4F::HMatrixQ4F(float fX,float fY,float fZ,HMatrixQ4F_TYPE nType)
 // │ cosx * sinz                        cosx * cosz                         -sinx       │
 // ┕ cosy * sinx * sinz - siny * cosz	siny * sinz + cosy * sinx * cosz    cosy * cosx ┘
 //
-void HMatrixQ4F::RotateMat(float fX,float fY,float fZ)
+void matrix4x4::RotateMat(float fX,float fY,float fZ)
 {
     Identity();
 	float fCosY = cosf(fY), fSinY = sinf(fY);
@@ -204,7 +204,7 @@ void HMatrixQ4F::RotateMat(float fX,float fY,float fZ)
 #endif
 }
 
-void HMatrixQ4F::PosMat(float fX,float fY,float fZ)
+void matrix4x4::PosMat(float fX,float fY,float fZ)
 {
      __m128 fm;
     fm= _mm_setzero_ps();
@@ -218,7 +218,7 @@ void HMatrixQ4F::PosMat(float fX,float fY,float fZ)
     _mm_store_ps(m[3],pos);
 }
 
-void HMatrixQ4F::ScaleMat(float fX,float fY,float fZ)
+void matrix4x4::ScaleMat(float fX,float fY,float fZ)
 { 
     __m128 fm;
     fm = _mm_setzero_ps();
@@ -233,7 +233,7 @@ void HMatrixQ4F::ScaleMat(float fX,float fY,float fZ)
     m[3][3] = 1.f;
 }
 
-void HMatrixQ4F::Transpose()
+void matrix4x4::Transpose()
 {
     __m128 src[4];
     //_mm_prefetch(m,_MM_HINT_T0);
@@ -244,7 +244,7 @@ void HMatrixQ4F::Transpose()
         _mm_store_ps(m[i],src[i]);
 }
 
-HMatrixQ4F& HMatrixQ4F::operator += (const HMatrixQ4F& mat)
+matrix4x4& matrix4x4::operator += (const matrix4x4& mat)
 {
     for(int i = 0; i < 4; i++)
     {
@@ -256,7 +256,7 @@ HMatrixQ4F& HMatrixQ4F::operator += (const HMatrixQ4F& mat)
     return *this;
 }
 
-HMatrixQ4F& HMatrixQ4F::operator -= (const HMatrixQ4F& mat)
+matrix4x4& matrix4x4::operator -= (const matrix4x4& mat)
 {
     for(int i = 0; i < 4; i++)
     {
@@ -268,7 +268,7 @@ HMatrixQ4F& HMatrixQ4F::operator -= (const HMatrixQ4F& mat)
     return *this;
 }
 
-HMatrixQ4F& HMatrixQ4F::operator *= (const HMatrixQ4F& mat)
+matrix4x4& matrix4x4::operator *= (const matrix4x4& mat)
 {
     __m128 dest[4];
     for(int i = 0; i < 4;i++)
@@ -295,7 +295,7 @@ HMatrixQ4F& HMatrixQ4F::operator *= (const HMatrixQ4F& mat)
     return *this;
 }
 
-bool HMatrixQ4F::Inverse()
+bool matrix4x4::Inverse()
 {
     float fScale(0.f), fMax(0.f);
     int nCheckCount(0);			// 处理到第几列
@@ -377,7 +377,7 @@ bool HMatrixQ4F::Inverse()
     return true;
 }
 
-bool HMatrixQ4F::IsIdentity()
+bool matrix4x4::IsIdentity()
 {
     for(int i = 0 ; i < 4; i++)
     {
@@ -396,7 +396,7 @@ bool HMatrixQ4F::IsIdentity()
 }
 
 
-bool HMatrixQ4F::Inverse_Test()
+bool matrix4x4::Inverse_Test()
 {
     int is[4];
     int js[4];
@@ -469,7 +469,18 @@ bool HMatrixQ4F::Inverse_Test()
     return true;
 }
 
-void HMatrixQ4F::swap(int i1,int j1,int i2,int j2)
+void matrix4x4::ResetPos(const float3 &vPos)
+{
+    memcpy(m[3],vPos.GetData(),3 * sizeof(float));
+}
+
+void matrix4x4::ResetPos(float fX, float fY, float fZ)
+{
+    __m128 pos = _mm_set_ps(1,fZ,fY,fX);
+    _mm_store_ps(m[3],pos);
+}
+
+void matrix4x4::swap(int i1,int j1,int i2,int j2)
 {
     float fTemp = m[i1][j1];
     m[i1][j1] = m[i2][j2];
@@ -487,36 +498,36 @@ void HMatrixQ4F::swap(int i1,int j1,int i2,int j2)
     //}
 //}
 
-void HMatrixQ4F::swapLine(int i1,int i2)
+void matrix4x4::swapLine(int i1,int i2)
 {
     __m128 line1 = _mm_load_ps(m[i1]);
     __m128 line2 = _mm_load_ps(m[i2]);
     _mm_store_ps(m[i1],line2);
     _mm_store_ps(m[i2],line1);
 }
-HMatrixQ4F::HMatrixQ4F(const HMatrixQ4F& mat)
+matrix4x4::matrix4x4(const matrix4x4& mat)
 {
     memcpy(m,mat.m,sizeof(float)<<4);
 }
 
 //non-member operator overloading
-HMatrixQ4F operator + (const HMatrixQ4F& mat1,const HMatrixQ4F& mat2)
+matrix4x4 operator + (const matrix4x4& mat1,const matrix4x4& mat2)
 {
-    HMatrixQ4F res(mat1);
+    matrix4x4 res(mat1);
     res += mat2;
     return res;
 }
 
-HMatrixQ4F operator - (const HMatrixQ4F& mat1,const HMatrixQ4F& mat2)
+matrix4x4 operator - (const matrix4x4& mat1,const matrix4x4& mat2)
 {
-    HMatrixQ4F res(mat1);
+    matrix4x4 res(mat1);
     res -= mat2;
     return res;
 }
 
-HMatrixQ4F operator * (const HMatrixQ4F& mat1,const HMatrixQ4F& mat2)
+matrix4x4 operator * (const matrix4x4& mat1,const matrix4x4& mat2)
 {
-    HMatrixQ4F res(mat1);
+    matrix4x4 res(mat1);
     res *= mat2;
     return res;
 }

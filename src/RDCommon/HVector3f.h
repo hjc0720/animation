@@ -20,7 +20,7 @@
 #define __HVECTOR_3F__
 #include <cstring>
 
-class HMatrixQ4F;
+class matrix4x4;
 class float4;
 
 class float3
@@ -56,7 +56,7 @@ public:
     float3& operator += (const float3& m);
     float3& operator -= (const float3& m);
     float3& operator /= (float fScale);
-    float3& operator *= (const HMatrixQ4F& m);
+    float3& operator *= (const matrix4x4& m);
     float3& operator *= (float fScale);
     float3& operator *= (const float3& vSrc);
     bool operator == (const float3& vSrc);
@@ -79,7 +79,6 @@ inline bool float3::operator != (const float3& vSrc)
     return !(*this == vSrc);
 }
 
-float operator * (const float3 v1,float3 v2);
 inline float3 operator + (const float3& v1,const float3& v2)
 {
     float3 ret(v1);
@@ -98,7 +97,7 @@ inline float3 operator / (const float3& v1,float fScale)
     ret /= fScale;
     return ret;
 }
-inline float3 operator * (const float3& v1,const HMatrixQ4F& m)
+inline float3 operator * (const float3& v1,const matrix4x4& m)
 {
     float3 ret(v1);
     ret *= m;

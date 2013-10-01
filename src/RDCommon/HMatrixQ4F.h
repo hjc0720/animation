@@ -33,15 +33,15 @@ enum HMatrixQ4F_TYPE
     HMatrixQ4F_Scale,
 };
 
-class HMatrixQ4F
+class matrix4x4
 {
 public:
-    static const HMatrixQ4F& CreateProjectMat(HMatrixQ4F& mat,float l,float r,float t,float b,float zn,float zf);
-    static const HMatrixQ4F& CreateViewMat(HMatrixQ4F& mat,const float3& vEyePos,const float3& vUp,const float3& vLookAt);
+    static const matrix4x4& CreateProjectMat(matrix4x4& mat,float l,float r,float t,float b,float zn,float zf);
+    static const matrix4x4& CreateViewMat(matrix4x4& mat,const float3& vEyePos,const float3& vUp,const float3& vLookAt);
 public:
-    HMatrixQ4F();//生成单位阵
-    HMatrixQ4F(const HMatrixQ4F& mat);
-    HMatrixQ4F(float fX,float fY,float fZ,HMatrixQ4F_TYPE nType);
+    matrix4x4();//生成单位阵
+    matrix4x4(const matrix4x4& mat);
+    matrix4x4(float fX,float fY,float fZ,HMatrixQ4F_TYPE nType);
 
     void Transpose();
     bool Inverse();
@@ -50,11 +50,14 @@ public:
     const float* GetLine(int i)const{return m[i];}
     const float* data()const{return m[0];}
 
+    void ResetPos(const float3& vPos);
+    void ResetPos(float fX,float fY,float fZ);
+
 public:
     //运算符
-    HMatrixQ4F& operator += (const HMatrixQ4F& m);
-    HMatrixQ4F& operator -= (const HMatrixQ4F& m);
-    HMatrixQ4F& operator *= (const HMatrixQ4F& m);// m could be the same of this
+    matrix4x4& operator += (const matrix4x4& m);
+    matrix4x4& operator -= (const matrix4x4& m);
+    matrix4x4& operator *= (const matrix4x4& m);// m could be the same of this
 protected:
     void Identity();
     //欧拉角旋转,y,x,z
@@ -88,9 +91,9 @@ protected:
 };
 //运算操作符
 
-HMatrixQ4F operator + (const HMatrixQ4F& mat1,const HMatrixQ4F& mat2);
-HMatrixQ4F operator - (const HMatrixQ4F& mat1,const HMatrixQ4F& mat2);
-HMatrixQ4F operator * (const HMatrixQ4F& mat1,const HMatrixQ4F& mat2);
+matrix4x4 operator + (const matrix4x4& mat1,const matrix4x4& mat2);
+matrix4x4 operator - (const matrix4x4& mat1,const matrix4x4& mat2);
+matrix4x4 operator * (const matrix4x4& mat1,const matrix4x4& mat2);
 
 
 

@@ -34,7 +34,7 @@ void RDBufferToScene(float3& pOut,const float3& pIn,float fBufferLeft,float fBuf
     pOut.SetY(-pOut.y());
 }
 
-void RDCalBoxMinMax(float& fMin,float& fMax,const float3& vMin,const float3& vMax,const HMatrixQ4F& WorldView)
+void RDCalBoxMinMax(float& fMin,float& fMax,const float3& vMin,const float3& vMax,const matrix4x4& WorldView)
 {
     float3 vBox[8];
     FillBox(vBox,vMin,vMax);
@@ -73,7 +73,7 @@ struct RDRay
 float3 RDSpaceParam::Convert3DTo2D(const float3 &vPos)
 {
     float4 vTmpPos(vPos);
-    vTmpPos *= *m_pWorldMat * *m_pViewMat * *m_pProjMat;
+    vTmpPos = vTmpPos * *m_pWorldMat * *m_pViewMat * *m_pProjMat;
     vTmpPos.DividW();
 
     return float3((vTmpPos.x() + 1) * 0.5f * m_rtViewPort.width() + m_rtViewPort.left(),
@@ -85,10 +85,10 @@ float3 RDSpaceParam::Convert2DTo3D(const float3 &vPoint)
 {
     float4 vOut;
     vOut.SetX((vPoint.x() -  m_rtViewPort.left())/m_rtViewPort.width()*2 - 1);
-    vOut.SetY(1 - (vPoint.x() - m_rtViewPort.top())/m_rtViewPort.height() * 2) ;
+    vOut.SetY(1 - (vPoint.y() - m_rtViewPort.top())/m_rtViewPort.height() * 2) ;
     vOut.SetZ(-1);
 
-    HMatrixQ4F mat = *m_pWorldMat * *m_pViewMat * *m_pProjMat;
+    matrix4x4 mat = *m_pWorldMat * *m_pViewMat * *m_pProjMat;
     mat.Inverse();
     vOut = vOut * mat;
     vOut.DividW();
@@ -117,6 +117,32 @@ bool RDSpaceParam::HitSphere(const float3 &vPt, float fRadius, float3 &vHitPt)
     return true;
 }
 
+bool RDSpaceParam::HitTriangle(const float3 &vPt, const float3 &vPt0, const float3 &vPt1, const float3 &vPt2, float3 &vHitPt, bool bCull)
+{
+    RDRay ray;
+    GetRay(vPt,ray);
+
+    float3 edg1(vPt1 - vPt0);
+    float3 edg2(vPt2 - vPt0);
+    float3 vec(ray.vDir * edg2);
+    float det = edg1 ^ vec;
+    if(bCull && det < 0)
+        return false;
+
+    float3 tVec(ray.vStart - vPt0);
+    float u = tVec ^ vec;
+    if(u < 0 || u > det)
+        return false;
+
+    float3 qVec(tVec * edg1);
+    float v = ray.vDir ^ qVec;
+    if(v < 0 || u + v > det)
+        return false;
+    float t = edg2 ^ qVec;
+    vHitPt = ray.vStart + t / det * ray.vDir;
+    return true;
+}
+
 void RDSpaceParam::GetRay(const float3 &vPt, RDRay &ray)
 {
     float3 vNearPt = Convert2DTo3D(vPt);
@@ -133,7 +159,7 @@ RDSpaceParam::RDSpaceParam()
 {
 }
 
-RDSpaceParam::RDSpaceParam(const HMatrixQ4F *pWorld, const HMatrixQ4F *pViewMat, const HMatrixQ4F *pProjMat, const QRectF &viewPort)
+RDSpaceParam::RDSpaceParam(const matrix4x4 *pWorld, const matrix4x4 *pViewMat, const matrix4x4 *pProjMat, const QRectF &viewPort)
     :m_pWorldMat(pWorld)
     ,m_pViewMat(pViewMat)
     ,m_pProjMat(pProjMat)

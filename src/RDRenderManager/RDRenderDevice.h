@@ -98,7 +98,7 @@ public:
     void    SetShaderParam(RDShaderProgram* pShader,const char* name,float value);
     void    SetShaderParam(RDShaderProgram* pShader,const char* name,float3& value);
     void    SetShaderParam(RDShaderProgram* pShader,const char* name,float4& value);
-    void    SetShaderParam(RDShaderProgram* pShader,const char* name,const HMatrixQ4F& value);
+    void    SetShaderParam(RDShaderProgram* pShader,const char* name,const matrix4x4& value);
     void    SetShaderTexture(RDShaderProgram* pShader,const char* name,const RDTexture* tex);
     void    SetShaderSample(RDTexture* tex,RDSampleType nType);
     void    Render(GLenum mode,GLint nStart,GLsizei count);

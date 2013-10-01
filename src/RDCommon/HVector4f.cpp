@@ -113,7 +113,7 @@ float4& float4::operator -= (const float4& m)
     _mm_store_ps(m_data,src);
     return *this;
 }
-float4& float4::operator *= (const HMatrixQ4F& m)// m could be the same of this
+float4& float4::operator *= (const matrix4x4& m)// m could be the same of this
 {
     __m128 dst = _mm_setzero_ps();
     for(int i = 0; i < 4; i++)

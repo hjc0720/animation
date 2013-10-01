@@ -111,7 +111,7 @@ void RDNode::Render(const RDTime& nTime,const QString& pRDName)
 void RDNode::CalNodeMatrix(RDRenderData& RenderData)
 {
     const float3& vPos = RenderData.GetPos();
-    RenderData.SetItemMatrix(HMatrixQ4F(vPos.x(),vPos.y(),vPos.z(),HMatrixQ4F_POS));
+    RenderData.SetItemMatrix(matrix4x4(vPos.x(),vPos.y(),vPos.z(),HMatrixQ4F_POS));
     RenderData.SetGlobalMatrix(RenderData.GetItemMatrix());
 }
 
@@ -467,7 +467,7 @@ RDSection* RDNode::GetSection(const QUuid& idStory,size_t nIndex)
     return m_vecSetctionListMap[idStory].at(nIndex);
 }
 
-const HMatrixQ4F&     RDNode::GetViewProjMat(const QString& RDName)
+const matrix4x4&     RDNode::GetViewProjMat(const QString& RDName)
 {
     RDLayer* pLayer = GetLayerNode();
     RDCamera* pCamera = pLayer->GetCurCamera(RDName);

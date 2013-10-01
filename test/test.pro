@@ -7,9 +7,11 @@ TARGET = appTest
 DEFINES += RDCOMMON_LIBRARY
 DEFINES += __GTEST__
 
-SOURCES += HMatrixTest.cpp HVector4fTest.cpp
+SOURCES += HMatrixTest.cpp HVector4fTest.cpp \
+    SpaceConvertTest.cpp
 
-HEADERS += HMatrixTest.h HVector4fTest.h
+HEADERS += HMatrixTest.h HVector4fTest.h \
+    SpaceConvertTest.h
 
 VERSION = 1.0.2
 
