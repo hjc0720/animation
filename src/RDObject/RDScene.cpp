@@ -356,6 +356,12 @@ void RDScene::AddChild(RDNode& pChild)
     }
 }
 
+QRectF RDScene::GetSceneRt(const QString& strName)const
+{
+    const RDSceneRenderData* RenderData = dynamic_cast<const RDSceneRenderData*>(GetRenderData(strName));
+    return QRectF(0,0,RenderData->GetWidth(),RenderData->GetHeight());
+}
+
 RDFileDataStream& operator << (RDFileDataStream& buffer,const RDScene& scene)
 {
     QMutexLocker locker(&scene.m_lock);

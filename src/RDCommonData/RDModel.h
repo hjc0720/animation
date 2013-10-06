@@ -23,6 +23,7 @@ struct RDSubModel
 //    RDMaterial material;
 };
 
+class RDSpaceParam;
 class float4;
 class RDModel
 {
@@ -35,9 +36,9 @@ public:
     void DrawSubset(size_t nSubset)const;
     void AddSubModel(int nCount);
     void AddSubModel(int nStart,int nCount);
-    size_t GetSubsetCount()const{return m_arSubModel.size();};
+    size_t GetSubsetCount()const{return m_arSubModel.size();}
+    bool HitTest(float3 &vHitPt, const float3& vMouse, const RDSpaceParam& param) const;
 protected:
-    int m_nVersion;
     int m_nCount;
     float4* m_vPos;
     float4* m_vNormal;

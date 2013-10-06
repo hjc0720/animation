@@ -45,11 +45,11 @@ public:
     RDCamera* GetCamera(size_t i){return m_vecCameraObj[i];}
     RDCamera* RemoveCamera(size_t i);
 
-    RDCamera*   GetCurCamera(const QString& pRDName);
+    RDCamera*   GetCurCamera(const QString& pRDName) const;
     void        SetCurCamera(const QString& pRDName,size_t nIndex);
     virtual void CalFrame(const RDTime& nTime,const QString& pRDName) ;
 protected:
-    RDCamera* GetCurCamera(const RDLayerRenderData& pLayerRD);
+    RDCamera* GetCurCamera(const RDLayerRenderData& pLayerRD) const;
     float2      CalObjMinMax(const QString& pRDName);
     virtual RDRenderData*  CreateRenderData(const QString& pName);
 protected:

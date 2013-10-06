@@ -36,7 +36,7 @@ float3::float3(const float3& src)
 {
     if(this == &src)
         return;
-    memcpy(m_data,src.m_data,3 * sizeof(float));
+    memcpy(m_data,src.m_data,sizeof(m_data));
 }
 
 float3::float3(const float4& src)

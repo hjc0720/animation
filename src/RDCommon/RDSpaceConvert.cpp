@@ -81,7 +81,7 @@ float3 RDSpaceParam::Convert3DTo2D(const float3 &vPos)
                   0);
 }
 
-float3 RDSpaceParam::Convert2DTo3D(const float3 &vPoint)
+float3 RDSpaceParam::Convert2DTo3D(const float3 &vPoint) const
 {
     float4 vOut;
     vOut.SetX((vPoint.x() -  m_rtViewPort.left())/m_rtViewPort.width()*2 - 1);
@@ -89,9 +89,14 @@ float3 RDSpaceParam::Convert2DTo3D(const float3 &vPoint)
     vOut.SetZ(-1);
 
     matrix4x4 mat = *m_pWorldMat * *m_pViewMat * *m_pProjMat;
+    matrix4x4 testMat(mat);
     mat.Inverse();
-    vOut = vOut * mat;
-    vOut.DividW();
+    float4 fTemp = vOut * mat;
+    fTemp.DividW();
+
+    fTemp = fTemp * testMat;
+    fTemp.DividW();
+    testMat *= mat;
     return vOut;
 }
 
@@ -117,24 +122,26 @@ bool RDSpaceParam::HitSphere(const float3 &vPt, float fRadius, float3 &vHitPt)
     return true;
 }
 
-bool RDSpaceParam::HitTriangle(const float3 &vPt, const float3 &vPt0, const float3 &vPt1, const float3 &vPt2, float3 &vHitPt, bool bCull)
+bool RDSpaceParam::HitTriangle(float3 &vHitPt, const float3 &vPt, const float3 &vPt0, const float3 &vPt1, const float3 &vPt2, bool bCull) const
 {
     RDRay ray;
     GetRay(vPt,ray);
 
     float3 edg1(vPt1 - vPt0);
     float3 edg2(vPt2 - vPt0);
-    float3 vec(ray.vDir * edg2);
+    float3 vec(ray.vDir * edg2 );
     float det = edg1 ^ vec;
-    if(bCull && det < 0)
-        return false;
+//    if(bCull && det < 0)
+//        return false;
+    float sign =  det < 0 ? -1.f : 1.f;
+    det = sign * det;
 
-    float3 tVec(ray.vStart - vPt0);
+    float3 tVec(sign * (ray.vStart - vPt0));
     float u = tVec ^ vec;
     if(u < 0 || u > det)
         return false;
 
-    float3 qVec(tVec * edg1);
+    float3 qVec( tVec * edg1 );
     float v = ray.vDir ^ qVec;
     if(v < 0 || u + v > det)
         return false;
@@ -143,11 +150,13 @@ bool RDSpaceParam::HitTriangle(const float3 &vPt, const float3 &vPt0, const floa
     return true;
 }
 
-void RDSpaceParam::GetRay(const float3 &vPt, RDRay &ray)
+void RDSpaceParam::GetRay(const float3 &vPt, RDRay &ray)const
 {
     float3 vNearPt = Convert2DTo3D(vPt);
-    ray.vStart = m_vEyePos;
-    ray.vDir = vNearPt - m_vEyePos;
+    matrix4x4 worldInv(*m_pWorldMat);
+    worldInv.Inverse();
+    ray.vStart = m_vEyePos * worldInv;
+    ray.vDir = vNearPt - ray.vStart ;
     ray.vDir.Normalize();
 }
 
@@ -165,5 +174,7 @@ RDSpaceParam::RDSpaceParam(const matrix4x4 *pWorld, const matrix4x4 *pViewMat, c
     ,m_pProjMat(pProjMat)
     ,m_rtViewPort(viewPort)
 {
-    m_vEyePos = float3::GetZero() * *pViewMat;
+    matrix4x4 viewInv(*pViewMat);
+    viewInv.Inverse();
+    m_vEyePos = float3::GetZero() * viewInv;
 }

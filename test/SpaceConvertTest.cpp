@@ -67,7 +67,7 @@ TEST_F(SpaceConvertTest,Tri)
 {
     RDSpaceParam param(&WorldMat,&ViewMat,&ProjMat,QRect(0,0,1920,1080));
     float3 vHitPt;
-    bool bHit = param.HitTriangle(float3(960,540,0),float3(0,100,0),float3(100,-100,0),float3(-100,-100,0),vHitPt);
+    bool bHit = param.HitTriangle(vHitPt,float3(960,540,0),float3(0,100,0),float3(100,-100,0),float3(-100,-100,0));
     EXPECT_TRUE(bHit);
     EXPECT_EQ(vHitPt.x(),0);
     EXPECT_EQ(vHitPt.y(),0);

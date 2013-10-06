@@ -297,15 +297,15 @@ void RDNode::MoveSection(const RDTime& nSteps, RDSectionList pStart,RDSectionLis
 RDRenderData*   RDNode::CreateRenderData(const QString& pName)
 {
     QMutexLocker locker(&m_lock);
-    RDScene* pScene = GetSceneNode();
-    RDRenderData* pRenderData = new RDRenderData(*this,*dynamic_cast<RDSceneRenderData*>(pScene->GetRenderData(pName)));
+    const RDScene* pScene = GetSceneNode();
+    RDRenderData* pRenderData = new RDRenderData(*this,*dynamic_cast<const RDSceneRenderData*>(pScene->GetRenderData(pName)));
     m_vecRenderData[pName] = pRenderData;
     return pRenderData;
 }
 
-RDScene*        RDNode::GetSceneNode()
+const RDScene*        RDNode::GetSceneNode() const
 {
-    RDScene* pScene = dynamic_cast<RDScene*>(this);
+    const RDScene* pScene = dynamic_cast<const RDScene*>(this);
     if(!pScene && m_pParent)
         return m_pParent->GetSceneNode();
     return pScene;
@@ -418,7 +418,7 @@ RDSection* RDNode::GetSection(const QUuid& nStoryId,const RDTime& nStoryFrame)
 }
 void RDNode::AddPosKey(const RDTime& nTime,const float3& vOffsetPos )
 {
-	RDScene* pScene = GetSceneNode();
+    const RDScene* pScene = GetSceneNode();
     const RDStory* pCurStory = pScene->GetStory(nTime,false);
     RDTime nStoryTime = nTime - pCurStory->GetStartTime(false);
     RDSection* pSection = GetSection(pCurStory->GetStoryId(),nStoryTime);
@@ -469,14 +469,25 @@ RDSection* RDNode::GetSection(const QUuid& idStory,size_t nIndex)
 
 const matrix4x4&     RDNode::GetViewProjMat(const QString& RDName)
 {
-    RDLayer* pLayer = GetLayerNode();
-    RDCamera* pCamera = pLayer->GetCurCamera(RDName);
+    RDCamera* pCamera = GetCamera(RDName);
     return pCamera->GetViewProjMat(RDName);
 }
 
-RDLayer*        RDNode::GetLayerNode()
+RDCamera *RDNode::GetCamera(const QString& strName)const
 {
-    RDLayer* pLayer = dynamic_cast<RDLayer*>(this);
+    const RDLayer* pLayer = GetLayerNode();
+    return pLayer->GetCurCamera(strName);
+}
+
+QRectF RDNode::GetSceneRt(const QString& strName)const
+{
+    const RDScene* pScene= GetSceneNode();
+    return pScene->GetSceneRt(strName);
+}
+
+const RDLayer*        RDNode::GetLayerNode()const
+{
+    const RDLayer* pLayer = dynamic_cast<const RDLayer*>(this);
     if(!pLayer && m_pParent)
         return m_pParent->GetLayerNode();
     return pLayer;

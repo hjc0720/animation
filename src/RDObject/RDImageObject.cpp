@@ -28,6 +28,7 @@
 #include "RDModel.h"
 #include "RDTexture.h"
 #include "RDModelResource.h"
+#include "RDCamera.h"
 
 class RDModel;
 class RDImagePrivateData: public RDRenderPrivateData
@@ -110,17 +111,15 @@ void RDImageObject::CalFrame(const RDTime& ,RDRenderData& RenderData)
 
 bool RDImageObject::HitTest(const float3& vScenePt,const RDNode& pNode,const QString& RDName) const
 {
-    float3 vBufferPt;
-	const RDRenderData* pRenderData = pNode.GetRenderData(RDName);
-    if(!pRenderData)
-        return false;
-    RDSceneToBuffer(vBufferPt,vScenePt,pRenderData->GetPos().x(),pRenderData->GetPos().y());
-    //qDebug() << "Scene  pt in image hit test" << vScenePt.GetX() << vScenePt.GetY() << vScenePt.GetZ();
-    //qDebug() << "buffer  pt in image hit test" << vBufferPt.GetX() << vBufferPt.GetY() << vBufferPt.GetZ();
-    if(vBufferPt.x() < 0 || vBufferPt.x() >= m_nWidth ||
-            vBufferPt.y() < 0 || vBufferPt.y() >= m_nHeight)
-        return false;
-    return true;
+    const RDRenderData* pRenderData = pNode.GetRenderData(RDName);
+    const RDImagePrivateData* pPrivateData = dynamic_cast<const RDImagePrivateData*>( pRenderData->GetPrivateData());
+    RDCamera* pCamera = pNode.GetCamera(RDName);
+    matrix4x4 worldMat = pPrivateData->m_vRenderMatrix * pRenderData->GetGlobalMatrix();
+    RDSpaceParam param(&worldMat,&pCamera->GetViewMatrix(RDName),&pCamera->GetEditProjMatrix(RDName),pNode.GetSceneRt(RDName));
+    const RDModel* pModel = pPrivateData->m_pSegModel->GetModel();
+    float3 vHitPt;
+
+    return pModel->HitTest(vHitPt,vScenePt,param);
 }
 
 void RDImageObject::Save(RDFileDataStream& buffer)

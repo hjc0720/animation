@@ -23,6 +23,7 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <QRectF>
 
 class RDSceneRenderData;
 class RDFileDataStream;
@@ -70,12 +71,13 @@ public:
 	void RefreshStoryLength();
 
     virtual void AddChild(RDNode& pChild);
+
+    virtual QRectF GetSceneRt(const QString &strName) const;
 protected:
     void RenderImage(RDSceneRenderData& pSceneData,unsigned long nTime);
     void BlendChild(const QString& pRDName);
     RDRenderData*  CreateRenderData(const QString& pName);
 protected:
-    //int   m_nSceneVersion;
     RDSceneData m_BackData;
     std::map<QUuid,const RDNode*> m_NodeMap;
     std::list<RDStory*> m_StoryList;

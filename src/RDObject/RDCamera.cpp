@@ -74,8 +74,8 @@ RDCamera::RDCamera(const QString& strName,uint nHeight,RDProjectType nType)
 RDRenderData*  RDCamera::CreateRenderData(const QString& pName)
 {
     QMutexLocker locker(&m_lock);
-    RDScene* pScene = GetSceneNode();
-    RDCameraRenderData* pRenderData = new RDCameraRenderData(*this,*dynamic_cast<RDSceneRenderData*>(pScene->GetRenderData(pName)));
+    const RDScene* pScene = GetSceneNode();
+    RDCameraRenderData* pRenderData = new RDCameraRenderData(*this,*dynamic_cast<const RDSceneRenderData*>(pScene->GetRenderData(pName)));
     pRenderData->m_vLookAt = m_vLookAt;
     pRenderData->m_vUp = m_vUp;
 
@@ -112,7 +112,8 @@ void    RDCamera::UpdateProject(const QString& pRDName,QRectF& rt,float fZNear,f
     pRenderData->m_fZNear = fabs(fZNear);
     pRenderData->m_fZFar = fabs(fFar);
     pRenderData->CalProjectMat(rt,false);
-    QRectF sceneRT(0,0,pRenderData->GetSceneWidth(),pRenderData->GetSceneHeight());
+    QRectF sceneRT(pRenderData->GetSceneWidth()/2,pRenderData->GetSceneHeight()/2,
+                   pRenderData->GetSceneWidth(),pRenderData->GetSceneHeight());
     pRenderData->CalProjectMat(sceneRT,true);
     pRenderData->UpdateMatrix();
 }
@@ -122,6 +123,19 @@ const matrix4x4&    RDCamera::GetViewMatrix(const QString& pRDName)
     RDCameraRenderData* pRenderData = dynamic_cast<RDCameraRenderData*>( GetRenderData(pRDName));
     return pRenderData->m_matView;
 }
+
+const matrix4x4 &RDCamera::GetRenderProjMatrix(const QString &pRDName)
+{
+    RDCameraRenderData* pRenderData = dynamic_cast<RDCameraRenderData*>( GetRenderData(pRDName));
+    return pRenderData->m_matRenderProj;
+}
+
+const matrix4x4 &RDCamera::GetEditProjMatrix(const QString &pRDName)
+{
+    RDCameraRenderData* pRenderData = dynamic_cast<RDCameraRenderData*>( GetRenderData(pRDName));
+    return pRenderData->m_matEditProj;
+}
+
 const matrix4x4&    RDCamera::GetViewProjMat(const QString& pRDName)
 {
     RDCameraRenderData* pRenderData = dynamic_cast<RDCameraRenderData*>( GetRenderData(pRDName));

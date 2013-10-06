@@ -3,12 +3,13 @@
 #include <QString>
 #include "HVector4f.h"
 #include "mac_define.h"
+#include "RDSpaceConvert.h"
+
 const int n2013_02_18 = 0;
 const int g_nVersion = n2013_02_18;
 
 RDModel::RDModel()
-    :m_nVersion(g_nVersion)
-    ,m_nCount(0)
+    :m_nCount(0)
     ,m_vPos(nullptr)
     ,m_vNormal(nullptr)
     , m_vUV(nullptr)
@@ -16,8 +17,7 @@ RDModel::RDModel()
 }
 
 RDModel::RDModel(int nCount)
-    :m_nVersion(g_nVersion)
-    ,m_nCount(nCount)
+    :m_nCount(nCount)
      ,m_hVertex(InvalidHandle)
 {
     m_vPos = new float4[nCount];
@@ -62,6 +62,17 @@ void RDModel::AddSubModel(int nStart,int nCount)
 {
     RDSubModel subModel = {nStart,nCount};
     m_arSubModel.push_back(subModel);
+}
+
+bool RDModel::HitTest(float3& vHitPt, const float3& vMouse, const RDSpaceParam& param) const
+{
+    for(int i = 0; i < m_nCount / 3; i++)
+    {
+        int nIndex = i * 3;
+        if(param.HitTriangle(vHitPt,vMouse,m_vPos[nIndex],m_vPos[nIndex + 1],m_vPos[nIndex + 2]))
+            return true;
+    }
+    return false;
 }
 
 void RDModel::AddSubModel(int nCount)

@@ -145,8 +145,8 @@ float2      RDLayer::CalObjMinMax(const QString& pRDName)
 RDRenderData *RDLayer::CreateRenderData(const QString &pName)
 {
     QMutexLocker locker(&m_lock);
-    RDScene* pScene = GetSceneNode();
-    RDRenderData* pRenderData = new RDLayerRenderData(*this,*dynamic_cast<RDSceneRenderData*>(pScene->GetRenderData(pName)));
+    const RDScene* pScene = GetSceneNode();
+    RDRenderData* pRenderData = new RDLayerRenderData(*this,*dynamic_cast<const RDSceneRenderData*>(pScene->GetRenderData(pName)));
     m_vecRenderData[pName] = pRenderData;
     return pRenderData;
 }
@@ -165,14 +165,14 @@ void RDLayer::CalFrame(const RDTime& nTime,const QString& pRDName)
         pLayerRD->UnionDirty(sceneRT);
 }
 
-RDCamera* RDLayer::GetCurCamera(const RDLayerRenderData& pLayerRD)
+RDCamera* RDLayer::GetCurCamera(const RDLayerRenderData& pLayerRD)const
 {
     return m_vecCameraObj[pLayerRD.GetCurCameraID()];
 }
 
-RDCamera* RDLayer::GetCurCamera(const QString& pRDName)
+RDCamera* RDLayer::GetCurCamera(const QString& pRDName)const
 {
-    RDLayerRenderData* pLayerRD = dynamic_cast<RDLayerRenderData*>(GetRenderData(pRDName));
+    const RDLayerRenderData* pLayerRD = dynamic_cast<const RDLayerRenderData*>(GetRenderData(pRDName));
     return GetCurCamera(*pLayerRD);
 }
 

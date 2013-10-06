@@ -271,7 +271,10 @@ TEST_F(HMatrixQ4F_Test,IsIdentityTime)
     matrix4x4 testMat;
     bool test = false;
     for(int i = 0; i < TEST_COUNT; i++)
+    {
         test = testMat.IsIdentity();
+        EXPECT_TRUE(test);
+    }
 }
 
 TEST_F(HMatrixQ4F_Test,IsIdentity)

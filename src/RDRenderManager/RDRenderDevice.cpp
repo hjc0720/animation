@@ -328,6 +328,7 @@ RDRenderDevice::RDRenderDevice(const QGLContext* renderContex)
     m_pTempState = new RDRenderState;
     //glGenFramebuffers(1,&m_hFrameBuffer);
     //glBindFramebuffer(GL_FRAMEBUFFER,m_hFrameBuffer);
+    glEnable(GL_SCISSOR_TEST);
 }
 
 RDShader * RDRenderDevice::GetExistShader(const QString &shaderName)

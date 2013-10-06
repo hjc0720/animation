@@ -60,7 +60,7 @@ void RDRenderWidget::resizeGL(int w, int h)
     m_document.UnLock();
     m_document.SetScale(m_fScale);
 
-    glViewport(m_nXOffset, m_nYOffset, GetRealPorjWidth(),GetRealPorjHeight());
+    //glViewport(m_nXOffset, m_nYOffset, GetRealPorjWidth(),GetRealPorjHeight());
 }
 
 void    RDRenderWidget::OnTime(void* param)
@@ -161,12 +161,12 @@ bool RDRenderWidget::event(QEvent* e)
     case QEvent::MouseButtonPress:
         {
             QMouseEvent* pEvent = dynamic_cast<QMouseEvent*>(e);
-            float3 vMousePt(ClientToScene(pEvent->pos()));
-            float3 vScenePt;
-            RDBufferToScene(vScenePt,vMousePt,-m_nProjWidth / 2.f,m_nProjHeight / 2.f);
-            qDebug() << "Mouse Press Pt in Scene Buffer" << vMousePt.x() << vMousePt.y() << vMousePt.z();
-            qDebug() << "Mouse Press Pt in Scene" << vScenePt.x() << vScenePt.y() << vScenePt.z();
-            bProcess = pCurTool->OnMousePress(pEvent->buttons() ,vScenePt ) ;
+//            float3 vMousePt(ClientToScene(pEvent->pos()));
+//            float3 vScenePt;
+//            RDBufferToScene(vScenePt,vMousePt,-m_nProjWidth / 2.f,m_nProjHeight / 2.f);
+//            qDebug() << "Mouse Press Pt in Scene Buffer" << vMousePt.x() << vMousePt.y() << vMousePt.z();
+//            qDebug() << "Mouse Press Pt in Scene" << vScenePt.x() << vScenePt.y() << vScenePt.z();
+            bProcess = pCurTool->OnMousePress(pEvent->buttons() ,ClientToScene(pEvent->pos())) ;
             if(bProcess)
                 QWidget::event(e);
         }
@@ -206,8 +206,6 @@ void RDRenderWidget::initializeGL()
 
 void RDRenderWidget::paintGL()
 {
-
-
     static RenderManager* pRDManager = 0;
     if(!pRDManager)
     {
@@ -230,6 +228,10 @@ void RDRenderWidget::paintGL()
         //}
         return;
     }
+    glScissor(0, 0,size().width() ,size().height());
+    RDRenderDevice::GetRenderManager()->ClearScreen(float4(0.5,0.5,0.5,1),1,RDClearColor);
+    glViewport(m_nXOffset, m_nYOffset, GetRealPorjWidth(),GetRealPorjHeight());
+    glScissor(m_nXOffset, m_nYOffset, GetRealPorjWidth(),GetRealPorjHeight());
     RDRenderDevice::GetRenderManager()->ClearScreen(float4(0,0,0,0),1,RDClearColor | RDClearDepth | RDClearStencil);
     pRDManager->SetRenderName(DEFAULT_RD);
     pRDManager->SetScene(pScene);

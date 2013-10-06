@@ -25,6 +25,7 @@
 #include <QUndoCommand>
 #include "RDRenderData.h"
 #include "HVector4f.h"
+#include <QRectF>
 
 class RDObject;
 class RDRenderData;
@@ -34,7 +35,7 @@ class RDLayer;
 
 typedef std::vector<RDSection*>::iterator RDSectionList;
 class RDScene;
-
+class RDCamera;
 class RDNode
 {
 public:
@@ -62,7 +63,6 @@ public:
 
     virtual void Render(const RDTime& nTime,const QString& pRDName) ;
     virtual void CalFrame(const RDTime& nTime,const QString& pRDName) ;
-
 
     //child operation function
     size_t GetTotalChildCount()const;
@@ -93,14 +93,16 @@ public:
     RDSection* GetSection(const QUuid& idStory,size_t nIndex);
 
     virtual const matrix4x4&     GetViewProjMat(const QString& RDName);
+    RDCamera* GetCamera(const QString &strName) const;
+    virtual QRectF GetSceneRt(const QString &)const;
 protected:
     void            MoveSection(const RDTime& nSteps, RDSectionList pStart,RDSectionList pEnd );
     void            UpdateSection(const RDTime& nFrame /*global frame*/,RDRenderData& pRD);
     RDSection*      GetLastSectionBefore(size_t nCurStoryIndex);
     RDSection*      GetSection(const QUuid& nStoryId,const RDTime& nStoryFrame);
     virtual RDRenderData*  CreateRenderData(const QString& pName);
-    RDScene*        GetSceneNode();
-    RDLayer*        GetLayerNode();
+    const RDScene *GetSceneNode()const;
+    const RDLayer*        GetLayerNode()const;
     bool            CalSpaceVector(const RDTime& nFrame,RDRenderData& RenderData);
     void            CalNodeMatrix(RDRenderData& RenderData);
 protected:

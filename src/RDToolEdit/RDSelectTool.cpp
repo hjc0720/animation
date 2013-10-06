@@ -56,10 +56,12 @@ bool RDSelectTool::OnMouseMove(const float3& vMov,Qt::MouseButtons buttons)
             m_bBeginMov = false;
         }
 
+        float3 vNeedMov = vMov - m_vStartPos;
+        vNeedMov.SetY(-vNeedMov.y());
         for(size_t i = 0; i < pDoc->GetSelItemCount(); i++)
         {
             RDNode*  pNode = pDoc->GetSelItem(i);
-            MoveItemPos(vMov - m_vStartPos + m_vOldPos[i],*pNode);
+            MoveItemPos(vNeedMov + m_vOldPos[i],*pNode);
         }
         //m_vStartPos = vMov;
         //m_bDrag = true;
