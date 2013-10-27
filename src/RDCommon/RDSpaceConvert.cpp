@@ -70,7 +70,7 @@ struct RDRay
 /// \brief RDSpaceParam::Convert3DTo2D
 /// \param vPos
 /// \return 2D pos
-float3 RDSpaceParam::Convert3DTo2D(const float3 &vPos)
+float3 RDSpaceParam::Convert3DTo2D(const float3 &vPos) const
 {
     float4 vTmpPos(vPos);
     vTmpPos = vTmpPos * *m_pWorldMat * *m_pViewMat * *m_pProjMat;
@@ -89,15 +89,31 @@ float3 RDSpaceParam::Convert2DTo3D(const float3 &vPoint) const
     vOut.SetZ(-1);
 
     matrix4x4 mat = *m_pWorldMat * *m_pViewMat * *m_pProjMat;
-    matrix4x4 testMat(mat);
     mat.Inverse();
-    float4 fTemp = vOut * mat;
-    fTemp.DividW();
-
-    fTemp = fTemp * testMat;
-    fTemp.DividW();
-    testMat *= mat;
+    vOut *= mat;
+    vOut.DividW();
     return vOut;
+}
+
+float3 RDSpaceParam::Convert2DTo3D(const float3 &vPoint, float fZValue) const
+{
+    if(fZValue >= 0)
+        return m_vEyePos;
+    float4 vOut;
+    vOut.SetX((vPoint.x() -  m_rtViewPort.left())/m_rtViewPort.width()*2 - 1);
+    vOut.SetY(1 - (vPoint.y() - m_rtViewPort.top())/m_rtViewPort.height() * 2) ;
+    vOut.SetZ(-1);
+
+    matrix4x4 mat(*m_pProjMat);
+    mat.Inverse();
+    vOut *= mat;
+    vOut.DividW();
+
+    vOut = vOut * fZValue / vOut.z();
+    vOut.SetW(1);
+    matrix4x4 worldInv(*m_pWorldMat * *m_pViewMat);
+    worldInv.Inverse();
+    return vOut * worldInv;
 }
 
 bool RDSpaceParam::HitSphere(const float3 &vPt, float fRadius, float3 &vHitPt)
@@ -165,6 +181,7 @@ RDSpaceParam::RDSpaceParam()
     :m_pWorldMat(nullptr)
     ,m_pViewMat(nullptr)
     ,m_pProjMat(nullptr)
+    ,m_fZValue(0)
 {
 }
 
@@ -177,4 +194,5 @@ RDSpaceParam::RDSpaceParam(const matrix4x4 *pWorld, const matrix4x4 *pViewMat, c
     matrix4x4 viewInv(*pViewMat);
     viewInv.Inverse();
     m_vEyePos = float3::GetZero() * viewInv;
+    m_fZValue = -m_rtViewPort.width() * m_pProjMat->Get(0,0) * 0.5;
 }

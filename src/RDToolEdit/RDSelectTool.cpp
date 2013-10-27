@@ -35,7 +35,7 @@ QIcon RDSelectTool::GetToolIcon()
 {
     return QIcon(":/select_tool");
 }
-bool RDSelectTool::OnMouseMove(const float3& vMov,Qt::MouseButtons buttons)
+bool RDSelectTool::OnMouseMove(const float3& vMov,Qt::MouseButtons buttons,const QString&)
 {
     RDToolManager* pManager = RDToolManager::GetToolManager();
     RDDocument* pDoc = pManager->GetDocument();
@@ -77,7 +77,7 @@ bool RDSelectTool::OnMouseMove(const float3& vMov,Qt::MouseButtons buttons)
     }
     return true;
 }
-bool RDSelectTool::OnMousePress(const Qt::MouseButtons& nButtonState,const float3& ptScene)
+bool RDSelectTool::OnMousePress(const Qt::MouseButtons& nButtonState,const float3& ptScene,const QString&)
 {
     if(!nButtonState.testFlag(Qt::LeftButton))
         return false;
@@ -96,7 +96,7 @@ bool RDSelectTool::OnMousePress(const Qt::MouseButtons& nButtonState,const float
     m_bBeginMov = true;
     return true;
 }
-bool RDSelectTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ) 
+bool RDSelectTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ,const QString&)
 {
     if(nButtonState.testFlag(Qt::LeftButton))
         return false;

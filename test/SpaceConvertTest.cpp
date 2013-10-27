@@ -8,10 +8,11 @@ using namespace std;
 
 
 SpaceConvertTest::SpaceConvertTest()
+    :WorldMat(1,1,1,HMatrixQ4F_Scale)
 {
-    WorldMat.ResetPos(0,0,100);
+    WorldMat.ResetPos(0,0,0);
     matrix4x4::CreateViewMat(ViewMat,float3(0,0,1080),float3(0,1,0),float3(0,0,0));
-    matrix4x4::CreateProjectMat(ProjMat,-96,96,54,-54,108,10000);
+    matrix4x4::CreateProjectMat(ProjMat,-960,960,540,-540,1080,10000);
 }
 
 TEST_F(SpaceConvertTest,T3D_2D)
@@ -44,7 +45,7 @@ TEST_F(SpaceConvertTest,T2D_3D)
     vector<float3> vSrc;
     vector<float3> vDst;
     vSrc.push_back(float3(0,0,0));
-    vDst.push_back(float3(960,540,0));
+    vDst.push_back(float3(1193,280,0));
     vSrc.push_back(float3(-96,54,-100));
     vDst.push_back(float3(0,0,0));
     vSrc.push_back(float3(96,54,-100));

@@ -29,7 +29,7 @@ const float3& float3::GetZero()
 
 float3::float3()
 {
-    memset(m_data,0,3 * sizeof(float));
+    memset(m_data,0,4 * sizeof(float));
 }
 
 float3::float3(const float3& src)

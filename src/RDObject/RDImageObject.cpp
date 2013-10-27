@@ -90,9 +90,6 @@ void RDImageObject::Render(unsigned long ,RDRenderData& RenderData)
     pDevice->SetShaderTexture(pPrivateData->m_pShaderProgram,"DiffuseTex",pPrivateData->m_pImage);
     
     matrix4x4 WVP = pPrivateData->m_vRenderMatrix * RenderData.GetMVPMatrix();
-    float4 vTemp(-1,1,0,1);
-    vTemp *= WVP;
-    vTemp.DividW();
     pDevice->SetShaderParam(pPrivateData->m_pShaderProgram,"MVP",WVP);
 
     for(size_t i = 0; i <  pModel->GetSubsetCount(); i++)
@@ -113,9 +110,8 @@ bool RDImageObject::HitTest(const float3& vScenePt,const RDNode& pNode,const QSt
 {
     const RDRenderData* pRenderData = pNode.GetRenderData(RDName);
     const RDImagePrivateData* pPrivateData = dynamic_cast<const RDImagePrivateData*>( pRenderData->GetPrivateData());
-    RDCamera* pCamera = pNode.GetCamera(RDName);
     matrix4x4 worldMat = pPrivateData->m_vRenderMatrix * pRenderData->GetGlobalMatrix();
-    RDSpaceParam param(&worldMat,&pCamera->GetViewMatrix(RDName),&pCamera->GetEditProjMatrix(RDName),pNode.GetSceneRt(RDName));
+    RDSpaceParam param(pNode.GetEditSpaceParam(RDName,&worldMat));
     const RDModel* pModel = pPrivateData->m_pSegModel->GetModel();
     float3 vHitPt;
 

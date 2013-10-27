@@ -112,7 +112,7 @@ void    RDCamera::UpdateProject(const QString& pRDName,QRectF& rt,float fZNear,f
     pRenderData->m_fZNear = fabs(fZNear);
     pRenderData->m_fZFar = fabs(fFar);
     pRenderData->CalProjectMat(rt,false);
-    QRectF sceneRT(pRenderData->GetSceneWidth()/2,pRenderData->GetSceneHeight()/2,
+    QRectF sceneRT(pRenderData->GetSceneWidth()/(-2.f),pRenderData->GetSceneHeight()/(-2.f),
                    pRenderData->GetSceneWidth(),pRenderData->GetSceneHeight());
     pRenderData->CalProjectMat(sceneRT,true);
     pRenderData->UpdateMatrix();

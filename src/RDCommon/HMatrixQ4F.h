@@ -49,6 +49,7 @@ public:
     bool Inverse_Test();
     const float* GetLine(int i)const{return m[i];}
     const float* data()const{return m[0];}
+    float Get(int nRow,int nColumn)const{return m[nRow][nColumn];}
 
     void ResetPos(const float3& vPos);
     void ResetPos(float fX,float fY,float fZ);

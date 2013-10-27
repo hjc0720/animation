@@ -479,10 +479,22 @@ RDCamera *RDNode::GetCamera(const QString& strName)const
     return pLayer->GetCurCamera(strName);
 }
 
+RDSpaceParam RDNode::GetEditSpaceParam(const QString &strName, const matrix4x4 *pWorldMat) const
+{
+    RDCamera* pCamera = GetCamera(strName);
+    return RDSpaceParam(pWorldMat,&pCamera->GetViewMatrix(strName),&pCamera->GetEditProjMatrix(strName),GetSceneRt(strName));
+}
+
 QRectF RDNode::GetSceneRt(const QString& strName)const
 {
     const RDScene* pScene= GetSceneNode();
     return pScene->GetSceneRt(strName);
+}
+
+const matrix4x4 &RDNode::GetNodeMatrix(const QString &strName) const
+{
+    const RDRenderData* pData = GetRenderData(strName);
+    return pData->GetGlobalMatrix();
 }
 
 const RDLayer*        RDNode::GetLayerNode()const

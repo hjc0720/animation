@@ -152,21 +152,13 @@ bool RDRenderWidget::event(QEvent* e)
     case QEvent::MouseMove:
         {
             QMouseEvent* pEvent = dynamic_cast<QMouseEvent*>(e);
-            float3 vMousePt(ClientToScene(pEvent->pos()));
-            float3 vScenePt;
-            RDBufferToScene(vScenePt,vMousePt,-m_nProjWidth / 2.f,m_nProjHeight / 2.f);
-            bProcess = pCurTool->OnMouseMove(vScenePt,pEvent->buttons());
+            bProcess = pCurTool->OnMouseMove(ClientToScene(pEvent->pos()),pEvent->buttons(),DEFAULT_RD);
         }
         break;
     case QEvent::MouseButtonPress:
         {
             QMouseEvent* pEvent = dynamic_cast<QMouseEvent*>(e);
-//            float3 vMousePt(ClientToScene(pEvent->pos()));
-//            float3 vScenePt;
-//            RDBufferToScene(vScenePt,vMousePt,-m_nProjWidth / 2.f,m_nProjHeight / 2.f);
-//            qDebug() << "Mouse Press Pt in Scene Buffer" << vMousePt.x() << vMousePt.y() << vMousePt.z();
-//            qDebug() << "Mouse Press Pt in Scene" << vScenePt.x() << vScenePt.y() << vScenePt.z();
-            bProcess = pCurTool->OnMousePress(pEvent->buttons() ,ClientToScene(pEvent->pos())) ;
+            bProcess = pCurTool->OnMousePress(pEvent->buttons() ,ClientToScene(pEvent->pos()),DEFAULT_RD) ;
             if(bProcess)
                 QWidget::event(e);
         }
@@ -174,10 +166,7 @@ bool RDRenderWidget::event(QEvent* e)
     case QEvent::MouseButtonRelease:
         {
             QMouseEvent* pEvent = dynamic_cast<QMouseEvent*>(e);
-            float3 vMousePt(ClientToScene(pEvent->pos()));
-            float3 vScenePt;
-            RDBufferToScene(vScenePt,vMousePt,-m_nProjWidth / 2.f,m_nProjHeight / 2.f);
-            bProcess = pCurTool->OnMouseRelease(pEvent->buttons() ,vScenePt ) ;
+            bProcess = pCurTool->OnMouseRelease(pEvent->buttons() ,ClientToScene(pEvent->pos()),DEFAULT_RD ) ;
         }
         break;
     case QEvent::KeyPress:

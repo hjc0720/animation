@@ -33,7 +33,7 @@ QIcon RDImageTool::GetToolIcon()
 {
     return QIcon(":/image_tool");
 }
-bool RDImageTool::OnMouseMove(const float3& ,Qt::MouseButtons buttons)
+bool RDImageTool::OnMouseMove(const float3& ,Qt::MouseButtons buttons,const QString&)
 {
     if(buttons.testFlag(Qt::LeftButton))
     {
@@ -42,7 +42,7 @@ bool RDImageTool::OnMouseMove(const float3& ,Qt::MouseButtons buttons)
     }
     return false;
 }
-bool RDImageTool::OnMousePress(const Qt::MouseButtons& nButtonState,const float3& ptScene)
+bool RDImageTool::OnMousePress(const Qt::MouseButtons& nButtonState,const float3& ptScene,const QString& )
 {
     if(!nButtonState.testFlag(Qt::LeftButton))
         return false;
@@ -52,39 +52,33 @@ bool RDImageTool::OnMousePress(const Qt::MouseButtons& nButtonState,const float3
     m_vImagePos = ptScene;
     return true;
 }
-bool RDImageTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ptScene) 
+bool RDImageTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ptScene,const QString& strName)
 {
     static int nObjIndex = 1; 
     if(nButtonState.testFlag(Qt::LeftButton) || !m_bDragged)
         return false;
-    m_bDragged = false;
-
-    m_nImageWidth = floatToInt(ptScene.x() - m_vImagePos.x());
-    m_nImageHeight = floatToInt(m_vImagePos.y() - ptScene.y() );
-
-    if(m_nImageWidth < 0 )
-    {
-        m_nImageWidth = -m_nImageWidth;
-        m_vImagePos.SetX(m_vImagePos.x() - m_nImageWidth);
-    }
-    if(m_nImageHeight < 0 )
-    {
-        m_nImageHeight = -m_nImageHeight;
-        m_vImagePos.SetY(m_vImagePos.y() + m_nImageHeight);
-    }
 
     QString fileName = QFileDialog::getOpenFileName(NULL,QObject::tr("Get Picture"));
     if(fileName.isEmpty())
         return false;
 
+    m_bDragged = false;
+
+    m_nImageWidth = floatToInt(abs(ptScene.x() - m_vImagePos.x()));
+    m_nImageHeight = floatToInt(abs(ptScene.y() - m_vImagePos.y()));
+    m_vImagePos = (ptScene + m_vImagePos) * 0.5f;
+    RDSpaceParam param = m_pFieldNode->GetEditSpaceParam(strName,&m_pFieldNode->GetNodeMatrix(strName));
+    float3 vPos = param.Convert2DTo3D(m_vImagePos,param.GetZValue());
+
     RDImageObject* pNewObject = new RDImageObject( fileName);
     pNewObject->SetWidth(m_nImageWidth);
     pNewObject->SetHeight(m_nImageHeight);
     QString imageName( QString(QObject::tr("Image %1")).arg(nObjIndex));
-    RDNode* pNewNode = new RDNode(imageName,m_vImagePos,pNewObject);
+    RDNode* pNewNode = new RDNode(imageName,vPos,pNewObject);
 	pNewNode->SetParent(m_pFieldNode);
 	pNewObject->SetNode(pNewNode);
     AddChild(*m_pFieldNode,*pNewNode);
     RDToolManager::GetToolManager()->StopCurTool();
+    nObjIndex ++;
     return true;
 }

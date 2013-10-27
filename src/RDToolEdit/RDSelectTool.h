@@ -25,9 +25,9 @@ class RDSelectTool :public RDBaseTool
 public:
     RDSelectTool();
     virtual QIcon GetToolIcon() ;
-    virtual bool OnMouseMove(const float3& ptScene,Qt::MouseButtons buttons);
-    virtual bool OnMousePress(const Qt::MouseButtons& nButtonState,const float3& ptScene);
-    virtual bool OnMouseRelease(const Qt::MouseButtons& ,const float3& ) ;
+    virtual bool OnMouseMove(const float3& ptScene, Qt::MouseButtons buttons, const QString &);
+    virtual bool OnMousePress(const Qt::MouseButtons& nButtonState, const float3& ptScene, const QString &);
+    virtual bool OnMouseRelease(const Qt::MouseButtons& , const float3& , const QString &) ;
 protected:
     const RDNode* HitTest(const float3& ptScene,const RDNode& pNode);
 	void RefreshNodePos();

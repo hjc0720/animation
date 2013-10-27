@@ -26,6 +26,7 @@
 #include "RDRenderData.h"
 #include "HVector4f.h"
 #include <QRectF>
+#include "RDSpaceConvert.h"
 
 class RDObject;
 class RDRenderData;
@@ -94,7 +95,9 @@ public:
 
     virtual const matrix4x4&     GetViewProjMat(const QString& RDName);
     RDCamera* GetCamera(const QString &strName) const;
+    RDSpaceParam GetEditSpaceParam(const QString &strName, const matrix4x4 *pWorldMat)const;
     virtual QRectF GetSceneRt(const QString &)const;
+    const matrix4x4& GetNodeMatrix(const QString& strName)const;
 protected:
     void            MoveSection(const RDTime& nSteps, RDSectionList pStart,RDSectionList pEnd );
     void            UpdateSection(const RDTime& nFrame /*global frame*/,RDRenderData& pRD);

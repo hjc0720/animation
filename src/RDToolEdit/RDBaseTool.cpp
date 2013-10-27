@@ -21,22 +21,22 @@ RDBaseTool::RDBaseTool(const QString& name)
     m_pActiveEdit = NULL;
     m_bEnableEdit = true;
 }
-bool RDBaseTool::OnMouseMove(const float3& ptScene,Qt::MouseButtons buttons)
+bool RDBaseTool::OnMouseMove(const float3& ptScene,Qt::MouseButtons buttons,const QString& strName)
 {
     if(m_pActiveEdit)
-        return m_pActiveEdit->OnMouseMove(ptScene,buttons);
+        return m_pActiveEdit->OnMouseMove(ptScene,buttons,strName);
     return false;
 }
-bool RDBaseTool::OnMousePress(const Qt::MouseButtons& nButtonState,const float3& ptScene)
+bool RDBaseTool::OnMousePress(const Qt::MouseButtons& nButtonState,const float3& ptScene,const QString& strName)
 {
     if(m_pActiveEdit)
-        return m_pActiveEdit->OnMousePress(nButtonState,ptScene);
+        return m_pActiveEdit->OnMousePress(nButtonState,ptScene,strName);
     return false;
 }
-bool RDBaseTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ptScene) 
+bool RDBaseTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ptScene,const QString& strName)
 {
     if(m_pActiveEdit)
-        return m_pActiveEdit->OnMouseRelease(nButtonState,ptScene);
+        return m_pActiveEdit->OnMouseRelease(nButtonState,ptScene,strName);
     return false;
 }
 bool RDBaseTool::OnKeyPress(int nKeyState)
