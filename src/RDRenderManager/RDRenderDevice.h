@@ -109,8 +109,8 @@ public:
     void    ClearScreen(float4 vColor,float vDepth,RDClearTypes types);
 
     //render info
-    int    GetTextureWidth(RDTexture* hTex);
-    int    GetTextureHeight(RDTexture*  hTex);
+    int    GetTextureWidth(const RDTexture*  hTex);
+    int    GetTextureHeight(const RDTexture*  hTex);
 public:
     void DumpTexture(RDTexture*  pTex);
     //info

@@ -29,6 +29,7 @@
 #include "RDTexture.h"
 #include "RDModelResource.h"
 #include "RDCamera.h"
+#include "RDMaterial.h"
 
 class RDModel;
 class RDImagePrivateData: public RDRenderPrivateData
@@ -37,16 +38,14 @@ public:
     RDImagePrivateData(){
         m_pSegModel = nullptr;
         m_pImage = nullptr;
-        m_pVertexShader = nullptr;
-        m_pPixelShader = nullptr;
         m_pShaderProgram = nullptr;
+        m_pMaterial = nullptr;
     }
 public:
     RDModelResource*            m_pSegModel;
     const RDTexture*    m_pImage; 
-    RDShader*           m_pVertexShader;    
-    RDShader*           m_pPixelShader;    
     RDShaderProgram*    m_pShaderProgram;
+    RDMaterial*         m_pMaterial;
     matrix4x4          m_vRenderMatrix;
 };
 
@@ -84,6 +83,8 @@ void RDImageObject::Render(unsigned long ,RDRenderData& RenderData)
 {
     RDImagePrivateData* pPrivateData = dynamic_cast<RDImagePrivateData*>( RenderData.GetPrivateData());
     RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
+    if(!pPrivateData->m_pShaderProgram)
+        pPrivateData->m_pShaderProgram = pDevice->CreateShaderProgram(pPrivateData->m_pSegModel->GetModel()->GetVertexShader(),nullptr,pPrivateData->m_pMaterial->GetShader());
     pDevice->SetShader(pPrivateData->m_pShaderProgram);
     const RDModel* pModel = pPrivateData->m_pSegModel->GetModel();
 
@@ -97,13 +98,14 @@ void RDImageObject::Render(unsigned long ,RDRenderData& RenderData)
     qDebug() << "image render";
     return;
 }
-void RDImageObject::CalFrame(const RDTime& ,RDRenderData& RenderData) 
+void RDImageObject::CalFrame(const RDTime& time,RDRenderData& RenderData) 
 {
     RDImagePrivateData* pPrivateData = dynamic_cast<RDImagePrivateData*>( RenderData.GetPrivateData());
     if(RenderData.GetChangeLevel() >= RDRender_TransChange)
     {
         pPrivateData->m_vRenderMatrix = matrix4x4(m_nWidth / 2,m_nHeight / 2,1,HMatrixQ4F_Scale);
     }
+    pPrivateData->m_pMaterial->UpdateFrame(time,0,0,0);
 }
 
 bool RDImageObject::HitTest(const float3& vScenePt,const RDNode& pNode,const QString& RDName) const
@@ -168,7 +170,7 @@ void RDImageObject::CreateRenderData(RDRenderData& pRD)
     pPrivateData->m_pImage = pResource->GetBuffer();
 
     RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
-    pPrivateData->m_pVertexShader = pDevice->CreateShader(":/shader/model_vs",VertexShader);    
-    pPrivateData->m_pPixelShader = pDevice->CreateShader(":/shader/main_ps",FragmentShader);    
-    pPrivateData->m_pShaderProgram = pDevice->CreateShaderProgram(pPrivateData->m_pVertexShader,nullptr,pPrivateData->m_pPixelShader);
+    pPrivateData->m_pMaterial = new RDMaterial(false,0xffffffff);
+    QRectF bound(0,0,pPrivateData->m_pImage->GetWidth(),pPrivateData->m_pImage->GetHeight());
+    pPrivateData->m_pMaterial->AddTex(RDNormalMatTexture,pPrivateData->m_pImage,bound);
 }

@@ -32,8 +32,8 @@ RDMatTexture::RDMatTexture(const uint* pBuffer,int nWidth,int nHeight)
     m_hTex = pDevice->CreateTexture(nWidth,nHeight,pBuffer,RDNormal2DTexture);
 }
 
-RDMatTexture::RDMatTexture(RDTexture*  hTex,const QRectF& texBound)
-    :m_hTex(hTex)
+RDMatTexture::RDMatTexture(const RDTexture*  hTex,const QRectF& texBound)
+    :m_hConstTex(hTex)
      ,m_bReleaseTex(false)
 {
     RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
@@ -65,7 +65,11 @@ void        RDMatTexture::InitData()
 }
 ////////////////////////////////////////////////////////////////////////////////
 RDMaterial::RDMaterial()
+    :m_MatTexture({nullptr})
 {
+    m_pShader = nullptr;
+    m_nNowTime = 0;
+    m_nChange = MT_ADD_TEXTURE;
 }
 
 RDMaterial::RDMaterial(bool bEnableLight,unsigned int color)
@@ -74,7 +78,11 @@ RDMaterial::RDMaterial(bool bEnableLight,unsigned int color)
      ,m_vAmbient(0xffffffff)
      ,m_vSpecular(color)
      ,m_fShine(32)
+     ,m_MatTexture({nullptr})
 {
+    m_nNowTime = 0;
+    m_nChange = MT_ADD_TEXTURE;
+    m_pShader = nullptr;
 }
 
 void RDMaterial::AddTex(RDMatTextureType nTexType,const QString& fileName)
@@ -100,7 +108,7 @@ void RDMaterial::AddTex(RDMatTextureType nTexType,const uint* pBuffer,int nWidth
     SetChange(MT_ADD_TEXTURE);
 }
 
-void RDMaterial::AddTex(RDMatTextureType nTexType,RDTexture*  hTex,const QRectF& texBound)
+void RDMaterial::AddTex(RDMatTextureType nTexType,const RDTexture*  hTex,const QRectF& texBound)
 {
     if(m_MatTexture[nTexType])
         SAFE_DELETE(m_MatTexture[nTexType]);
@@ -156,8 +164,8 @@ void RDMaterial::CreateShader()
 
 void RDMaterial::GenerateShader()
 {
-    QFile file(":/main_ps");
-    
+    QFile file(":/shader/main_ps");
+ 
     file.open(QIODevice::ReadOnly);
     QTextStream shader(&file);
     m_strShader = shader.readAll();

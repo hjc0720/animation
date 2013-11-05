@@ -38,6 +38,7 @@ public:
     void AddSubModel(int nStart,int nCount);
     size_t GetSubsetCount()const{return m_arSubModel.size();}
     bool HitTest(float3 &vHitPt, const float3& vMouse, const RDSpaceParam& param) const;
+    RDShader* GetVertexShader()const{return m_pVertexShader;}          
 protected:
     int m_nCount;
     float4* m_vPos;
@@ -46,6 +47,7 @@ protected:
     std::vector<RDSubModel> m_arSubModel;
 
     //render data
+    RDShader*           m_pVertexShader;    
     RDVertexBufferHandle m_hVertex;
 
     //static create function

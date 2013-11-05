@@ -18,6 +18,7 @@ RDModel::RDModel()
 
 RDModel::RDModel(int nCount)
     :m_nCount(nCount)
+     ,m_pVertexShader(nullptr)
      ,m_hVertex(InvalidHandle)
 {
     m_vPos = new float4[nCount];
@@ -28,6 +29,7 @@ RDModel::RDModel(int nCount)
 RDModel::~RDModel()
 {
     RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
+    pDevice->ReleaseShader(m_pVertexShader);
     pDevice->ReleaseVertexBuffer(m_hVertex);
     SAFE_DELETE_ARRAY(m_vPos);
     SAFE_DELETE_ARRAY(m_vNormal);
@@ -56,6 +58,7 @@ void RDModel::UpdateRenderData()
     vertex[2].pVertexData = (float*)m_vUV;
     vertex[2].nVertexCount = m_nCount * 2 ;
     m_hVertex = pDevice->CreateVertexBuffer(vertex);
+    m_pVertexShader = pDevice->CreateShader(":/shader/model_vs",VertexShader);
 }
 
 void RDModel::AddSubModel(int nStart,int nCount)

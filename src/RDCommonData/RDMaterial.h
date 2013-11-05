@@ -21,7 +21,7 @@ public:
     RDMatTexture();
     RDMatTexture(const QString& strFileName);
     RDMatTexture(const uint* pBuffer,int nWidth,int nHeight);
-    RDMatTexture(RDTexture* hTex,const QRectF& texBound);
+    RDMatTexture(const RDTexture*  hTex,const QRectF& texBound);
     ~RDMatTexture();
     const QString& GetFileName()const{return m_strFile;}
 protected:
@@ -35,7 +35,10 @@ protected:
     float       m_fRotate;
 
     //临时数据
-    RDTexture*  m_hTex;
+    union{
+        const RDTexture*  m_hConstTex;
+        RDTexture*  m_hTex;
+    };
     matrix4x4  m_matTex;
     bool        m_bReleaseTex;
 };
@@ -53,12 +56,13 @@ public:
     RDMaterial(bool bEnableLight,unsigned int color);
     void AddTex(RDMatTextureType nTexType,const QString& fileName);
     void AddTex(RDMatTextureType nTexType,const uint* pBuffer,int nWidth,int nHeight);
-    void AddTex(RDMatTextureType nTexType,RDTexture*  hTex,const QRectF& texBount);
+    void AddTex(RDMatTextureType nTexType,const RDTexture*  hTex,const QRectF& texBount);
     bool UpdateFrame(const RDTime& time,char m_nPointLightNum,char m_nLineLightNum,char m_nSpotLightNum);
 
     int  SetChange(int nChangeType);
     void ClearChange(){m_nChange = MT_MAT_NO_CHANGE;};
     bool CheckChange( RDMatChangeType nType);
+    RDShader* GetShader()const{return m_pShader;}
 protected:
     void CreateShader();
     void GenerateShader();
