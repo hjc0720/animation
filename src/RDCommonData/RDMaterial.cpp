@@ -65,8 +65,8 @@ void        RDMatTexture::InitData()
 }
 ////////////////////////////////////////////////////////////////////////////////
 RDMaterial::RDMaterial()
-    :m_MatTexture({nullptr})
 {
+    memset(m_MatTexture,0,sizeof(RDMatTexture*) * RDMatTextureCount);
     m_pShader = nullptr;
     m_nNowTime = 0;
     m_nChange = MT_ADD_TEXTURE;
@@ -78,8 +78,8 @@ RDMaterial::RDMaterial(bool bEnableLight,unsigned int color)
      ,m_vAmbient(0xffffffff)
      ,m_vSpecular(color)
      ,m_fShine(32)
-     ,m_MatTexture({nullptr})
 {
+    memset(m_MatTexture,0,sizeof(RDMatTexture*) * RDMatTextureCount);
     m_nNowTime = 0;
     m_nChange = MT_ADD_TEXTURE;
     m_pShader = nullptr;
@@ -169,4 +169,10 @@ void RDMaterial::GenerateShader()
     file.open(QIODevice::ReadOnly);
     QTextStream shader(&file);
     m_strShader = shader.readAll();
+}
+
+void RDMaterial::SetParamToDevice()
+{
+    RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
+    pDevice->SetShader(m_pShader,FragmentShader);
 }

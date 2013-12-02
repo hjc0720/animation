@@ -23,6 +23,13 @@ struct RDSubModel
 //    RDMaterial material;
 };
 
+struct ModelVSParam
+{
+	matrix4x4 MVP;
+	matrix4x4 NormalMat;
+	matrix4x4 ModelMat;
+};
+
 class RDSpaceParam;
 class float4;
 class RDModel

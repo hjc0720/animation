@@ -27,6 +27,12 @@ struct RDVertexBuffer
     RDVertexBufferType nType;
 };
 
+struct RDUBO
+{
+    GLuint hUbo;
+    size_t nBufferSize;
+};
+
 struct RDVertexArray
 {
     GLuint hVertexArray;
@@ -82,6 +88,8 @@ const char* GetShaderExt(RDShaderType nType)
         return "_FS";
     case GeometryShader:
         return "_GS";
+    default:
+        return "";
     }
     return "";
 }
@@ -200,7 +208,7 @@ RDVertexBufferHandle RDRenderDevice::CreateVertexBuffer(const std::vector<RDVert
         glVertexAttribPointer(arVertexData[i].nType,GetPtSize(arVertexData[i].nType),GL_FLOAT,GL_FALSE,0,nullptr);
         pVertexArray->arVertexBuffer.push_back(vertexBuffer);
     }
-    m_vecVertexBuffer.push_back(pVertexArray);
+    //m_vecVertexBuffer.push_back(pVertexArray);
     SAFE_DELETE_ARRAY(pBuffer);
     return pVertexArray;
 }
@@ -261,6 +269,7 @@ void RDRenderDevice::SetShaderSample(RDTexture*  tex, RDSampleType nType)
 void RDRenderDevice::Render(GLenum mode, GLint nStart, GLsizei count)
 {
     QMutexLocker locker(&m_lock);
+    SetShaderToDevice();
     glDrawArrays(mode,nStart,count);
 }
 
@@ -316,6 +325,7 @@ RDRenderDevice::RDRenderDevice(const QGLContext* renderContex)
     :m_pDefaultContext(renderContex)
     ,m_lock(QMutex::Recursive)
 {
+    memset(m_pShader,0,sizeof(RDShader*) * ShaderTypeCount);
     GLint major, minor;
     glGetIntegerv(GL_MAJOR_VERSION, &major);
     glGetIntegerv(GL_MINOR_VERSION, &minor);
@@ -382,4 +392,50 @@ void    RDRenderDevice::ReleaseShader(RDShader* hShader)
      bool bRelease = hShader->Release();
      if(bRelease)
          m_vecShader.erase(strShaderName);
+}
+
+RDUBO* RDRenderDevice::CreateUniformBufferObject(int nCount,const float* pData)
+{
+    QMutexLocker locker(&m_lock);
+    RDUBO* pBuffer = new RDUBO;
+    glGenBuffers(1,&pBuffer->hUbo);
+    glBindBuffer( GL_UNIFORM_BUFFER,pBuffer->hUbo);
+    pBuffer->nBufferSize = nCount * sizeof(float);
+    glBufferData(GL_UNIFORM_BUFFER,pBuffer->nBufferSize,pData,GL_DYNAMIC_DRAW);
+    return pBuffer;
+}
+
+void    RDRenderDevice::ReleaseUniformBufferObject(RDUBO* pBuffer)
+{
+    glDeleteBuffers(1,&pBuffer->hUbo);
+    SAFE_DELETE(pBuffer);
+}
+
+void    RDRenderDevice::SetShaderParam(int nIndex,RDUBO* pBuffer)
+{
+    glBindBufferBase( GL_UNIFORM_BUFFER, nIndex, pBuffer->hUbo);
+}
+
+void    RDRenderDevice::ModifyUniformBufferObject(RDUBO* pBuffer, const float* pData)
+{
+    glBufferSubData(GL_UNIFORM_BUFFER,0,pBuffer->nBufferSize,pData);
+}
+
+void    RDRenderDevice::SetShader(RDShader* pShader,RDShaderType nType)
+{
+    QMutexLocker locker(&m_lock);
+    m_pShader[nType] = pShader;
+}
+
+void    RDRenderDevice::SetShaderToDevice()
+{
+    QMutexLocker locker(&m_lock);
+    RDShaderProgram* pParam = CreateShaderProgram(m_pShader[VertexShader],m_pShader[GeometryShader],m_pShader[FragmentShader]);
+    SetShader(pParam);
+}
+
+void    RDRenderDevice::SetShaderTexture(int nIndex,const RDTexture* tex)
+{
+    QMutexLocker locker(&m_lock);
+    tex->SetTexture(nIndex);
 }

@@ -39,7 +39,6 @@ bool g_bForceUpdate = false;
 
 void RDRenderWidget::setVisible(bool visible)
 {
-    m_RenderTimer.start();
     QWidget::setVisible(visible);
 }
 
@@ -124,10 +123,8 @@ RDRenderWidget::RDRenderWidget(int nWidth, int nHeight,const QGLFormat& format,Q
      ,m_nYOffset(0)
      ,m_fScale(1)
      ,m_document(true)
-     ,m_RenderTimer(20,RDRenderWidget::OnTime,this)
      ,m_swapChain(nWidth,nHeight)
 {
-    m_RenderTimer.close();
     //setAttribute(Qt::WA_PaintOutsidePaintEvent);
     //setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
     //setFocusPolicy(Qt::ClickFocus);
@@ -135,7 +132,6 @@ RDRenderWidget::RDRenderWidget(int nWidth, int nHeight,const QGLFormat& format,Q
 }
 RDRenderWidget::~RDRenderWidget()
 {
-    m_RenderTimer.close();
 }
 
 QSize RDRenderWidget::hintSize()const
@@ -201,14 +197,10 @@ void RDRenderWidget::paintGL()
         pRDManager = new RenderManager;
     }
     RDDocument* pDoc = &m_document;
-    static double dStartTime = 0;
-    static double oldTime = GetTime();
-    dStartTime = GetTime();
     pDoc->Lock();
     RDScene* pScene = pDoc->GetCurScene();
     if(pScene->GetMaxChangeLevel(DEFAULT_RD) == RDRender_NoChange && pDoc->GetCurTime() == pScene->GetRenderData(DEFAULT_RD)->GetTime())
     {
-        oldTime = dStartTime;
         pDoc->UnLock();
         //if(g_bForceUpdate)
         //{
@@ -228,15 +220,14 @@ void RDRenderWidget::paintGL()
     QPointF pt(m_nXOffset,m_nYOffset);
     if(!pRDManager->RenderScene(pt,m_validRt,pDoc->GetCurTime()))
     {
-        oldTime = dStartTime;
         pDoc->UnLock();
         return;
     }
     qDebug() << "On Time :" << pDoc->GetCurTime();
     //pWidget->update();
-    if(dStartTime - oldTime > 20)
-        qDebug() << dStartTime - oldTime;
-    oldTime = dStartTime;
+//    if(dStartTime - oldTime > 20)
+ //       qDebug() << dStartTime - oldTime;
+  //  oldTime = dStartTime;
     pDoc->UnLock();
 }
 

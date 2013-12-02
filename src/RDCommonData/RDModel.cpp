@@ -92,6 +92,7 @@ void RDModel::DrawSubset(size_t nSubset) const
 {
     RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
     const RDSubModel& subModel = m_arSubModel[nSubset];
+    pDevice->SetShader(m_pVertexShader,VertexShader);
     pDevice->SetVertexBuffer(m_hVertex);
     pDevice->Render(GL_TRIANGLES,subModel.nStart,subModel.nCount );
 }

@@ -62,7 +62,7 @@ public:
     int  SetChange(int nChangeType);
     void ClearChange(){m_nChange = MT_MAT_NO_CHANGE;};
     bool CheckChange( RDMatChangeType nType);
-    RDShader* GetShader()const{return m_pShader;}
+    void SetParamToDevice();
 protected:
     void CreateShader();
     void GenerateShader();

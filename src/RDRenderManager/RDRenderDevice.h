@@ -1,6 +1,5 @@
 #ifndef RDRENDERMANAGERGL_H
 #define RDRENDERMANAGERGL_H
-# include <GL/gl.h>
 #include <list>
 #include <map>
 #include <QString>
@@ -10,12 +9,14 @@
 #include <HVector4f.h>
 #include <HVector3f.h>
 #include <HMatrixQ4F.h>
+# include <GL/gl.h>
 
 enum RDShaderType
 {
     VertexShader,
     FragmentShader,
     GeometryShader,
+    ShaderTypeCount,
 };
 
 enum RDTexture_Type
@@ -59,6 +60,7 @@ struct RDVertexData
     int nVertexCount;
 };
 
+struct RDUBO;
 class QRect;
 class QGLContext;
 class RDRenderState;
@@ -83,22 +85,27 @@ public:
     RDTexture* CreateTexture(int nWidth, int nHeight,const uint* buffer,  RDTexture_Type nType);
     RDShader* CreateShader(const QString &fileName, RDShaderType nType);
     RDShader* CreateShader(const QString& code,const QString& shaderName,RDShaderType nType);
-    RDShaderProgram* CreateShaderProgram(RDShader *pVertexShader,  RDShader*pGeometryShader,  RDShader* pPixelShader);
     RDVertexBufferHandle     CreateVertexBuffer(const std::vector<RDVertexData> &arVertexData);
+    RDUBO*         CreateUniformBufferObject(int nCount,const float* vBuffer);
     //release function
     void    ReleaseVertexBuffer(RDVertexBufferHandle hVertexBuffer);
     void    ReleaseTexture(RDTexture* hTex);
     void    ReleaseShader(RDShader* hShader);
-
+    void    ReleaseUniformBufferObject(RDUBO* pBuffer);
     //modify function
+    void    ModifyUniformBufferObject(RDUBO* pBuffer, const float* pData);
     //void    ClearTexture(RDTexture* pTexture, );
     //render function
     void    SetVertexBuffer(RDVertexBufferHandle pVertex);
-    void    SetShader(RDShaderProgram* pShader);
+    void    SetShaderParam(int nIndex,RDUBO* pBuffer);
+    void    SetShader(RDShader* pShader,RDShaderType nType);
+    void    SetShaderTexture(int nIndex,const RDTexture* tex);
+
     void    SetShaderParam(RDShaderProgram* pShader,const char* name,float value);
     void    SetShaderParam(RDShaderProgram* pShader,const char* name,float3& value);
     void    SetShaderParam(RDShaderProgram* pShader,const char* name,float4& value);
     void    SetShaderParam(RDShaderProgram* pShader,const char* name,const matrix4x4& value);
+
     void    SetShaderTexture(RDShaderProgram* pShader,const char* name,const RDTexture* tex);
     void    SetShaderSample(RDTexture* tex,RDSampleType nType);
     void    Render(GLenum mode,GLint nStart,GLsizei count);
@@ -120,16 +127,20 @@ public:
 protected:
     RDRenderDevice(const QGLContext *renderContex);
     RDShader* GetExistShader(const QString& shaderName);
+    void    SetShaderToDevice();
+    RDShaderProgram* CreateShaderProgram(RDShader *pVertexShader,  RDShader*pGeometryShader,  RDShader* pPixelShader);
+    void    SetShader(RDShaderProgram* pShader);
 protected:
     RDRenderState* m_pCurState;
     RDRenderState* m_pTempState;
 
 //    std::list<RDTexHandle> m_vecTex;
-    std::list<RDVertexBufferHandle> m_vecVertexBuffer;
+    //std::list<RDVertexBufferHandle> m_vecVertexBuffer;
     std::map<QString,RDTexture* > m_vecFileTex;
     std::map<QString,RDShader*> m_vecShader;
     std::map<QString,RDShaderProgram*> m_vecShaderProgram;
     GLuint                 m_hFrameBuffer;
+    RDShader*               m_pShader[ShaderTypeCount];
 
     const QGLContext*     m_pDefaultContext;
 

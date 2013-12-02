@@ -29,6 +29,8 @@ GLenum GetGLType(RDShaderType nType)
         return GL_FRAGMENT_SHADER;
     case GeometryShader:
         return GL_GEOMETRY_SHADER;
+    default:
+        return GL_VERTEX_SHADER;
     }
     return GL_VERTEX_SHADER;
 }
@@ -45,6 +47,7 @@ RDShader::RDShader(const QString &code, const QString &shaderName, RDShaderType 
     glCompileShader(m_hShader);
 
 #ifdef _DEBUG
+    qDebug() << code;
     GLint result;
     glGetShaderiv(m_hShader,GL_COMPILE_STATUS,&result);
     if(GL_FALSE == result)

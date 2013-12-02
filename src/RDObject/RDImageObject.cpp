@@ -38,13 +38,13 @@ public:
     RDImagePrivateData(){
         m_pSegModel = nullptr;
         m_pImage = nullptr;
-        m_pShaderProgram = nullptr;
         m_pMaterial = nullptr;
+        m_pVertexParam = nullptr;
     }
 public:
     RDModelResource*            m_pSegModel;
     const RDTexture*    m_pImage; 
-    RDShaderProgram*    m_pShaderProgram;
+    RDUBO*              m_pVertexParam;
     RDMaterial*         m_pMaterial;
     matrix4x4          m_vRenderMatrix;
 };
@@ -83,16 +83,19 @@ void RDImageObject::Render(unsigned long ,RDRenderData& RenderData)
 {
     RDImagePrivateData* pPrivateData = dynamic_cast<RDImagePrivateData*>( RenderData.GetPrivateData());
     RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
-    if(!pPrivateData->m_pShaderProgram)
-        pPrivateData->m_pShaderProgram = pDevice->CreateShaderProgram(pPrivateData->m_pSegModel->GetModel()->GetVertexShader(),nullptr,pPrivateData->m_pMaterial->GetShader());
-    pDevice->SetShader(pPrivateData->m_pShaderProgram);
     const RDModel* pModel = pPrivateData->m_pSegModel->GetModel();
 
-    pDevice->SetShaderTexture(pPrivateData->m_pShaderProgram,"DiffuseTex",pPrivateData->m_pImage);
+    pDevice->SetShaderTexture(0,pPrivateData->m_pImage);
     
-    matrix4x4 WVP = pPrivateData->m_vRenderMatrix * RenderData.GetMVPMatrix();
-    pDevice->SetShaderParam(pPrivateData->m_pShaderProgram,"MVP",WVP);
+    ModelVSParam param;
+    param.MVP = pPrivateData->m_vRenderMatrix * RenderData.GetMVPMatrix();
+    if(pPrivateData->m_pVertexParam)
+        pDevice->ModifyUniformBufferObject(pPrivateData->m_pVertexParam,reinterpret_cast<float*>(&param));
+    else
+        pPrivateData->m_pVertexParam = pDevice->CreateUniformBufferObject(sizeof(ModelVSParam) / sizeof(float),reinterpret_cast<float*>(&param));
+    pDevice->SetShaderParam(0,pPrivateData->m_pVertexParam);
 
+    pPrivateData->m_pMaterial->SetParamToDevice();
     for(size_t i = 0; i <  pModel->GetSubsetCount(); i++)
         pModel->DrawSubset(i);
     qDebug() << "image render";
@@ -169,7 +172,6 @@ void RDImageObject::CreateRenderData(RDRenderData& pRD)
     RDImageResource* pResource = dynamic_cast<RDImageResource*>(pResManager->GetResource(m_Image));
     pPrivateData->m_pImage = pResource->GetBuffer();
 
-    RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
     pPrivateData->m_pMaterial = new RDMaterial(false,0xffffffff);
     QRectF bound(0,0,pPrivateData->m_pImage->GetWidth(),pPrivateData->m_pImage->GetHeight());
     pPrivateData->m_pMaterial->AddTex(RDNormalMatTexture,pPrivateData->m_pImage,bound);

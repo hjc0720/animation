@@ -58,7 +58,7 @@ protected:
     int     m_nYOffset;//after scene scale;
     float   m_fScale;//real show size divide projSize;
     RDDocument m_document;
-    RDTimer m_RenderTimer;
+    //RDTimer m_RenderTimer;
     RDSwapChain m_swapChain;
     QRectF  m_validRt;
 };

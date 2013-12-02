@@ -147,8 +147,8 @@ bool RDSpaceParam::HitTriangle(float3 &vHitPt, const float3 &vPt, const float3 &
     float3 edg2(vPt2 - vPt0);
     float3 vec(ray.vDir * edg2 );
     float det = edg1 ^ vec;
-//    if(bCull && det < 0)
-//        return false;
+    if(bCull && det > 0)
+        return false;
     float sign =  det < 0 ? -1.f : 1.f;
     det = sign * det;
 
