@@ -62,59 +62,6 @@ void RDRenderWidget::resizeGL(int w, int h)
     //glViewport(m_nXOffset, m_nYOffset, GetRealPorjWidth(),GetRealPorjHeight());
 }
 
-void    RDRenderWidget::OnTime(void* param)
-{
-    static RenderManager* pRDManager = 0;
-    if(!pRDManager)
-    {
-        pRDManager = new RenderManager;
-    }
-    RDRenderWidget* pWidget = (RDRenderWidget*)param;
-    RDDocument* pDoc = &pWidget->GetDocument();
-    static double dStartTime = 0;
-    static double oldTime = GetTime();
-    dStartTime = GetTime();
-    pDoc->Lock();
-    RDScene* pScene = pDoc->GetCurScene();
-    //if(pScene->GetMaxChangeLevel(DEFAULT_RD) == RDRender_NoChange && pDoc->GetCurTime() == pScene->GetRenderData(DEFAULT_RD)->GetTime()) 
-    //{
-        //oldTime = dStartTime;
-        //pDoc->UnLock();
-        //if(g_bForceUpdate)
-        //{
-            //pWidget->update();
-            //g_bForceUpdate = false;
-        //}
-        //return;
-    //}
-    pRDManager->SetRenderName(DEFAULT_RD);
-    pRDManager->SetScene(pScene);
-    pRDManager->SetDstBuffer(pWidget->m_swapChain.GetBackBuffer());
-    QPointF pt(pWidget->m_nXOffset,pWidget->m_nYOffset);
-//    if(!pRDManager->RenderScene(pt,pWidget->m_validRt,pDoc->GetCurTime()))
-//    {
-//        oldTime = dStartTime;
-//        pDoc->UnLock();
-//        if(g_bForceUpdate)
-//        {
-//            pWidget->update();
-//            g_bForceUpdate = false;
-//        }
-//        return;
-//    }
-//    qDebug() << "On Time :" << pDoc->GetCurTime();
-//    pWidget->m_swapChain.SwapChain();
-
- //   RDRenderData* pSceneRD = pScene->GetRenderData(DEFAULT_RD);
-//    pWidget->update(pSceneRD->GetDirty().translated(pt).toAlignedRect());
-    pWidget->update();
-    pDoc->UnLock();
-    //pWidget->update();
-    if(dStartTime - oldTime > 20)
-        qDebug() << dStartTime - oldTime;
-    oldTime = dStartTime;
-}
-
 RDRenderWidget::RDRenderWidget(int nWidth, int nHeight,const QGLFormat& format,QWidget *parent /*= 0*/)
     :QGLWidget(format,parent)
      ,m_nProjWidth(nWidth)
@@ -125,11 +72,8 @@ RDRenderWidget::RDRenderWidget(int nWidth, int nHeight,const QGLFormat& format,Q
      ,m_document(true)
      ,m_swapChain(nWidth,nHeight)
 {
-    //setAttribute(Qt::WA_PaintOutsidePaintEvent);
-    //setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
-    //setFocusPolicy(Qt::ClickFocus);
-   //m_swapChain.GetFrontBuffer()->FillColor(0xff00ff00);
 }
+
 RDRenderWidget::~RDRenderWidget()
 {
 }
@@ -155,8 +99,6 @@ bool RDRenderWidget::event(QEvent* e)
         {
             QMouseEvent* pEvent = dynamic_cast<QMouseEvent*>(e);
             bProcess = pCurTool->OnMousePress(pEvent->buttons() ,ClientToScene(pEvent->pos()),DEFAULT_RD) ;
-            if(bProcess)
-                QWidget::event(e);
         }
         break;
     case QEvent::MouseButtonRelease:
@@ -174,6 +116,7 @@ bool RDRenderWidget::event(QEvent* e)
     default:
         return QWidget::event(e);
     }
+    //updateGL();
     return bProcess || QWidget::event(e);
 }
 

@@ -40,8 +40,10 @@ public:
     RDBaseTool* GetCurTool(){return m_pCurTool;}
 
     RDDocument* GetDocument(){return m_pCurDoc;}
+    void SendSceneChange(){emit SceneChange();}
 signals:
     void ChangeTool(const QString& toolName);
+    void SceneChange();
 protected:
     RDToolManager();
     void RegisterTool();

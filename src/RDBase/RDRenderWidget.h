@@ -50,7 +50,6 @@ protected:
     float3 ClientToScene(const QPoint& pos);
     void initializeGL () ;
     void paintGL();
-    static void    OnTime(void* param);
 protected:
     int     m_nProjWidth;
     int     m_nProjHeight;

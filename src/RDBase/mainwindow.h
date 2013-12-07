@@ -50,9 +50,6 @@ protected:
     RDRenderWidget* m_pCenterWidget;
     QDockWidget*    m_pProperty;
     QUndoGroup      m_UndoGroup;
-    //int         m_nCurDocument;
-    //std::vector<RDDocument*> m_vecDocList;
-private:
     QStatusBar* m_pBar;
 	RDTimelineView* m_pTimeLineView;
 };

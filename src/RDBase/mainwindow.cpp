@@ -51,14 +51,15 @@ void MainWindow::InitData()
     //RDDocument* pDocument = new RDDocument(true);
     //m_vecDocList.push_back(pDocument);
     //m_nCurDocument = 0;
- 
 }
+
 void MainWindow::setVisible(bool visible)
 {
     if(!m_bInit && visible)
         InitWindow();
    QMainWindow::setVisible(visible); 
 }
+
 void MainWindow::InitWindow()
 {
     AddCenterWidget();
@@ -69,10 +70,13 @@ void MainWindow::InitWindow()
     AddEditorBar();
     AddProperty();
 
+    connect(RDToolManager::GetToolManager(),SIGNAL(SceneChange()),m_pCenterWidget,SLOT(updateGL()));
+    connect(&RDEditerManager::GetEditerManager(),SIGNAL(SceneChange()),m_pCenterWidget,SLOT(updateGL()));
     resize(800,600);
 	m_UndoGroup.setActiveStack(GetCurDocument()->GetUndoStack());
     m_bInit = true;
 }
+
 void MainWindow::AddCenterWidget()
 {
     int nWidth = QApplication::desktop()->width();
@@ -216,4 +220,5 @@ void MainWindow::OnReloadTimeLine(RDScene& pScene)
 void MainWindow::OnFrameChanged(const RDTime& nTime)
 {
     GetCurDocument()->SetCurTime(nTime);
+    m_pCenterWidget->updateGL();
 }

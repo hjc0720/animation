@@ -63,6 +63,7 @@ bool RDSelectTool::OnMouseMove(const float3& vMov,Qt::MouseButtons buttons,const
             RDNode*  pNode = pDoc->GetSelItem(i);
             MoveItemPos(vNeedMov + m_vOldPos[i],*pNode);
         }
+        RDToolManager::GetToolManager()->SendSceneChange();
         //m_vStartPos = vMov;
         //m_bDrag = true;
     }

@@ -55,12 +55,10 @@ RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
     pLeft->addWidget(m_pHead);
 
 
-    //m_pRuler = new RDTimeRuler(10000000,this);
     m_pSectionView = new RDSectionView(&pScene,this);
     QVBoxLayout* pRight = new QVBoxLayout();
     pRight->setContentsMargins(0,0,0,0);
     pRight->setSpacing(0);
-    //    pRight->addWidget(m_pRuler);
     //pRight->addSpacing(20);
     pRight->addWidget(m_pSectionView);
 

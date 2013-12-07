@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="animation" company="" manager="" phase="" project-start="20121006T000000Z" mrproject-version="2" calendar="1">
+<project name="animation" company="" manager="" phase="" project-start="20121006T000000Z" mrproject-version="2" calendar="2">
   <properties/>
   <phases/>
   <calendars>
@@ -8,7 +8,18 @@
       <day-type id="1" name="&#x65E0;&#x5DE5;&#x4F5C;" description="&#x9ED8;&#x8BA4;&#x7684;&#x4E0D;&#x5DE5;&#x4F5C;&#x65E5;"/>
       <day-type id="2" name="&#x4F7F;&#x7528;&#x57FA;&#x7840;" description="&#x4F7F;&#x7528;&#x57FA;&#x65E5;&#x5386;&#x7684;&#x5929;"/>
     </day-types>
-    <calendar id="1" name="&#x9ED8;&#x8BA4;">
+    <calendar id="1" name="test">
+      <default-week mon="0" tue="0" wed="0" thu="0" fri="0" sat="0" sun="0"/>
+      <overridden-day-types>
+        <overridden-day-type id="0">
+          <interval start="2000" end="2200"/>
+        </overridden-day-type>
+      </overridden-day-types>
+      <days>
+        <day date="20121010" type="day-type" id="0"/>
+      </days>
+    </calendar>
+    <calendar id="2" name="&#x9ED8;&#x8BA4;">
       <default-week mon="0" tue="0" wed="0" thu="0" fri="0" sat="1" sun="1"/>
       <overridden-day-types>
         <overridden-day-type id="1">
@@ -22,17 +33,6 @@
       </overridden-day-types>
       <days>
         <day date="20121006" type="day-type" id="0"/>
-      </days>
-    </calendar>
-    <calendar id="2" name="test">
-      <default-week mon="0" tue="0" wed="0" thu="0" fri="0" sat="0" sun="0"/>
-      <overridden-day-types>
-        <overridden-day-type id="0">
-          <interval start="2000" end="2200"/>
-        </overridden-day-type>
-      </overridden-day-types>
-      <days>
-        <day date="20121010" type="day-type" id="0"/>
       </days>
     </calendar>
   </calendars>
@@ -81,16 +81,17 @@
         </predecessors>
       </task>
       <task id="18" name="&#x5B9E;&#x73B0;GroupNode" note="" work="7200" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
-      <task id="19" name="&#x6DFB;&#x52A0;&#x5B58;&#x76D8;magic number" note="" work="7200" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
-      <task id="20" name="&#x6DFB;&#x52A0;&#x6750;&#x8D28;" note="" work="216000" start="20121104T110000Z" end="20121120T210000Z" work-start="20121104T110000Z" percent-complete="0" priority="8" type="normal" scheduling="fixed-work">
+      <task id="19" name="&#x6DFB;&#x52A0;&#x5B58;&#x76D8;magic number" note="" work="7200" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work"/>
+      <task id="20" name="&#x6DFB;&#x52A0;&#x6750;&#x8D28;" note="" work="216000" start="20121104T110000Z" end="20121120T210000Z" work-start="20121104T110000Z" percent-complete="10" priority="8" type="normal" scheduling="fixed-work">
         <predecessors>
           <predecessor id="1" predecessor-id="17" type="FS"/>
           <predecessor id="1" predecessor-id="11" type="FS"/>
         </predecessors>
       </task>
     </task>
-    <task id="21" name="&#x7F16;&#x8F91;&#x5668;" note="" work="7200" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+    <task id="21" name="&#x7F16;&#x8F91;&#x5668;" note="" work="14400" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
       <task id="22" name="&#x51FB;&#x4E2D;&#x6D4B;&#x8BD5;" note="" work="7200" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
+      <task id="23" name="&#x6E32;&#x67D3;&#x66F4;&#x65B0;" note="" work="7200" start="20121006T000000Z" end="20121006T220000Z" work-start="20121006T200000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
     </task>
   </tasks>
   <resource-groups/>

@@ -72,5 +72,6 @@ void RDToolManager::StopCurTool()
 {
     SwitchTool(&g_strDefaultTool,*m_pCurDoc);
     emit ChangeTool(g_strDefaultTool);
+    emit SceneChange();
     qDebug() << "stop cur tool! emit signal";
 }

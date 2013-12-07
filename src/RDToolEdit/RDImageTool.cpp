@@ -52,6 +52,7 @@ bool RDImageTool::OnMousePress(const Qt::MouseButtons& nButtonState,const float3
     m_vImagePos = ptScene;
     return true;
 }
+
 bool RDImageTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ptScene,const QString& strName)
 {
     static int nObjIndex = 1; 
@@ -78,6 +79,7 @@ bool RDImageTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const floa
 	pNewNode->SetParent(m_pFieldNode);
 	pNewObject->SetNode(pNewNode);
     AddChild(*m_pFieldNode,*pNewNode);
+    m_pFieldNode->SetChangeLevel(RDRender_TransChange);
     RDToolManager::GetToolManager()->StopCurTool();
     nObjIndex ++;
     return true;

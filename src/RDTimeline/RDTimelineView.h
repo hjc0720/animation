@@ -44,6 +44,5 @@ protected:
 		QScrollArea* m_pHead;
         RDSectionView* m_pSectionView;
 		QVBoxLayout* m_pHeadLayout;
-		RDTimeRuler* m_pRuler;
 };
 #endif   // ----- #ifndef rdtimeline_INC  -----
