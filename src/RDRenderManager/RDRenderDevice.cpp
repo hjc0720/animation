@@ -6,6 +6,7 @@
 #include <QFileInfo>
 #include <QMutexLocker>
 #include "RDShaderProgram.h"
+#include <algorithm>
 
 #define SINGLE_CONTEX
 
@@ -53,6 +54,18 @@ RDRenderDevice * RDRenderDevice::CreateRenderManager(const QGLContext* renderCon
 RDRenderDevice* RDRenderDevice::GetRenderManager()
 {
     return g_pRenderManager;
+}
+
+void RDRenderDevice::ReleaseRenderManager()
+{
+    SAFE_DELETE(g_pRenderManager);
+}
+////////////////////////////////////////////////////////////////////////////////
+
+RDRenderDevice::~RDRenderDevice()
+{
+    std::for_each(m_vecShaderProgram.begin(),m_vecShaderProgram.end(),[](std::pair<QString,RDShaderProgram*> pair)
+            {SAFE_DELETE(pair.second);});
 }
 
 RDTexture*  RDRenderDevice::CreateTexture(const QString &fileName)
@@ -176,10 +189,7 @@ RDShaderProgram *RDRenderDevice::CreateShaderProgram(RDShader *pVertexShader,  R
 
     auto it = m_vecShaderProgram.find(programName) ;
     if(it != m_vecShaderProgram.end())
-    {
-        it->second->AddRef();
        return it->second;
-    }
     
     RDShaderProgram* pShaderProgram = new RDShaderProgram(programName,pVertexShader,pGeometryShader,pPixelShader);
     m_vecShaderProgram[programName] = pShaderProgram;
@@ -223,41 +233,6 @@ void RDRenderDevice::SetShader(RDShaderProgram *pShader)
 {
     QMutexLocker locker(&m_lock);
     pShader->use();
-}
-
-void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name, float value)
-{
-    QMutexLocker locker(&m_lock);
-    GLint hLocation = pShader->GetUniformLocation(name);
-    glUniform1f(hLocation,value);
-}
-
-void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name, float3 &value)
-{
-    QMutexLocker locker(&m_lock);
-    GLint hLocation = pShader->GetUniformLocation(name);
-    glUniform3f(hLocation,value.x(),value.y(),value.z());
-}
-
-void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name, float4 &value)
-{
-    QMutexLocker locker(&m_lock);
-    GLint hLocation = pShader->GetUniformLocation(name);
-    glUniform4f(hLocation,value.x(),value.y(),value.z(),value.w());
-}
-
-void RDRenderDevice::SetShaderParam(RDShaderProgram *pShader, const char *name,const matrix4x4 &value)
-{
-    QMutexLocker locker(&m_lock);
-    GLint hLocation = pShader->GetUniformLocation(name);
-    glUniformMatrix4fv(hLocation,1,false,value.data());
-}
-
-void RDRenderDevice::SetShaderTexture(RDShaderProgram *pShader, const char *name, const RDTexture*  tex)
-{
-    QMutexLocker locker(&m_lock);
-    GLint hLocation = pShader->GetUniformLocation(name);
-    tex->SetTexture(hLocation);
 }
 
 void RDRenderDevice::SetShaderSample(RDTexture*  tex, RDSampleType nType)

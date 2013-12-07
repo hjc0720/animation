@@ -79,6 +79,7 @@ class RDRenderDevice
 public:
     static RDRenderDevice* CreateRenderManager(const QGLContext *renderContex);
     static RDRenderDevice* GetRenderManager();
+    static void ReleaseRenderManager();
 public:
     //create function
     RDTexture* CreateTexture(const QString& fileName);
@@ -101,12 +102,6 @@ public:
     void    SetShader(RDShader* pShader,RDShaderType nType);
     void    SetShaderTexture(int nIndex,const RDTexture* tex);
 
-    void    SetShaderParam(RDShaderProgram* pShader,const char* name,float value);
-    void    SetShaderParam(RDShaderProgram* pShader,const char* name,float3& value);
-    void    SetShaderParam(RDShaderProgram* pShader,const char* name,float4& value);
-    void    SetShaderParam(RDShaderProgram* pShader,const char* name,const matrix4x4& value);
-
-    void    SetShaderTexture(RDShaderProgram* pShader,const char* name,const RDTexture* tex);
     void    SetShaderSample(RDTexture* tex,RDSampleType nType);
     void    Render(GLenum mode,GLint nStart,GLsizei count);
 
@@ -126,6 +121,7 @@ public:
     GLint GetCreateTextureIndex()const{return m_nMaxUseTexture - 1;}
 protected:
     RDRenderDevice(const QGLContext *renderContex);
+    virtual ~RDRenderDevice();
     RDShader* GetExistShader(const QString& shaderName);
     void    SetShaderToDevice();
     RDShaderProgram* CreateShaderProgram(RDShader *pVertexShader,  RDShader*pGeometryShader,  RDShader* pPixelShader);

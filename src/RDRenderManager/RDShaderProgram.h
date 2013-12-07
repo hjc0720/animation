@@ -55,29 +55,15 @@ class RDShaderProgram
 {
 public:
     RDShaderProgram(const QString& shaderName,RDShader* pVertexShader,RDShader* pGeometryShader,RDShader* pFragmentShader);
-    bool Release(){
-        m_nRef--;
-        if(m_nRef == 0) 
-        {
-            delete this;
-            return true;
-        }
-        return false;
-    }
+    ~RDShaderProgram(){glDeleteProgram(m_hShaderProgram);}
 
     void SetShader(RDShader* pShader,RDShaderType nType);
     void link();
-    void AddRef(){m_nRef++;}
-
     void use(){
         glUseProgram(m_hShaderProgram);
     }
-    GLint GetUniformLocation( const char *name);
-protected:
-    ~RDShaderProgram(){glDeleteProgram(m_hShaderProgram);}
 protected:
     RDShader*   m_pShader[3];
-    int         m_nRef;
     GLuint      m_hShaderProgram;
     QString     m_ProgramName;
 };

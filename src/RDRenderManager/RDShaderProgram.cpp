@@ -71,8 +71,7 @@ RDShader::RDShader(const QString &code, const QString &shaderName, RDShaderType 
 
 
 RDShaderProgram::RDShaderProgram(const QString& shaderName,RDShader* pVertexShader,RDShader* pGeometryShader,RDShader* pFragmentShader)
-    :m_nRef(1)
-    ,m_ProgramName(shaderName)
+    :m_ProgramName(shaderName)
 {
     m_hShaderProgram = glCreateProgram();
     memset(m_pShader,0,sizeof(m_pShader));
@@ -113,9 +112,4 @@ void RDShaderProgram::link()
         }
     }
 #endif
-}
-
-GLint RDShaderProgram::GetUniformLocation(const char *name)
-{
-    return glGetUniformLocation(m_hShaderProgram,name);
 }
