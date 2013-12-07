@@ -10,7 +10,8 @@ layout(binding = 2, std140)uniform Material
     float fAlpha;
 };
 
-uniform sampler2D DiffuseTex;
+layout(binding=0)uniform sampler2D DiffuseTex;
+//uniform sampler2D DiffuseTex;
 void main()
 {
     vColor = texture(DiffuseTex,oUv);

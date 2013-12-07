@@ -101,6 +101,7 @@ void RDImageObject::Render(unsigned long ,RDRenderData& RenderData)
     qDebug() << "image render";
     return;
 }
+
 void RDImageObject::CalFrame(const RDTime& time,RDRenderData& RenderData) 
 {
     RDImagePrivateData* pPrivateData = dynamic_cast<RDImagePrivateData*>( RenderData.GetPrivateData());
