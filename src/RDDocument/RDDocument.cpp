@@ -118,12 +118,15 @@ void RDDocument::SaveProjAs(const QString& filePath)
         m_pProject->SetFilePath(filePath);
     }
 }
+
+#define MAGICNUM "JENNYHJC"
 void RDDocument::SaveProjAs(const RDProject& pProj,const QString& filePath)
 {
     QFile out(m_strCachePath + "/project");
 	qDebug() << " begin save file" << filePath;
     out.open(QIODevice::WriteOnly);
     RDFileDataStream data(&out,m_strCachePath + "/Resource");
+    data << MAGICNUM;
     data << pProj;
     data.EndSaveResource();
     out.close();
@@ -150,6 +153,13 @@ void RDDocument::LoadProj(const QString& filePath)
         return;
     RDFileDataStream data(&in);
     m_pProject = new RDProject();
+    QString magicNum;
+    data >> magicNum;
+    if(magicNum != MAGICNUM)
+    {
+        in.close();
+        return;
+    }
     data >> *m_pProject;
     m_pProject->SetFilePath(filePath);
     SetCurScene(0);
