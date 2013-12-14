@@ -30,7 +30,10 @@ class RDLayerRenderData;
 class RDLayer : public RDNode
 {
 public:
+    RDLayer(){};
     RDLayer(RDLayerType nType,const QString& strName);
+    virtual ~RDLayer();
+    virtual void Serialize(RDFileDataStream& buffer,bool bSave);
 
     virtual size_t GetChildCount()const{return  GetCameraCount() + RDNode::GetChildCount();}
     virtual RDNode* GetChild(size_t i);

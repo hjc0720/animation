@@ -90,8 +90,8 @@ public:
     void Lock(){m_lock.lock();}
     void UnLock(){m_lock.unlock();}
 protected:
-    void SaveProj(const RDProject& pProj);
-    void SaveProjAs(const RDProject& pProj,const QString& filePath);
+    void SaveProj(RDProject& pProj);
+    void SaveProjAs(RDProject& pProj,const QString& filePath);
     void CreateTempProjDir();
     int DeleteTempProjDir();
     int TarProjDir(const QString& strProjPath);

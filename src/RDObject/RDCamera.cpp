@@ -141,3 +141,16 @@ const matrix4x4&    RDCamera::GetViewProjMat(const QString& pRDName)
     RDCameraRenderData* pRenderData = dynamic_cast<RDCameraRenderData*>( GetRenderData(pRDName));
     return pRenderData->m_matRenderViewProj;
 }
+
+void RDCamera::Serialize(RDFileDataStream& buffer,bool bSave)
+{
+    int nVersion = 0;
+    buffer.Serialize(nVersion,bSave);
+    RDNode::Serialize(buffer,bSave);
+    int nType = m_nProjType;
+    buffer.Serialize(nType,bSave);
+    if(!bSave)
+        m_nProjType = static_cast<RDProjectType>(nType);
+    buffer.Serialize(m_vUp,bSave);
+    buffer.Serialize(m_vLookAt,bSave);
+}

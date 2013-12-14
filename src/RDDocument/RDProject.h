@@ -35,21 +35,14 @@ public:
     int GetHeight()const{return m_nHeight;}
     RDScene* GetScene(int nIndex){try{return m_SceneList.at(nIndex);}catch(std::out_of_range& ){return 0;}}
     size_t GetSceneCount(){return m_SceneList.size();}
+
+    void Serialize(RDFileDataStream& buffer,bool bSave);
 protected:
-    int     m_nProjVersion;
     int     m_nWidth;
     int     m_nHeight;
     double  m_dFrameRate; //framecount per second;
     QString m_strFilePath;
     std::vector<RDScene*> m_SceneList;
 
-    //friend class
-    friend RDFileDataStream& operator << (RDFileDataStream& buffer,const RDProject& proj);
-    friend RDFileDataStream& operator >> (RDFileDataStream& buffer,RDProject& proj);
 };
-
-//save Load operator
-RDFileDataStream& operator << (RDFileDataStream& buffer,const RDProject& proj);
-RDFileDataStream& operator >> (RDFileDataStream& buffer,RDProject& proj);
-
 #endif   // ----- #ifndef rdproject_INC  -----

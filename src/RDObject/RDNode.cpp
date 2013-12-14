@@ -32,6 +32,8 @@ using namespace std;
 const int g_nFirstVersion = 0;
 const int g_nNowVersion = g_nFirstVersion;
 
+RDObjectCreator<RDNode,false> nodeCreator;
+
 RDNode::RDNode()
       :m_vScale(1,1,1)
      ,m_NodeID(QUuid::createUuid())
@@ -504,98 +506,96 @@ const RDLayer*        RDNode::GetLayerNode()const
         return m_pParent->GetLayerNode();
     return pLayer;
 }
-//================================================================================
-RDFileDataStream& operator << (RDFileDataStream& buffer,const RDNode& node)
+
+void RDNode::Serialize(RDFileDataStream& buffer,bool bSave)
 {
-    QMutexLocker locker(&node.m_lock);
-    qDebug() << "begin to save node :" << node.m_strName;
-    buffer << g_nNowVersion;
-    QDataStream& tmp = dynamic_cast<QDataStream&>(buffer);
-    tmp << node.m_strName;
-    buffer.writeRawData( (char*)&node.m_vPos,sizeof(float3));
-    buffer << node.m_NodeID;
+    QMutexLocker locker(&m_lock);
+    int nVersion = g_nNowVersion;
+    buffer.Serialize(nVersion,bSave);
+    buffer.Serialize(m_strName,bSave);
+    qDebug() << "begin to serialize node :" << m_strName;
+    buffer.Serialize(m_vPos,bSave);
+    buffer.Serialize(m_NodeID,bSave);
 
-    RDObjectType nObjectType = RDObjectInvalidType;
-    if(node.m_pObj)
-        nObjectType = node.m_pObj->GetObjType();
-    buffer << nObjectType;
-    if(nObjectType > RDObjectInvalidType)
+    bool bHaveObj = m_pObj != nullptr;
+    buffer.Serialize(bHaveObj,bSave);
+    if(bHaveObj)
     {
-        node.m_pObj->Save(buffer);
-    }
-
-    //save section
-    int nSectionListCount = node.m_vecSetctionListMap.size();
-    buffer << nSectionListCount;
-    for(auto it = node.m_vecSetctionListMap.begin(); it != node.m_vecSetctionListMap.end(); it++)
-    {
-        buffer << it->first;
-        const vector<RDSection*>& SectionList = it->second;
-        int nSectionCount = SectionList.size();
-        buffer << nSectionCount;
-        for(auto SectionIt = SectionList.begin(); SectionIt != SectionList.end(); SectionIt ++)
+        if(bSave)
         {
-            RDSection* pSection = *SectionIt;
-            buffer << *pSection;
+            QString ObjType(typeid(*m_pObj).name());
+            buffer.Serialize(ObjType,true);
+        }
+        else
+        {
+            QString ObjType;
+            buffer.Serialize(ObjType,false);
+            m_pObj = CreateObj(ObjType);
+        }
+        m_pObj->Serialize(buffer,bSave);
+    }
+    //serialize section
+    int nSectionListCount = m_vecSetctionListMap.size();
+    buffer.Serialize(nSectionListCount,bSave);
+    if(bSave)
+    {
+        for(auto it = m_vecSetctionListMap.begin(); it != m_vecSetctionListMap.end(); it++)
+        {
+            buffer << it->first;
+            const vector<RDSection*>& SectionList = it->second;
+            int nSectionCount = SectionList.size();
+            buffer << nSectionCount;
+            for(auto SectionIt = SectionList.begin(); SectionIt != SectionList.end(); SectionIt ++)
+            {
+                RDSection* pSection = *SectionIt;
+                buffer << *pSection;
+            }
         }
     }
-    
-    //save child
-    buffer << (quint64)node.GetChildCount();
-    for(size_t i = 0; i < node.GetChildCount(); i++)
-        buffer << *node.GetChild(i);
-
-    qDebug() << "end to save node :" << node.m_strName;
-    return buffer;
-}
-
-RDFileDataStream& operator >> (RDFileDataStream& buffer,RDNode& node)
-{
-    QMutexLocker locker(&node.m_lock);
-    int nVersion = 0;
-    buffer >> nVersion;
-    buffer >> node.m_strName;
-    buffer.readRawData( (char*)&node.m_vPos,sizeof(float3));
-    buffer >> node.m_NodeID;
-
-    int nObjectType = RDObjectInvalidType;
-    buffer >> nObjectType;
-    if(nObjectType >= 0)
+    else
     {
-        node.m_pObj = CreateObj(nObjectType);
-        node.m_pObj->Load(buffer);
-        node.m_pObj->SetNode(&node);
-    }
-
-    //load section
-    int nSectionListCount; 
-    buffer >> nSectionListCount;
-    for(int i = 0; i < nSectionListCount; i++)
-    {
-        QUuid StoryId;
-        buffer >> StoryId;
-        vector<RDSection*> SectionList;
-        int nSectionCount;
-        buffer >> nSectionCount;
-        for(int i = 0; i < nSectionCount; i++)
+        for(int i = 0; i < nSectionListCount; i++)
         {
-            RDSection* pSection = new RDSection;
-            buffer >> *pSection;
-            SectionList.push_back(pSection);
+            QUuid StoryId;
+            buffer >> StoryId;
+            vector<RDSection*> SectionList;
+            int nSectionCount;
+            buffer >> nSectionCount;
+            for(int i = 0; i < nSectionCount; i++)
+            {
+                RDSection* pSection = new RDSection;
+                buffer >> *pSection;
+                SectionList.push_back(pSection);
+            }
+            m_vecSetctionListMap[StoryId] = SectionList;
         }
-        node.m_vecSetctionListMap[StoryId] = SectionList;
     }
-    //load child
-    quint64 childCount = 0;
-    buffer >> childCount;
-    for(quint64 i = 0; i < childCount; i++)
+    //serialize child
+    int nChildCount = static_cast<int>(m_vecChildObj.size());
+    buffer.Serialize(nChildCount,bSave);
+    for(int i = 0; i < nChildCount; i++)
     {
-        RDNode* pNewNode = new RDNode;
-        buffer >> *pNewNode;
-		pNewNode->SetParent(&node);
-        node.AddChild(*pNewNode);
+        RDNode* pNode = nullptr;
+        if(bSave)
+        {
+            pNode = m_vecChildObj[i];
+            QString pTypeName(typeid(*pNode).name());
+
+            qDebug() << "serialize node type" << pTypeName;
+            buffer.Serialize(pTypeName,true);
+        }
+        else
+        {
+            QString pTypeName;
+            buffer.Serialize(pTypeName,false);
+            pNode = CreateNode(pTypeName);
+            m_vecChildObj.push_back(pNode);
+            pNode->m_pParent = this;
+        }
+        pNode->Serialize(buffer,bSave);
     }
-    return buffer;
+
+    qDebug() << "end to serialize node :" << m_strName;
 }
 //================================================================================
 //undo

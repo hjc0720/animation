@@ -106,7 +106,7 @@ void RDDocument::SaveProj()
     if(m_pProject)
         SaveProj(*m_pProject);
 }
-void RDDocument::SaveProj(const RDProject& pProj)
+void RDDocument::SaveProj(RDProject& pProj)
 {
     SaveProjAs(pProj,pProj.GetFilePath());
 }
@@ -119,15 +119,15 @@ void RDDocument::SaveProjAs(const QString& filePath)
     }
 }
 
-#define MAGICNUM "JENNYHJC"
-void RDDocument::SaveProjAs(const RDProject& pProj,const QString& filePath)
+const char* MAGICNUM = "JENNYHJC";
+void RDDocument::SaveProjAs(RDProject& pProj,const QString& filePath)
 {
     QFile out(m_strCachePath + "/project");
 	qDebug() << " begin save file" << filePath;
     out.open(QIODevice::WriteOnly);
     RDFileDataStream data(&out,m_strCachePath + "/Resource");
-    data << MAGICNUM;
-    data << pProj;
+    data << QString(MAGICNUM);
+    pProj.Serialize(data,true);
     data.EndSaveResource();
     out.close();
 
@@ -141,6 +141,7 @@ void RDDocument::LoadProj(const QString& filePath)
     if(!m_strCachePath.isEmpty())
         DeleteTempProjDir();
 
+    qDebug()<<filePath;
     QFile in(filePath);
     if(!in.open(QIODevice::ReadOnly))
         return;
@@ -149,18 +150,20 @@ void RDDocument::LoadProj(const QString& filePath)
     CreateTempProjDir();
     UntarProjDir(filePath);
     in.setFileName(m_strCachePath + "/project");
+    qDebug()<<"project path:" <<m_strCachePath;
     if(!in.open(QIODevice::ReadOnly))
         return;
     RDFileDataStream data(&in);
     m_pProject = new RDProject();
     QString magicNum;
     data >> magicNum;
-    if(magicNum != MAGICNUM)
+    qDebug() << magicNum;
+    if(magicNum != QString(MAGICNUM))
     {
         in.close();
         return;
     }
-    data >> *m_pProject;
+    m_pProject->Serialize(data,false);
     m_pProject->SetFilePath(filePath);
     SetCurScene(0);
 }
@@ -208,25 +211,23 @@ void RDDocument::CreateTempProjDir()
     m_strCachePath += m_DocUUID.toString();
     QString cmdStr("mkdir ");
     cmdStr += m_strCachePath;
-    int nRet = system(cmdStr.toAscii().data());
-    if(!nRet)
-        return;
+    system(cmdStr.toAscii().data());
 
     QString cmdStr2("mkdir ");
     cmdStr2 += m_strCachePath;
     cmdStr2 += "/Resource";
-    nRet = system(cmdStr2.toAscii().data());
+    system(cmdStr2.toAscii().data());
 
 //image
     QString imageStr2("mkdir ");
     imageStr2 += m_strCachePath;
     imageStr2 += "/Resource/Image";
-    nRet = system(imageStr2.toAscii().data());
+    system(imageStr2.toAscii().data());
 //movie
     QString movieStr2("mkdir ");
     movieStr2 += m_strCachePath;
     movieStr2 += "/Resource/Movie";
-    nRet = system(movieStr2.toAscii().data());
+    system(movieStr2.toAscii().data());
 
 #ifdef _DEBUG
     qDebug() << m_strCachePath;
@@ -270,16 +271,15 @@ void RDDocument::UntarProjDir(const QString& strProjPath)
     cmdStr += " -C ";
     cmdStr += m_strCachePath;
 
-    int nRet = system(cmdStr.toAscii().data());
-    if(!nRet)
-        return;
+    qDebug()  << cmdStr;
+    system(cmdStr.toAscii().data());
 
     QString copyStr("cp -rf ");
     copyStr += m_strCachePath + "/Resource/* ";
     copyStr += RDResourceManager::GetResourceManager()->GetResourcePath();
 
     qDebug()  << copyStr;
-    nRet = system(copyStr.toAscii().data());
+    system(copyStr.toAscii().data());
 }
 void RDDocument::ClearRDStack()
 {

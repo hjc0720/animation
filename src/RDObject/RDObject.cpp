@@ -20,10 +20,9 @@
 
 const int g_nObjVersion = 0;
 
-RDObject::RDObject(RDObjectType nType)
+RDObject::RDObject()
      :m_ObjID(QUuid::createUuid())
 {
-	m_nType = nType;
 }
 
 void RDObject::Lock()const
@@ -35,14 +34,9 @@ void RDObject::UnLock()const
     m_pParent->UnLock();
 }
 
-void RDObject::Save(RDFileDataStream& buffer)
+void RDObject::Serialize(RDFileDataStream& buffer,bool bSave)
 {
-    buffer << g_nObjVersion;
-    buffer << m_ObjID;
-}
-void RDObject::Load(RDFileDataStream& buffer)
-{
-    int nObjVersion = g_nObjVersion;
-    buffer >> nObjVersion;
-    buffer >> m_ObjID;
+    int nVersion = g_nObjVersion;
+    buffer.Serialize(nVersion,bSave);
+    buffer.Serialize(m_ObjID,bSave);
 }

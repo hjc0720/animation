@@ -362,71 +362,32 @@ QRectF RDScene::GetSceneRt(const QString& strName)const
     return QRectF(0,0,RenderData->GetWidth(),RenderData->GetHeight());
 }
 
-RDFileDataStream& operator << (RDFileDataStream& buffer,const RDScene& scene)
+void RDScene::Serialize(RDFileDataStream& buffer,bool bSave)
 {
-    QMutexLocker locker(&scene.m_lock);
+    QMutexLocker locker(&m_lock);
 	qDebug() <<"begin to save scene" ;
-    buffer << *(RDNode*)&scene;
+    RDNode::Serialize(buffer,bSave);
     int nVersion = 0;
-    buffer << nVersion;
-    buffer.writeRawData( (char*)&scene.m_BackData.m_nBackType,sizeof(scene.m_BackData.m_nBackType));
-    switch(scene.m_BackData.m_nBackType)
-    {
-    case RDScene_Back_Color:
-        buffer.writeRawData( (char*)&scene.m_BackData.backColor,sizeof(scene.m_BackData.backColor));
-        //buffer << scene.m_BackData.backColor;
-        break;
-    case RDScene_Back_Picture:
-        {
-            buffer.writeRawData( (char*)scene.m_BackData.pImage,sizeof(RDMd5));
-            RDImageResource* pResource = dynamic_cast<RDImageResource*>(RDResourceManager::GetResourceManager()->AddResource(*scene.m_BackData.pImage));
-            if(pResource)
-            {
-                buffer.SaveResource(pResource->GetPath());
-                RDResourceManager::GetResourceManager()->RemoveResource(scene.m_BackData.pImage);
-            }
-        }
-        break;
-    }
+    buffer.Serialize(nVersion,bSave);
     //story list
-    int nCount = (int)scene.m_StoryList.size();
-    buffer << nCount;
-    for(auto it = scene.m_StoryList.begin(); it != scene.m_StoryList.end(); it++)
+    int nCount = (int)m_StoryList.size();
+    buffer.Serialize(nCount,bSave);
+    if(bSave)
     {
-        RDStory* pStory = *it;
-        buffer << *pStory;
+        for(auto it = m_StoryList.begin(); it != m_StoryList.end(); it++)
+        {
+            RDStory* pStory = *it;
+            buffer << *pStory;
+        }
+    }
+    else
+    {
+        for(int i = 0 ; i < nCount; i++)
+        {
+            RDStory* pStory = new RDStory;
+            buffer >> *pStory;
+            m_StoryList.push_back(pStory);
+        }
     }
 	qDebug() <<"end to save scene" ;
-    return buffer;
-}
-
-RDFileDataStream& operator >> (RDFileDataStream& buffer,RDScene& scene)
-{
-    QMutexLocker locker(&scene.m_lock);
-    buffer >> *(RDNode*)&scene;
-    int nVersion = 0;
-    buffer >> nVersion ;
-    buffer.readRawData( (char*)&scene.m_BackData.m_nBackType,sizeof(scene.m_BackData.m_nBackType));
-    switch(scene.m_BackData.m_nBackType)
-    {
-    case RDScene_Back_Color:
-        buffer.readRawData( (char*)&scene.m_BackData.backColor,sizeof(scene.m_BackData.backColor));
-        //buffer >> scene.m_BackData.backColor;
-        break;
-    case RDScene_Back_Picture:
-        if(!scene.m_BackData.pImage)
-            scene.m_BackData.pImage = new RDMd5;
-        buffer.readRawData( (char*)scene.m_BackData.pImage,sizeof(RDMd5));
-        break;
-    }
-    //story list
-    int nCount = 0;
-    buffer >> nCount;
-    for(int i = 0 ; i < nCount; i++)
-    {
-        RDStory* pStory = new RDStory;
-        buffer >> *pStory;
-        scene.m_StoryList.push_back(pStory);
-    }
-    return buffer;
 }

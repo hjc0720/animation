@@ -17,6 +17,7 @@
 #include <QFile>
 #include <QDebug>
 #include "RDFileDataStream.h"
+#include <QDir>
 
 RDFileDataStream::RDFileDataStream ( QIODevice * d ,const QString& strResourcePath)
     :QDataStream(d)
@@ -43,16 +44,12 @@ void RDFileDataStream::EndSaveResource()
         QString dstFilePath(m_strResourcePath);
         dstFilePath += "/";
         dstFilePath += (*str).section('/',-2,-1);
- 
+
         if(!QFile::exists(dstFilePath))
         {
             qDebug() << "copy file "<< *str  << "to" << dstFilePath ;
-            QFile srcFile(*str);
-            if(!srcFile.open(QIODevice::ReadOnly))
-                continue;
-            if(!srcFile.copy(dstFilePath))
+            if(!QFile::copy(*str,dstFilePath))
                 qDebug() << dstFilePath;
-            srcFile.close();
         }
          //m_ResourceList[i];
     }
@@ -78,5 +75,18 @@ RDFileDataStream& operator >> (RDFileDataStream& buffer,float3& vec)
 
     buffer >> value;
     vec.SetZ(value );
+    return buffer;
+}
+
+#include "RDMd5.h"
+RDFileDataStream& operator << (RDFileDataStream& buffer,const RDMd5& md5)
+{
+	buffer.writeRawData( (char*)&md5,sizeof(RDMd5));
+    return buffer;
+}
+
+RDFileDataStream& operator >> (RDFileDataStream& buffer,RDMd5& md5)
+{
+	buffer.readRawData( (char*)&md5,sizeof(RDMd5));
     return buffer;
 }

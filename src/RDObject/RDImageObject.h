@@ -43,8 +43,7 @@ public:
 
     virtual bool HitTest(const float3& vScenePt,const RDNode& pNode,const QString& RDName) const;
 
-	virtual void Save(RDFileDataStream& buffer);
-	virtual void Load(RDFileDataStream& buffer);
+    virtual void Serialize(RDFileDataStream& buffer,bool bSave);
 protected:
     RDMd5 m_Image;
     int m_nWidth;

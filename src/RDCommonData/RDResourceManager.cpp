@@ -153,6 +153,8 @@ RDResource* RDResourceManager::AddResource(const RDMd5& pMd5)
         QDir dir(dstFilePath,QString()); 
         QStringList names = dir.entryList();
         QStringList findName = names.filter(pMd5.GetMd5String());
+
+        qDebug() << dstFilePath << names << findName;
         if(!findName.isEmpty())
         {
             qDebug() << dstFilePath << names << findName;

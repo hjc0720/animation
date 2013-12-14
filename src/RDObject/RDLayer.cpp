@@ -22,6 +22,10 @@
 #include "RDSpaceConvert.h"
 #include "RDScene.h"
 #include "RDSceneRenderData.h"
+#include "RDCreateObj.h"
+#include "RDFileDataStream.h"
+
+RDObjectCreator<RDLayer,false> LayerCreator;
 
 class RDLayerRenderData :public RDRenderData
 {
@@ -180,4 +184,40 @@ void        RDLayer::SetCurCamera(const QString& pRDName,size_t nIndex)
 {
     RDLayerRenderData* pLayerRD = dynamic_cast<RDLayerRenderData*>(GetRenderData(pRDName));
     pLayerRD->SetCurCameraID(nIndex);
+}
+
+RDLayer::~RDLayer()
+{
+    for(size_t i = 0; i < m_vecCameraObj.size();i++)
+    {
+        RDCamera* pCamera = m_vecCameraObj[i];
+        SAFE_DELETE(pCamera);
+    }
+}
+
+void RDLayer::Serialize(RDFileDataStream& buffer,bool bSave)
+{
+    int nVersion = 0;
+    buffer.Serialize(nVersion,bSave);
+    RDNode::Serialize(buffer,bSave);
+    int nType = m_nType;
+    buffer.Serialize(nType,bSave);
+    if(!bSave)
+        m_nType = static_cast<RDLayerType>(nType);
+    
+    int nCount = m_vecCameraObj.size();
+    buffer.Serialize(nCount,bSave);
+    for(int i = 0; i < nCount; i++)
+    {
+        RDCamera* pCamera = nullptr;
+        if(bSave)
+            pCamera = m_vecCameraObj[i];
+        else
+        {
+            pCamera = new RDCamera;
+            m_vecCameraObj.push_back(pCamera);
+            pCamera->SetParent(this);
+        }
+        pCamera->Serialize(buffer,bSave);
+    }
 }

@@ -21,13 +21,11 @@
 const int g_nNowProjVersion = 0;
 
 RDProject::RDProject()
-     :m_nProjVersion(g_nNowProjVersion)
 {
 
 }
 RDProject::RDProject(int nWidth,int nHeight,double dFrameRate)
-        :m_nProjVersion(g_nNowProjVersion)
-        ,m_nWidth(nWidth)
+        :m_nWidth(nWidth)
         ,m_nHeight(nHeight)
         ,m_dFrameRate(dFrameRate)
 {
@@ -48,33 +46,25 @@ void RDProject::CreateNewScene(const QString& strSceneName)
    m_SceneList.push_back(pscene);
 }
 
-RDFileDataStream& operator << (RDFileDataStream& buffer,const RDProject& proj)
+void RDProject::Serialize(RDFileDataStream& buffer,bool bSave)
 {
-    buffer << proj.m_nProjVersion;
-    buffer << proj.m_nWidth;
-    buffer << proj.m_nHeight;
-    buffer << proj.m_dFrameRate;
-    buffer << (quint64)proj.m_SceneList.size();
-    for(size_t i = 0; i < proj.m_SceneList.size();i++)
+    int nVersion = g_nNowProjVersion;
+    buffer.Serialize(nVersion,bSave);
+    buffer.Serialize(m_nWidth,bSave);
+    buffer.Serialize(m_nHeight,bSave);
+    buffer.Serialize(m_dFrameRate,bSave);
+    int nSceneListSize = static_cast<int>(m_SceneList.size());
+    buffer.Serialize(nSceneListSize,bSave);
+    for(int i = 0; i < nSceneListSize;i++)
     {
-        buffer << *proj.m_SceneList[i];
+        RDScene* pScene = nullptr;
+        if(bSave)
+            pScene = m_SceneList[i];
+        else
+        {
+            pScene = new RDScene;
+            m_SceneList.push_back(pScene);
+        }
+        pScene->Serialize(buffer,bSave);
     }
-    return buffer;
-}
-RDFileDataStream& operator >> (RDFileDataStream& buffer,RDProject& proj)
-{
-    buffer >> proj.m_nProjVersion;
-    buffer >> proj.m_nWidth;
-    buffer >> proj.m_nHeight;
-    buffer >> proj.m_dFrameRate;
-    quint64 nSceneCount = 0;
-    buffer >> nSceneCount;
-    for(quint64 i = 0; i < nSceneCount; i++)
-    {
-        RDScene* pScene = new RDScene;
-        buffer >> *pScene;
-        proj.m_SceneList.push_back(pScene);
-    }
-    proj.m_nProjVersion = g_nNowProjVersion;
-    return buffer;
 }

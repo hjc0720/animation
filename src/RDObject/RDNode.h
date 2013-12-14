@@ -47,6 +47,8 @@ public:
     void Lock(){ m_lock.lock();}
     void UnLock(){m_lock.unlock();}
 
+    virtual void Serialize(RDFileDataStream& buffer,bool bSave);
+
     const QString& GetName()const {return m_strName;}
     const QUuid& GetNodeID()const{return m_NodeID;}
 
@@ -125,9 +127,6 @@ protected:
     friend RDFileDataStream& operator << (RDFileDataStream& buffer,const RDNode& proj);
     friend RDFileDataStream& operator >> (RDFileDataStream& buffer,RDNode& proj);
 };
-
-RDFileDataStream& operator << (RDFileDataStream& buffer,const RDNode& proj);
-RDFileDataStream& operator >> (RDFileDataStream& buffer,RDNode& proj);
 
 //undo
 class RDUndoCommand 

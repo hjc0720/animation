@@ -30,7 +30,9 @@
 #include "RDModelResource.h"
 #include "RDCamera.h"
 #include "RDMaterial.h"
+#include "RDCreateObj.h"
 
+RDObjectCreator<RDImageObject,true> imageCreator;
 class RDModel;
 class RDImagePrivateData: public RDRenderPrivateData
 {
@@ -50,20 +52,17 @@ public:
 };
 
 RDImageObject::RDImageObject()
-    :RDObject(RDObjectImage)
 {
 }
 
 RDImageObject::RDImageObject(const QString& fileName)
-    :RDObject(RDObjectImage)
 {
     RDResourceManager* pResManger = RDResourceManager::GetResourceManager();
     m_Image = pResManger->AddResource(fileName,RDResource_Image)->GetMd5();
 }
 
 RDImageObject::RDImageObject(const RDMd5& image)
-    :RDObject(RDObjectImage)
-     ,m_Image(image)
+     :m_Image(image)
 {
     RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
     pResManager->AddResource(m_Image);
@@ -124,26 +123,6 @@ bool RDImageObject::HitTest(const float3& vScenePt,const RDNode& pNode,const QSt
     return pModel->HitTest(vHitPt,vScenePt,param);
 }
 
-void RDImageObject::Save(RDFileDataStream& buffer)
-{
-	RDObject::Save(buffer);
-	buffer.writeRawData( (char*)&m_Image,sizeof(RDMd5));
-	RDImageResource* pResource = dynamic_cast<RDImageResource*>(RDResourceManager::GetResourceManager()->GetResource(m_Image));
-	buffer.SaveResource(pResource->GetPath());
-	buffer << m_nWidth;
-	buffer << m_nHeight;
-}
-
-void RDImageObject::Load(RDFileDataStream& buffer)
-{
-	qDebug() << "begine load image";
-	RDObject::Load(buffer);
-	buffer.readRawData( (char*)&m_Image,sizeof(RDMd5));
-	buffer >> m_nWidth;
-	buffer >> m_nHeight;
-    RDResourceManager::GetResourceManager()->AddResource(m_Image);
-	qDebug() << "end load image";
-}
 const RDMd5& RDImageObject::GetObjMd5()const 
 {
     static RDMd5 ImageMd5("RDImageObject", -1);
@@ -176,4 +155,23 @@ void RDImageObject::CreateRenderData(RDRenderData& pRD)
     pPrivateData->m_pMaterial = new RDMaterial(false,0xffffffff);
     QRectF bound(0,0,pPrivateData->m_pImage->GetWidth(),pPrivateData->m_pImage->GetHeight());
     pPrivateData->m_pMaterial->AddTex(RDNormalMatTexture,pPrivateData->m_pImage,bound);
+}
+
+void RDImageObject::Serialize(RDFileDataStream& buffer,bool bSave)
+{
+    int nVersion = 0;
+    buffer.Serialize(nVersion,bSave);
+	RDObject::Serialize(buffer,bSave);
+    buffer.Serialize(m_Image,bSave);
+    if(bSave)
+    {
+        RDImageResource* pResource = dynamic_cast<RDImageResource*>(RDResourceManager::GetResourceManager()->GetResource(m_Image));
+        buffer.SaveResource(pResource->GetPath());
+    }
+    else
+    {
+        RDResourceManager::GetResourceManager()->AddResource(m_Image);
+    }
+    buffer.Serialize(m_nWidth,bSave);
+    buffer.Serialize(m_nHeight,bSave);
 }

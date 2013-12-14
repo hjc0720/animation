@@ -22,6 +22,7 @@
 #include <QString>
 
 class float3;
+class RDMd5;
 class RDFileDataStream : public QDataStream
 {
 public:
@@ -31,6 +32,13 @@ public:
     void SetResourcePath(const QString& strResourcePath){ m_strResourcePath = strResourcePath;}
     void SaveResource(const QString& filePath);
     void EndSaveResource();
+    template<typename T>
+    void Serialize(T& value,bool bSave) {
+        if(bSave)
+            *this << value;
+        else
+            *this >> value;
+    }
 protected:
     QStringList m_ResourceList;
     QString     m_strResourcePath;
@@ -38,5 +46,6 @@ protected:
 
 RDFileDataStream& operator << (RDFileDataStream& ,const float3& );
 RDFileDataStream& operator >> (RDFileDataStream& ,float3& );
-
+RDFileDataStream& operator << (RDFileDataStream& ,const RDMd5& );
+RDFileDataStream& operator >> (RDFileDataStream& ,RDMd5& );
 #endif   // ----- #ifndef rddatastream_INC  -----

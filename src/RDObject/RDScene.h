@@ -48,6 +48,7 @@ public:
     RDScene();
     RDScene(const QString& strName);
     virtual ~RDScene();
+    virtual void Serialize(RDFileDataStream& buffer,bool bSave);
     void SetWidthHeight(int nWidth,int nHeight);
     void SetBackType(RDScene_BackType nType,const void* pData);
     const RDSceneData& GetBackData()const {return m_BackData;}
@@ -85,10 +86,5 @@ protected:
     friend RDFileDataStream& operator << (RDFileDataStream& buffer,const RDScene& proj);
     friend RDFileDataStream& operator >> (RDFileDataStream& buffer,RDScene& proj);
 };
-
-//save Load operator
-RDFileDataStream& operator << (RDFileDataStream& buffer,const RDScene& proj);
-RDFileDataStream& operator >> (RDFileDataStream& buffer,RDScene& proj);
-
 #endif   // ----- #ifndef rdscene_INC  -----
 

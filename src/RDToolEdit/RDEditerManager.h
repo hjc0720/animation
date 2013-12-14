@@ -37,6 +37,7 @@ public:
 signals:
     void 	PropertyChanged(RDCell** pCellArray,int nCount);
 	void 	AddNoded(RDNode&);
+    void    SceneChange();
 public slots:
     void    CellChange(const RDMd5& pCell);
 protected:

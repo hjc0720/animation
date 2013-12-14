@@ -16,5 +16,37 @@
  * =====================================================================================
  */
 
+#include <typeinfo>
+
 class RDObject;
-RDObject* CreateObj(int nType);
+class RDNode;
+class QString;
+
+typedef RDObject* (*pCreateObj)();
+typedef RDNode* (*pCreateNode)();
+
+void RegisterObj(const QString& pStr,pCreateObj pFun);
+void UnRegisterObj(const QString& pStr);
+void RegisterNode(const QString& pStr,pCreateNode pFun);
+void UnRegisterNode(const QString& pStr);
+
+RDObject* CreateObj(const QString& strType);
+RDNode* CreateNode(const QString& strType);
+
+template<typename T,bool bObj>
+class RDObjectCreator
+{
+public:
+    RDObjectCreator(){
+        if(bObj)
+            RegisterObj(QString(typeid(T).name()),[]()->RDObject*{return (RDObject*)new T;});
+        else
+            RegisterNode(QString(typeid(T).name()),[]()->RDNode*{return (RDNode*)new T;});
+    }
+    ~RDObjectCreator(){
+        if(bObj)
+            UnRegisterObj(QString(typeid(T).name()));
+        else
+            UnRegisterNode(QString(typeid(T).name()));
+    }
+};
