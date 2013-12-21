@@ -120,6 +120,20 @@ void matrix4x4::Identity()
 #endif
 }
 
+matrix4x4::matrix4x4(const float3& vec,HMatrixQ4F_TYPE nType)
+{
+    switch(nType)
+    {
+    case HMatrixQ4F_POS:
+        PosMat(vec.x(),vec.y(),vec.z());
+        break;
+    case HMatrixQ4F_Rotate:
+        RotateMat(vec.x(),vec.y(),vec.z());
+        break;
+    case HMatrixQ4F_Scale:
+        ScaleMat(vec.x(),vec.y(),vec.z());
+   }
+}
 matrix4x4::matrix4x4(float fX,float fY,float fZ,HMatrixQ4F_TYPE nType)
 {
     switch(nType)

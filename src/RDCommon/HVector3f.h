@@ -22,6 +22,7 @@
 
 class matrix4x4;
 class float4;
+class float2;
 
 class float3
 {
@@ -29,6 +30,7 @@ public:
     static const float3& GetZero();
 public:
     float3();
+    float3(const float2& src);
     float3(const float3& src);
     float3(const float4& src);
     float3(float fx,float fy,float fz);

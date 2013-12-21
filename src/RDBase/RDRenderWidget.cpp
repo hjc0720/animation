@@ -145,11 +145,6 @@ void RDRenderWidget::paintGL()
     if(pScene->GetMaxChangeLevel(DEFAULT_RD) == RDRender_NoChange && pDoc->GetCurTime() == pScene->GetRenderData(DEFAULT_RD)->GetTime())
     {
         pDoc->UnLock();
-        //if(g_bForceUpdate)
-        //{
-            //pWidget->update();
-            //g_bForceUpdate = false;
-        //}
         return;
     }
     glScissor(0, 0,size().width() ,size().height());
@@ -159,7 +154,6 @@ void RDRenderWidget::paintGL()
     RDRenderDevice::GetRenderManager()->ClearScreen(float4(0,0,0,0),1,RDClearColor | RDClearDepth | RDClearStencil);
     pRDManager->SetRenderName(DEFAULT_RD);
     pRDManager->SetScene(pScene);
-    pRDManager->SetDstBuffer(m_swapChain.GetBackBuffer());
     QPointF pt(m_nXOffset,m_nYOffset);
     if(!pRDManager->RenderScene(pt,m_validRt,pDoc->GetCurTime()))
     {
@@ -167,10 +161,6 @@ void RDRenderWidget::paintGL()
         return;
     }
     qDebug() << "On Time :" << pDoc->GetCurTime();
-    //pWidget->update();
-//    if(dStartTime - oldTime > 20)
- //       qDebug() << dStartTime - oldTime;
-  //  oldTime = dStartTime;
     pDoc->UnLock();
 }
 

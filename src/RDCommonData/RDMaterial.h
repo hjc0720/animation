@@ -23,24 +23,26 @@ public:
     RDMatTexture(const uint* pBuffer,int nWidth,int nHeight);
     RDMatTexture(const RDTexture*  hTex,const QRectF& texBound);
     ~RDMatTexture();
-    const QString& GetFileName()const{return m_strFile;}
+    const QString&  GetFileName()const{return m_strFile;}
+    void            SetParamToDevice(int nIndex,RDRenderDevice* pDevice );
+    void            UpdateFrame(RDRenderDevice* pDevice ,const RDTime& time);
 protected:
     void        InitData();
 protected:
     QString     m_strFile;
     bool        m_bFileTex;
 
+    float2      m_vTexCenter;
     float2      m_vTexOffset;
     float2      m_vTexScale;
     float       m_fRotate;
+    float       m_fAlpha;
 
     //临时数据
-    union{
-        const RDTexture*  m_hConstTex;
-        RDTexture*  m_hTex;
-    };
-    matrix4x4  m_matTex;
+    RDTexture*  m_hTex;
+    matrix4x4   m_matTex;
     bool        m_bReleaseTex;
+    RDUBO*      m_pTexParam;
 };
 
 enum RDMatChangeType
@@ -72,7 +74,7 @@ protected:
     float4          m_vAmbient;
     float4          m_vSpecular;
     float           m_fShine;
-    RDMatTexture*    m_MatTexture[RDMatTextureCount];
+    RDMatTexture*   m_MatTexture[RDMatTextureCount];
 
     //临时数据
     char             m_nPointLightNum;

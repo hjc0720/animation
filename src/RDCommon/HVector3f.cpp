@@ -32,6 +32,14 @@ float3::float3()
     memset(m_data,0,4 * sizeof(float));
 }
 
+float3::float3(const float2& src)
+{
+    m_data[0] = src.x;
+    m_data[1] = src.y;
+    m_data[2] = 0;
+    m_data[3] = 0;
+}
+
 float3::float3(const float3& src)
 {
     if(this == &src)

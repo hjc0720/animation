@@ -28,11 +28,9 @@ class RenderManager
 public:
     void SetRenderName(const QString& pName){m_RenderName = pName;}
     void SetScene(RDScene* pScene){m_pScene = pScene;}
-    void SetDstBuffer(RDBuffer* pDstBuffer){m_pDstBuffer = pDstBuffer;}
     bool RenderScene(const QPointF& offSceneToScreen,const QRectF& rtScene,unsigned long nTime);
 protected:
     RDScene*      m_pScene;
-    RDBuffer*     m_pDstBuffer;
     QString       m_RenderName;
 };
 #endif   // ----- #ifndef rdrendermanager_INC  -----

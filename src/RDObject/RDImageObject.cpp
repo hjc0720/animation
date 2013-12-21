@@ -84,8 +84,6 @@ void RDImageObject::Render(unsigned long ,RDRenderData& RenderData)
     RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
     const RDModel* pModel = pPrivateData->m_pSegModel->GetModel();
 
-    pDevice->SetShaderTexture(0,pPrivateData->m_pImage);
-    
     ModelVSParam param;
     param.MVP = pPrivateData->m_vRenderMatrix * RenderData.GetMVPMatrix();
     if(pPrivateData->m_pVertexParam)

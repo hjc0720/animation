@@ -393,6 +393,7 @@ void    RDRenderDevice::SetShaderParam(int nIndex,RDUBO* pBuffer)
 
 void    RDRenderDevice::ModifyUniformBufferObject(RDUBO* pBuffer, const float* pData)
 {
+    glBindBuffer( GL_UNIFORM_BUFFER,pBuffer->hUbo);
     glBufferSubData(GL_UNIFORM_BUFFER,0,pBuffer->nBufferSize,pData);
 }
 

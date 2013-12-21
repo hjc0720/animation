@@ -42,6 +42,7 @@ public:
     matrix4x4();//生成单位阵
     matrix4x4(const matrix4x4& mat);
     matrix4x4(float fX,float fY,float fZ,HMatrixQ4F_TYPE nType);
+    matrix4x4(const float3& vec,HMatrixQ4F_TYPE nType);
 
     void Transpose();
     bool Inverse();
