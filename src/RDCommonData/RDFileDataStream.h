@@ -48,4 +48,45 @@ RDFileDataStream& operator << (RDFileDataStream& ,const float3& );
 RDFileDataStream& operator >> (RDFileDataStream& ,float3& );
 RDFileDataStream& operator << (RDFileDataStream& ,const RDMd5& );
 RDFileDataStream& operator >> (RDFileDataStream& ,RDMd5& );
+
+template<typename T>
+size_t RDSaveData(char*& pBuffer,const T& data)
+{
+    if(pBuffer)
+    {
+        memcpy(pBuffer,&data,sizeof(T));
+        pBuffer += sizeof(T);
+    }
+    return sizeof(T);
+}
+
+template<typename T>
+size_t RDSaveDataArray(char*& pBuffer,const T* data,int nCount)
+{
+    if(pBuffer)
+    {
+        memcpy(pBuffer,data,sizeof(T) * nCount);
+        pBuffer += sizeof(T) * nCount;
+    }
+    return sizeof(T) * nCount;
+}
+
+template<typename T>
+size_t RDLoadBuffer(char*& pBuffer,T& data)
+{
+    memcpy(&data,pBuffer,sizeof(T));
+    pBuffer += sizeof(T);
+    return sizeof(T);
+}
+
+template<typename T>
+size_t RDLoadDataArray(char*& pBuffer,T* data,int nCount)
+{
+    if(pBuffer)
+    {
+        memcpy(&data,pBuffer,sizeof(T) * nCount);
+        pBuffer += sizeof(T) * nCount;
+    }
+    return sizeof(T) * nCount;
+}
 #endif   // ----- #ifndef rddatastream_INC  -----

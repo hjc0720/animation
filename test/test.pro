@@ -8,10 +8,10 @@ DEFINES += RDCOMMON_LIBRARY
 DEFINES += __GTEST__
 
 SOURCES += HMatrixTest.cpp HVector4fTest.cpp \
-    SpaceConvertTest.cpp
+    SpaceConvertTest.cpp HVector3fTest.cpp 
 
 HEADERS += HMatrixTest.h HVector4fTest.h \
-    SpaceConvertTest.h
+    SpaceConvertTest.h HVector3fTest.h 
 
 VERSION = 1.0.2
 

@@ -40,7 +40,7 @@ protected:
 
 RDMatShaderCode MainMatCode(":/shader/main_ps");
 RDMatShaderCode TexMatCode[] = {QString(":/shader/diffuse_ps")};
-RDMatShaderCode ParamMatCode[] = {QString(":/shader/buffer_ps")};
+RDMatShaderCode ParamMatCode[] = {QString(":/shader/diffusebuffer")};
 
 RDMatTexture::RDMatTexture()
     :m_bFileTex(true)

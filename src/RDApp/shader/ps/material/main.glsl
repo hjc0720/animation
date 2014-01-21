@@ -17,8 +17,8 @@ layout(binding = 1, std140)uniform Material
 //end param
 void main()
 {
-    vec4 vDiffuse = DiffuseColor, vSpec = vec4(0),vAmbient = vec4(0);
+    vec4 vDiffuse = DiffuseColor, vSpec = vec4(0);
     //begin code
     //end code
-    vColor = vDiffuse + vSpec + vAmbient;
+    vColor = vDiffuse + vSpec; 
 }

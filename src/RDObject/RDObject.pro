@@ -18,11 +18,13 @@ SOURCES += RDObject.cpp RDScene.cpp RDRenderData.cpp RDSceneRenderData.cpp RDNod
 SOURCES += RDImageObject.cpp 
 SOURCES += RDRenderManager.cpp
 SOURCES += RDLayer.cpp RDCamera.cpp
+SOURCES += RDLight.cpp
 
 HEADERS  += RDObject.h RDScene.h RDRenderData.h RDSceneRenderData.h RDNode.h RDCreateObj.h
 HEADERS += RDImageObject.h
 HEADERS  += RDRenderManager.h
 HEADERS += RDLayer.h RDCamera.h
+SOURCES += RDLight.h
 
 
 DEPENDENCY_SHARE_LIBRARIES = RDCommon

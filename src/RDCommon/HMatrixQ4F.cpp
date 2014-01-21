@@ -38,9 +38,10 @@ inline __m128 CrossProduct(__m128 a, __m128 b)
 
 const matrix4x4& matrix4x4::CreateViewMat(matrix4x4& mat,const float3& vEyePos,const float3& vUp,const float3& vLookAt)
 {
-    __m128 eye = _mm_load_ps(vEyePos.GetData());
-    __m128 up = _mm_load_ps(vUp.GetData());
-    __m128 look = _mm_load_ps(vLookAt.GetData());
+    float4 Eye(vEyePos,0),Up(vUp,0),LookAt(vLookAt,0);
+    __m128 eye = _mm_load_ps(Eye.GetData());
+    __m128 up = _mm_load_ps(Up.GetData());
+    __m128 look = _mm_load_ps(LookAt.GetData());
 
     __m128 one = _mm_set_ps1(1);
     __m128 vZ = _mm_sub_ps(eye,look);

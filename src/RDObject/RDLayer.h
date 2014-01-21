@@ -26,6 +26,7 @@ enum RDLayerType
 };
 
 class RDCamera;
+class RDLight;
 class RDLayerRenderData;
 class RDLayer : public RDNode
 {
@@ -35,21 +36,28 @@ public:
     virtual ~RDLayer();
     virtual void Serialize(RDFileDataStream& buffer,bool bSave);
 
-    virtual size_t GetChildCount()const{return  GetCameraCount() + RDNode::GetChildCount();}
+    virtual size_t GetChildCount()const{return  GetCameraCount() + GetLightCount() + RDNode::GetChildCount();}
     virtual RDNode* GetChild(size_t i);
     virtual const RDNode* GetChild(size_t i)const;
-    virtual RDNode* GetChild(const QUuid& NodeId);
     virtual RDNode* RemoveChild(size_t i); 
-    virtual void RemoveChild(const RDNode& pChild); 
 
+    //camera function
     void    AddCamera(RDCamera* pCameraNode){ m_vecCameraObj.push_back(pCameraNode);}
+    RDCamera* RemoveCamera(size_t i);
     size_t  GetCameraCount()const{return m_vecCameraObj.size();}
     const RDCamera* GetCamera(size_t i)const{return m_vecCameraObj[i];}
     RDCamera* GetCamera(size_t i){return m_vecCameraObj[i];}
-    RDCamera* RemoveCamera(size_t i);
 
     RDCamera*   GetCurCamera(const QString& pRDName) const;
     void        SetCurCamera(const QString& pRDName,size_t nIndex);
+
+    //light function
+    void AddLight(RDLight* pLight){m_vecLight.push_back(pLight);}
+    RDLight* RemoveLight(size_t nIndex);
+    size_t GetLightCount()const{return m_vecLight.size();}
+    const RDLight* GetLight(size_t i)const{return m_vecLight[i];}
+    RDLight* GetLight(size_t i){return m_vecLight[i];}
+
     virtual void CalFrame(const RDTime& nTime,const QString& pRDName) ;
 protected:
     RDCamera* GetCurCamera(const RDLayerRenderData& pLayerRD) const;
@@ -58,5 +66,6 @@ protected:
 protected:
     RDLayerType m_nType;
     std::vector<RDCamera*> m_vecCameraObj;
+    std::vector<RDLight*> m_vecLight;
 };
 #endif

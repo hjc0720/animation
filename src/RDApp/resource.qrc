@@ -12,6 +12,8 @@
     <file alias="model_vs">shader/vs/model.glsl</file>
     <file alias="main_ps">shader/ps/material/main.glsl</file>
     <file alias="diffuse_ps">shader/ps/material/DiffuseTex.glsl</file>
-    <file alias="buffer_ps">shader/ps/material/DiffuseParam.glsl</file>
+    <file alias="diffusebuffer">shader/ps/material/DiffuseParam.glsl</file>
+    <file alias="light_ps">shader/ps/material/Light.glsl</file>
+    <file alias="lightbuffer">shader/ps/material/LightParam.glsl</file>
 </qresource>
 </RCC>

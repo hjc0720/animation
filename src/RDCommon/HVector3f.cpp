@@ -16,7 +16,6 @@
  * =====================================================================================
  */
 #include "HVector3f.h"
-#include <string.h>
 #include "HVector4f.h"
 #include <cmath>
 #include <smmintrin.h>
@@ -29,15 +28,17 @@ const float3& float3::GetZero()
 
 float3::float3()
 {
-    memset(m_data,0,4 * sizeof(float));
+    __m128 zero = _mm_setzero_ps();
+    _mm_storel_pi((__m64*)m_data,zero);
+    _mm_store_ss(m_data + 2,zero);
 }
 
 float3::float3(const float2& src)
 {
-    m_data[0] = src.x;
-    m_data[1] = src.y;
-    m_data[2] = 0;
-    m_data[3] = 0;
+    __m128 zero = _mm_setzero_ps();
+    __m128 vec = _mm_loadl_pi(zero,(__m64*)&src);
+    _mm_storel_pi((__m64*)m_data,vec);
+    _mm_store_ss(m_data + 3,vec);
 }
 
 float3::float3(const float3& src)
@@ -49,8 +50,7 @@ float3::float3(const float3& src)
 
 float3::float3(const float4& src)
 {
-    memcpy(m_data,src.GetData(),3 * sizeof(float));
-    m_data[3] = 0;
+    memcpy(m_data,src.GetData(),sizeof(m_data));
 }
 
 float3::float3(float fx,float fy,float fz)
@@ -60,9 +60,10 @@ float3::float3(float fx,float fy,float fz)
 
 void float3::Set(float fx,float fy,float fz)
 {
-    __m128 fm;
-    fm = _mm_set_ps(0,fz,fy,fx);
-    _mm_store_ps(m_data,fm);
+    __m128 fm = _mm_set_ps(0,fz,fy,fx);
+    __m128 l = _mm_movehl_ps(fm,fm);
+    _mm_storel_pi((__m64*)m_data,fm);
+    _mm_store_ss(m_data + 2,l);
 }
 
 float float3::Mode ()const
@@ -72,18 +73,26 @@ float float3::Mode ()const
 
 float float3::Mode2() const
 {
-    float4 tmp(*this,0);
-    return tmp.Mode2();
+    __m128 high = _mm_load_ss(m_data+2);
+    high = _mm_movelh_ps(high,high);
+    __m128 vec = _mm_loadl_pi(high,(__m64*)m_data);
+    __m128 rt = _mm_dp_ps(vec,vec,0x77);
+    float fRt;
+    _mm_store_ss(&fRt,rt);
+    return fRt;
 }		// -----  end of method float3::Mode  -----
 
 void float3::Normalize ()
 {
-	float fMode = Mode();
-    if(fMode == 0)
-        return;
-    else
-        fMode = 1 / fMode;
-    *this *= fMode;
+    __m128 high = _mm_load_ss(m_data+2);
+    high = _mm_movelh_ps(high,high);
+    __m128 vec = _mm_loadl_pi(high,(__m64*)m_data);
+    __m128 mode = _mm_dp_ps(vec,vec,0x77);
+    mode = _mm_sqrt_ps(mode);
+    vec = _mm_div_ps(vec,mode);
+    high = _mm_movehl_ps(vec,vec);
+    _mm_storel_pi((__m64*)m_data,vec);
+    _mm_store_ss(m_data + 2, high);
 }		// -----  end of method float3::Normalize  -----
 
 float3& float3::operator = (const float4& m)
@@ -91,13 +100,25 @@ float3& float3::operator = (const float4& m)
     memcpy(m_data,m.GetData(),3 * sizeof(float));
     return *this;
 }
+
 float3& float3::operator += (const float3& m)
 {
-    float4 dst(*this);
-    float4 src(m);
-    *this = dst + src;
+    __m128 high = _mm_load_ss(m_data+2);
+    high = _mm_movelh_ps(high,high);
+    __m128 vec1 = _mm_loadl_pi(high,(__m64*)m_data);
+
+    high = _mm_load_ss(m.GetData() + 2);
+    high = _mm_movelh_ps(high,high);
+    __m128 vec2 = _mm_loadl_pi(high,(__m64*)m.GetData());
+    
+    __m128 rt = _mm_add_ps(vec1,vec2);
+
+    high = _mm_movehl_ps(rt,rt);
+    _mm_storel_pi((__m64*)m_data,rt);
+    _mm_store_ss(m_data + 2, high);
     return *this;
 }
+
 float3& float3::operator -= (const float3& m)
 {
     float4 dst(*this);

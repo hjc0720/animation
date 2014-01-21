@@ -278,12 +278,14 @@ RDSection* RDNode::GetLastSectionBefore(size_t nCurStoryIndex)
 }
 void RDNode::RemoveChild(const RDNode& pChild)
 {
-    for(std::vector<RDNode*>::iterator it = m_vecChildObj.begin(); it != m_vecChildObj.end(); it++)
+    size_t nCount = GetChildCount();
+    for(size_t i = 0; i < nCount; i++)
     {
-        if(*it == &pChild)
+        RDNode* pNode = GetChild(i);
+        if(pNode == &pChild)
         {
-            m_vecChildObj.erase(it);
-            break;
+            RemoveChild(i);
+            return ;
         }
     }
 } 
@@ -428,13 +430,26 @@ void RDNode::AddPosKey(const RDTime& nTime,const float3& vOffsetPos )
     pSection->AddPosKey(nStoryTime,vOffsetPos);
 }
 
+const RDNode* RDNode::GetChild(const QUuid& NodeId)const
+{
+    int nCount = GetChildCount();
+    for(int i = 0; i < nCount; i++)
+    {
+        const RDNode* pChild = GetChild(i);
+        if(pChild->GetNodeID() == NodeId)
+            return pChild;
+    }
+    return 0;
+}
 RDNode* RDNode::GetChild(const QUuid& NodeId)
 {
-    for(auto it = m_vecChildObj.begin(); it != m_vecChildObj.end(); it++)
+    int nCount = GetChildCount();
+    for(int i = 0; i < nCount; i++)
     {
-        if((*it)->GetNodeID() == NodeId)
-            return *it;
-        auto ret = (*it)->GetChild(NodeId);
+        RDNode* pChild = GetChild(i);
+        if(pChild->GetNodeID() == NodeId)
+            return pChild;
+        RDNode* ret = pChild->GetChild(NodeId);
         if(ret)
             return ret;
     }
@@ -597,6 +612,12 @@ void RDNode::Serialize(RDFileDataStream& buffer,bool bSave)
 
     qDebug() << "end to serialize node :" << m_strName;
 }
+
+const float3& RDNode::GetDynamicPos(const QString& pName)const
+{
+    const RDRenderData* pData = GetRenderData(pName);
+    return pData->GetPos();
+}
 //================================================================================
 //undo
 RDPosUndo::RDPosUndo(RDNode& pNode)
@@ -604,6 +625,7 @@ RDPosUndo::RDPosUndo(RDNode& pNode)
      ,m_OldPos(pNode.GetPos())
 {
 }
+
 void RDPosUndo::undo()
 {
     float3 vOldPos = m_OldPos;

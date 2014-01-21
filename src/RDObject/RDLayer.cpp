@@ -24,6 +24,7 @@
 #include "RDSceneRenderData.h"
 #include "RDCreateObj.h"
 #include "RDFileDataStream.h"
+#include "RDLight.h"
 
 RDObjectCreator<RDLayer,false> LayerCreator;
 
@@ -54,48 +55,27 @@ RDNode* RDLayer::GetChild(size_t i)
 {
     if(i < m_vecCameraObj.size())
         return GetCamera(i);
-    return RDNode::GetChild(i - m_vecCameraObj.size());
+    else if(i - m_vecCameraObj.size() < GetLightCount())
+        return GetLight(i - m_vecCameraObj.size());
+    return RDNode::GetChild(i - m_vecCameraObj.size() - m_vecLight.size());
 }
 
 const RDNode* RDLayer::GetChild(size_t i)const
 {
     if(i < m_vecCameraObj.size())
         return GetCamera(i);
-    return RDNode::GetChild(i - m_vecCameraObj.size());
-}
-
-RDNode* RDLayer::GetChild(const QUuid& NodeId)
-{
-    for(auto it = m_vecCameraObj.begin(); it != m_vecCameraObj.end(); it++)
-    {
-        if((*it)->GetNodeID() == NodeId)
-            return *it;
-        auto ret = (*it)->GetChild(NodeId);
-        if(ret)
-            return ret;
-    }
-    return RDNode::GetChild(NodeId);
+    else if(i - m_vecCameraObj.size() < GetLightCount())
+        return GetLight(i - m_vecCameraObj.size());
+    return RDNode::GetChild(i - m_vecCameraObj.size() - m_vecLight.size());
 }
 
 RDNode* RDLayer::RemoveChild(size_t i)
 {
     if(i < GetCameraCount())
         return RemoveCamera(i);
-
-    return RDNode::RemoveChild(i - m_vecCameraObj.size());
-} 
-
-void RDLayer::RemoveChild(const RDNode& pChild)
-{
-    for(auto it = m_vecCameraObj.begin(); it != m_vecCameraObj.end(); it++)
-    {
-        if(*it == &pChild)
-        {
-            m_vecCameraObj.erase(it);
-            return;
-        }
-    }
-    RDNode::RemoveChild(pChild);
+    else if(i - m_vecCameraObj.size() < GetLightCount())
+        return RemoveLight(i - m_vecCameraObj.size());
+    return RDNode::RemoveChild(i - m_vecCameraObj.size() - m_vecLight.size());
 } 
 
 RDCamera* RDLayer::RemoveCamera(size_t i)
@@ -157,13 +137,14 @@ RDRenderData *RDLayer::CreateRenderData(const QString &pName)
 
 void RDLayer::CalFrame(const RDTime& nTime,const QString& pRDName) 
 {
-    RDLayerRenderData* pLayerRD = dynamic_cast<RDLayerRenderData*>(GetRenderData(pRDName));
-    RDCamera* pCamera = GetCurCamera(*pLayerRD);
-    pCamera->CalFrame(nTime,pRDName);
     RDNode::CalFrame(nTime,pRDName);
+
     float2 vNearFar = CalObjMinMax(pRDName);
 
+    RDLayerRenderData* pLayerRD = dynamic_cast<RDLayerRenderData*>(GetRenderData(pRDName));
     QRectF sceneRT(-(pLayerRD->GetSceneWidth() / 2.f),-(pLayerRD->GetSceneHeight() / 2.f),pLayerRD->GetSceneWidth(),pLayerRD->GetSceneHeight());
+
+    RDCamera* pCamera = GetCurCamera(*pLayerRD);
     pCamera->UpdateProject(pRDName,sceneRT,vNearFar.x,vNearFar.y);
     if(pCamera->GetRenderChangeLevel(pRDName) > RDRender_NoChange)
         pLayerRD->UnionDirty(sceneRT);
@@ -205,9 +186,9 @@ void RDLayer::Serialize(RDFileDataStream& buffer,bool bSave)
     if(!bSave)
         m_nType = static_cast<RDLayerType>(nType);
     
-    int nCount = m_vecCameraObj.size();
-    buffer.Serialize(nCount,bSave);
-    for(int i = 0; i < nCount; i++)
+    int nCameraCount = m_vecCameraObj.size();
+    buffer.Serialize(nCameraCount,bSave);
+    for(int i = 0; i < nCameraCount; i++)
     {
         RDCamera* pCamera = nullptr;
         if(bSave)
@@ -220,4 +201,27 @@ void RDLayer::Serialize(RDFileDataStream& buffer,bool bSave)
         }
         pCamera->Serialize(buffer,bSave);
     }
+
+    int nLightCount = m_vecLight.size();
+    buffer.Serialize(nLightCount,bSave);
+    for(int i = 0;i  < nLightCount; i++)
+    {
+        RDLight* pLight = nullptr;
+        if(bSave)
+            pLight = m_vecLight[i];
+        else
+        {
+            pLight = new RDLight;
+            m_vecLight.push_back(pLight);
+            pLight->SetParent(this);
+        }
+        pLight->Serialize(buffer,bSave);
+    }
+}
+
+RDLight* RDLayer::RemoveLight(size_t nIndex)
+{
+    RDLight* pLight = m_vecLight[nIndex];
+    m_vecLight.erase(m_vecLight.begin() + nIndex);
+    return pLight ;
 }

@@ -52,9 +52,13 @@ public:
     const QString& GetName()const {return m_strName;}
     const QUuid& GetNodeID()const{return m_NodeID;}
 
+    //static pos
     const float3& GetPos()const{return m_vPos;}
     void MovePos(const float3& vOffset){ m_vPos += vOffset;}
     void SetPos(const float3& vPos){ m_vPos = vPos;}
+
+    //dynamic
+    const float3& GetDynamicPos(const QString& pName)const;
 
     bool AddSection(const RDTime& nStoryTime,const RDTime& nLength,const QUuid& storyId);
 	RDTime GetSectionMaxLength(const QUuid& idStory)const;
@@ -73,9 +77,10 @@ public:
     virtual void AddChild(RDNode& pChild){m_vecChildObj.push_back(&pChild);pChild.m_pParent = this;}
     virtual RDNode* GetChild(size_t i){return m_vecChildObj[i];}
     virtual const RDNode* GetChild(size_t i)const{return m_vecChildObj[i];}
-    virtual RDNode* GetChild(const QUuid& NodeId);
+    const RDNode* GetChild(const QUuid& NodeId)const;
+    RDNode* GetChild(const QUuid& NodeId);
     virtual RDNode* RemoveChild(size_t i); 
-    virtual void RemoveChild(const RDNode& pChild); 
+    void RemoveChild(const RDNode& pChild); 
 
     RDNode* GetParent(){return m_pParent;}
     const RDNode* GetParent()const{return m_pParent;}

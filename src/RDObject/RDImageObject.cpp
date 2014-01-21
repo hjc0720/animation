@@ -31,9 +31,10 @@
 #include "RDCamera.h"
 #include "RDMaterial.h"
 #include "RDCreateObj.h"
+class RDModel;
 
 RDObjectCreator<RDImageObject,true> imageCreator;
-class RDModel;
+
 class RDImagePrivateData: public RDRenderPrivateData
 {
 public:

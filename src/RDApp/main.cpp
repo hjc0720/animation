@@ -17,7 +17,6 @@
 #include "mainwindow.h"
 #include "RDMainWindow.h"
 #include <QDir>
-#include "HVector4f.h"
 
 void InitEnv()
 {

@@ -51,7 +51,6 @@ public:
     inline void SetX(float fX ){m_data[0] = fX;}
     inline void SetY(float fY ){m_data[1] = fY;}
     inline void SetZ(float fZ ){m_data[2] = fZ;}
-    
 public:
     //operator overriding
     float3& operator = (const float4& m);
@@ -65,7 +64,7 @@ public:
     bool operator != (const float3& vSrc);
     float operator ^ (const float3& vSrc);
 protected:
-    float m_data[4] __attribute__ ((aligned (16)));
+    float m_data[3] __attribute__ ((aligned (16)));
 };
 
 //operator
@@ -78,6 +77,8 @@ inline bool float3::operator == (const float3& vSrc)
 
 inline bool float3::operator != (const float3& vSrc)
 {
+    if(this == &vSrc)
+        return true;
     return !(*this == vSrc);
 }
 
