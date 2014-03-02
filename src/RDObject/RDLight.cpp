@@ -29,6 +29,7 @@ RDLight::RDLight(const QString& strName,RDLightType nType,const float3& vPos)
      ,m_vDiffuseColor(1,1,1,1)
      ,m_vSpecColor(1,1,1,1)
 {
+    m_fIntensity = 1;
     if(nType == RDSpotLight)
         m_pSpotParam = new RDSpotParam;
     else
@@ -57,13 +58,14 @@ void RDLight::Serialize(RDFileDataStream& buffer,bool bSave)
 
 size_t    RDLight::GenerateShaderParam(char* pBuffer,const QString& name)
 {
+    if(!GetCurSection(name))
+        return 0;
     size_t size = 0;
-    float fNoUse = 0;
     switch(m_nType)
     {
     case RDPointLight:
         size += RDSaveData(pBuffer,GetDynamicPos(name));
-        size += RDSaveData(pBuffer,fNoUse);
+        break;
     default:
         return 0;
     }

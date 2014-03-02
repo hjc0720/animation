@@ -87,6 +87,8 @@ void RDImageObject::Render(unsigned long ,RDRenderData& RenderData)
 
     ModelVSParam param;
     param.MVP = pPrivateData->m_vRenderMatrix * RenderData.GetMVPMatrix();
+    param.ModelMat = pPrivateData->m_vRenderMatrix * RenderData.GetGlobalMatrix();
+    param.NormalMat = param.ModelMat.toNormalMat();
     if(pPrivateData->m_pVertexParam)
         pDevice->ModifyUniformBufferObject(pPrivateData->m_pVertexParam,reinterpret_cast<float*>(&param));
     else
@@ -151,7 +153,7 @@ void RDImageObject::CreateRenderData(RDRenderData& pRD)
     RDImageResource* pResource = dynamic_cast<RDImageResource*>(pResManager->GetResource(m_Image));
     pPrivateData->m_pImage = pResource->GetBuffer();
 
-    pPrivateData->m_pMaterial = new RDMaterial(false,0xffffffff);
+    pPrivateData->m_pMaterial = new RDMaterial(true,0xffffffff);
     QRectF bound(0,0,pPrivateData->m_pImage->GetWidth(),pPrivateData->m_pImage->GetHeight());
     pPrivateData->m_pMaterial->AddTex(RDNormalMatTexture,pPrivateData->m_pImage,bound);
 }

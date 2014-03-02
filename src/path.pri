@@ -5,7 +5,7 @@ CONFIG -= release
 #CONFIG -= debug
 #CONFIG += release
 
-QMAKE_CXXFLAGS += -std=c++0x
+QMAKE_CXXFLAGS += -std=c++11
 debug{
     DESTDIR  = ../../bin_debug
     DEFINES += _DEBUG

@@ -7,6 +7,10 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
+#include "RDFileDataStream.h"
+
+const int MAT_PARAM_INDEX = 1;
+const int MAT_TEX_PARAM_START = 2;
 
 class RDMatShaderCode
 {
@@ -41,6 +45,8 @@ protected:
 RDMatShaderCode MainMatCode(":/shader/main_ps");
 RDMatShaderCode TexMatCode[] = {QString(":/shader/diffuse_ps")};
 RDMatShaderCode ParamMatCode[] = {QString(":/shader/diffusebuffer")};
+RDMatShaderCode LightParamCode(":/shader/lightbuffer");
+RDMatShaderCode LightCode(":/shader/light_ps");
 
 RDMatTexture::RDMatTexture()
     :m_bFileTex(true)
@@ -114,7 +120,7 @@ void        RDMatTexture::InitData()
 void            RDMatTexture::SetParamToDevice(int nIndex,RDRenderDevice* pDevice )
 {
     pDevice->SetShaderTexture(nIndex,m_hTex);
-    pDevice->SetShaderParam(2 + nIndex,m_pTexParam);
+    pDevice->SetShaderParam(MAT_TEX_PARAM_START + nIndex,m_pTexParam);
 }
 
 void            RDMatTexture::UpdateFrame(RDRenderDevice* pDevice ,const RDTime& )
@@ -136,7 +142,8 @@ RDMaterial::RDMaterial()
     memset(m_MatTexture,0,sizeof(RDMatTexture*) * RDMatTextureCount);
     m_pShader = nullptr;
     m_nNowTime = 0;
-    m_nChange = MT_ADD_TEXTURE;
+    m_nChange = MAT_NEW_CHANGE;
+    m_pMatParam = nullptr;
 }
 
 RDMaterial::RDMaterial(bool bEnableLight,unsigned int color)
@@ -148,8 +155,9 @@ RDMaterial::RDMaterial(bool bEnableLight,unsigned int color)
 {
     memset(m_MatTexture,0,sizeof(RDMatTexture*) * RDMatTextureCount);
     m_nNowTime = 0;
-    m_nChange = MT_ADD_TEXTURE;
+    m_nChange = MAT_NEW_CHANGE;
     m_pShader = nullptr;
+    m_pMatParam = nullptr;
 }
 
 void RDMaterial::AddTex(RDMatTextureType nTexType,const QString& fileName)
@@ -162,7 +170,7 @@ void RDMaterial::AddTex(RDMatTextureType nTexType,const QString& fileName)
     if(!m_MatTexture[nTexType])
     {
         m_MatTexture[nTexType] = new RDMatTexture(fileName);
-        SetChange(MT_ADD_TEXTURE);
+        SetChange(RD_ADD_TEXTURE);
     }
 }
 
@@ -172,7 +180,7 @@ void RDMaterial::AddTex(RDMatTextureType nTexType,const uint* pBuffer,int nWidth
         SAFE_DELETE(m_MatTexture[nTexType]);
 
     m_MatTexture[nTexType] = new RDMatTexture(pBuffer,nWidth,nHeight);
-    SetChange(MT_ADD_TEXTURE);
+    SetChange(RD_ADD_TEXTURE);
 }
 
 void RDMaterial::AddTex(RDMatTextureType nTexType,const RDTexture*  hTex,const QRectF& texBound)
@@ -180,16 +188,18 @@ void RDMaterial::AddTex(RDMatTextureType nTexType,const RDTexture*  hTex,const Q
     if(m_MatTexture[nTexType])
         SAFE_DELETE(m_MatTexture[nTexType]);
     m_MatTexture[nTexType] = new RDMatTexture(hTex,texBound);
-    SetChange(MT_ADD_TEXTURE);
+    SetChange(RD_ADD_TEXTURE);
 }
 
 bool RDMaterial::UpdateFrame(const RDTime& time,char ,char ,char )
 {
-    if(m_nNowTime == time && m_nChange == MT_MAT_NO_CHANGE)
+    if(m_nNowTime == time && m_nChange == RD_MAT_NO_CHANGE)
         return false;
-    if(CheckChange(MT_ADD_TEXTURE))
+    if(CheckChange(RD_Mat_Param))
+        GenerateMatParam();
+    if(CheckChange(RD_ADD_TEXTURE))
         CreateShader();
-    if(CheckChange(MT_ADD_TEXTURE))
+    if(CheckChange(RD_ADD_TEXTURE))
     {
         RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
         for(int i = 0; i < RDMatTextureCount;i++)
@@ -241,22 +251,28 @@ void RDMaterial::CreateShader()
 
 void RDMaterial::GenerateShader()
 {
-    qDebug() << "main shader:\n"<< MainMatCode.GetStr();
     m_strShader = MainMatCode.GetStr();
     int nParamIndex = m_strShader.indexOf("//end param");
+
+    if(m_bEnableLight)
+        m_strShader.insert(nParamIndex,LightParamCode.GetStr());
     for(int i = 0;i < RDMatTextureCount; i++)
     {
         if(m_MatTexture[i])
             m_strShader.insert(nParamIndex,ParamMatCode[i].GetStr());
         qDebug() << "tex shader:\n"<< ParamMatCode[i].GetStr();
     }
+
     int nCodeIndex = m_strShader.indexOf("//end code");
+
+    if(m_bEnableLight)
+        m_strShader.insert(nCodeIndex,LightCode.GetStr());
     for(int i = 0; i < RDMatTextureCount;i++)
     {
         if(m_MatTexture[i])
             m_strShader.insert(nCodeIndex,TexMatCode[i].GetStr());
     }
-    qDebug() << "material shader:\n"<< m_strShader;
+    m_strShader.replace("POINT_COUNT","1");
 }
 
 void RDMaterial::SetParamToDevice()
@@ -264,6 +280,7 @@ void RDMaterial::SetParamToDevice()
     RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
     pDevice->SetShader(m_pShader,FragmentShader);
 
+    pDevice->SetShaderParam(MAT_PARAM_INDEX ,m_pMatParam);
     for(int i = 0; i < RDMatTextureCount; i++)
     {
         if(m_MatTexture[i])
@@ -271,4 +288,28 @@ void RDMaterial::SetParamToDevice()
             m_MatTexture[i]->SetParamToDevice(i,pDevice);
         }
     }
+}
+
+void    RDMaterial::GenerateMatParam()
+{
+    size_t nBufferSize = GenerateMatParamBuffer(nullptr);
+    char* pBuffer = new char[nBufferSize];
+    GenerateMatParamBuffer(pBuffer);
+    if(m_pMatParam)
+        RDRenderDevice::GetRenderManager()->ModifyUniformBufferObject(m_pMatParam,reinterpret_cast<float*>(pBuffer));
+    else
+        m_pMatParam = RDRenderDevice::GetRenderManager()->CreateUniformBufferObject(nBufferSize,reinterpret_cast<float*>(pBuffer));
+}
+
+size_t  RDMaterial::GenerateMatParamBuffer(char* pBuffer)
+{
+    if(pBuffer)
+    {
+        RDSaveData(pBuffer,m_vDiffuse);
+        RDSaveData(pBuffer,m_vSpecular);
+        RDSaveData(pBuffer,m_vAmbient);
+        RDSaveData(pBuffer,m_fShine);
+        RDSaveData(pBuffer,1.f);
+    }
+    return 16 * sizeof(float);
 }

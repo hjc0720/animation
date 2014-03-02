@@ -25,20 +25,29 @@
 #include "RDCreateObj.h"
 #include "RDFileDataStream.h"
 #include "RDLight.h"
+#include <algorithm>
+#include "RDRenderDevice.h"
 
 RDObjectCreator<RDLayer,false> LayerCreator;
 
 class RDLayerRenderData :public RDRenderData
 {
+    friend RDLayer;
 public:
     RDLayerRenderData(RDNode& node,const RDSceneRenderData& SceneRenderData)
         :RDRenderData(node,SceneRenderData)
+         ,m_pLightParam(nullptr)
          ,m_nCurCameraID(0)
-    { }
+    { 
+        ClearLightCount();
+    }
     size_t GetCurCameraID()const{return m_nCurCameraID;}
     void    SetCurCameraID(size_t nIndex){m_nCurCameraID = nIndex;}
-public:
+    void    ClearLightCount(){memset(m_nTypeLightCount,0,sizeof(m_nTypeLightCount));}
+protected:
+    RDUBO* m_pLightParam;
     size_t m_nCurCameraID;
+    size_t m_nTypeLightCount[RDLightTypeCount]; 
 };
 
 RDLayer::RDLayer(RDLayerType nType,const QString& strName)
@@ -49,6 +58,10 @@ RDLayer::RDLayer(RDLayerType nType,const QString& strName)
      RDCamera* pCamera = new RDCamera("camera",1080,PerspectiveProject);
      pCamera->SetParent(this);
      m_vecCameraObj.push_back(pCamera);
+
+     RDLight* pLight = new RDLight("light",RDPointLight,float3(0,100,-100));
+     pLight->SetParent(this);
+     m_vecLight.push_back(pLight);
 }
 
 RDNode* RDLayer::GetChild(size_t i)
@@ -135,19 +148,54 @@ RDRenderData *RDLayer::CreateRenderData(const QString &pName)
     return pRenderData;
 }
 
-void RDLayer::CalFrame(const RDTime& nTime,const QString& pRDName) 
+void    RDLayer::CalChildFrame(const RDTime& nTime,const QString& pRDName)
 {
-    RDNode::CalFrame(nTime,pRDName);
+    RDLayerRenderData* pLayerRD = dynamic_cast<RDLayerRenderData*>(GetRenderData(pRDName));
+    std::for_each(m_vecCameraObj.begin(),m_vecCameraObj.end(),
+            [&](RDCamera* pCamera){pCamera->CalFrame(nTime,pRDName);});
+
+    pLayerRD->ClearLightCount();
+    std::for_each(m_vecLight.begin(),m_vecLight.end(),
+            [&](RDLight* pLight){
+            pLight->CalFrame(nTime,pRDName);
+            if(pLight->GetCurSection(pRDName))
+                pLayerRD->m_nTypeLightCount[pLight->GetLightType()]++;
+            });
+
+    std::for_each(m_vecChildObj.begin(),m_vecChildObj.end(),
+            [&](RDNode* pChild){pChild->CalFrame(nTime,pRDName);});
 
     float2 vNearFar = CalObjMinMax(pRDName);
 
-    RDLayerRenderData* pLayerRD = dynamic_cast<RDLayerRenderData*>(GetRenderData(pRDName));
     QRectF sceneRT(-(pLayerRD->GetSceneWidth() / 2.f),-(pLayerRD->GetSceneHeight() / 2.f),pLayerRD->GetSceneWidth(),pLayerRD->GetSceneHeight());
-
     RDCamera* pCamera = GetCurCamera(*pLayerRD);
     pCamera->UpdateProject(pRDName,sceneRT,vNearFar.x,vNearFar.y);
+
     if(pCamera->GetRenderChangeLevel(pRDName) > RDRender_NoChange)
         pLayerRD->UnionDirty(sceneRT);
+
+    std::vector<RDLight*> arLight(m_vecLight);
+    std::sort(arLight.begin(),arLight.end(),
+            [](RDLight* l1,RDLight* l2){return l1->GetLightType() < l2->GetLightType();});
+
+    size_t nLightSize = sizeof(float4);
+    std::for_each(arLight.begin(),arLight.end(),
+            [&](RDLight* pLight){nLightSize += pLight->GenerateShaderParam(nullptr,pRDName);});
+
+    char* pBuffer = new char[nLightSize]; 
+    char* pTmp = pBuffer;
+    RDSaveData(pTmp,pCamera->GetDynamicPos(pRDName));
+    std::for_each(arLight.begin(),arLight.end(),
+            [&](RDLight* pLight){pLight->GenerateShaderParam(pTmp,pRDName);});
+
+    RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
+    if(pLayerRD->m_pLightParam)
+        pDevice->ModifyUniformBufferObject(pLayerRD->m_pLightParam ,reinterpret_cast<float*>(pBuffer));
+    else
+        pLayerRD->m_pLightParam = pDevice->CreateUniformBufferObject(nLightSize ,reinterpret_cast<float*>(pBuffer));
+    
+    SAFE_DELETE(pBuffer);
+//    qDebug() << GetLight(0)->GetDynamicPos(pRDName);
 }
 
 RDCamera* RDLayer::GetCurCamera(const RDLayerRenderData& pLayerRD)const
@@ -224,4 +272,10 @@ RDLight* RDLayer::RemoveLight(size_t nIndex)
     RDLight* pLight = m_vecLight[nIndex];
     m_vecLight.erase(m_vecLight.begin() + nIndex);
     return pLight ;
+}
+
+RDUBO*      RDLayer::GetLightParam(const QString& name)const
+{
+    const RDLayerRenderData* pLayerRD = dynamic_cast<const RDLayerRenderData*>(GetRenderData(name));
+    return pLayerRD->m_pLightParam;
 }

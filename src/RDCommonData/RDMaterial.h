@@ -15,6 +15,7 @@ enum RDMatTextureType
 };
 
 class QRectF;
+class RDUBO;
 class RDMatTexture
 {
 public:
@@ -47,9 +48,12 @@ protected:
 
 enum RDMatChangeType
 {
-    MT_MAT_NO_CHANGE = 0,
-    MT_ADD_TEXTURE   = 1,
+    RD_MAT_NO_CHANGE    = 0,
+    RD_ADD_TEXTURE      = 1,
+    RD_Mat_Param        =   2,
 };
+
+#define MAT_NEW_CHANGE RD_Mat_Param
 
 class RDMaterial
 {
@@ -62,12 +66,14 @@ public:
     bool UpdateFrame(const RDTime& time,char m_nPointLightNum,char m_nLineLightNum,char m_nSpotLightNum);
 
     int  SetChange(int nChangeType);
-    void ClearChange(){m_nChange = MT_MAT_NO_CHANGE;};
+    void ClearChange(){m_nChange = RD_MAT_NO_CHANGE;};
     bool CheckChange( RDMatChangeType nType);
     void SetParamToDevice();
 protected:
-    void CreateShader();
-    void GenerateShader();
+    void    GenerateMatParam();
+    size_t  GenerateMatParamBuffer(char* pBuffer);
+    void    CreateShader();
+    void    GenerateShader();
 protected:
     bool            m_bEnableLight;
     float4          m_vDiffuse;
@@ -86,6 +92,7 @@ protected:
     QString         m_strShaderName;
     QString         m_strShader;
     RDShader*       m_pShader;
+    RDUBO*           m_pMatParam;
 
     int             m_nChange;
 };

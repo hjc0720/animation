@@ -15,9 +15,9 @@
 // =====================================================================================
 
 #include <QFile>
-#include <QDebug>
 #include "RDFileDataStream.h"
 #include <QDir>
+#include "HMatrixQ4F.h"
 
 RDFileDataStream::RDFileDataStream ( QIODevice * d ,const QString& strResourcePath)
     :QDataStream(d)
@@ -89,4 +89,25 @@ RDFileDataStream& operator >> (RDFileDataStream& buffer,RDMd5& md5)
 {
 	buffer.readRawData( (char*)&md5,sizeof(RDMd5));
     return buffer;
+}
+
+QDebug operator<<(QDebug dbg, const matrix4x4 &mat)
+{
+    for(int i = 0; i < 4; i++)
+    {
+        for(int j = 0; j < 4; j++)
+        {
+            dbg.nospace() << mat.Get(i,j) << "\t";
+        }
+        dbg.nospace() << ";\n";
+    }
+    return dbg.space();
+}
+
+QDebug operator<<(QDebug dbg, const float3 & vec)
+{
+    for(int i = 0; i < 3; i++)
+        dbg.nospace() << vec.GetData()[i] << "\t";
+    dbg.nospace() << ";\n";
+    return dbg.space();
 }

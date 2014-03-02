@@ -26,8 +26,8 @@ struct RDSubModel
 struct ModelVSParam
 {
 	matrix4x4 MVP;
-	matrix4x4 NormalMat;
 	matrix4x4 ModelMat;
+	matrix4x4 NormalMat;
 };
 
 class RDSpaceParam;

@@ -502,17 +502,6 @@ void matrix4x4::swap(int i1,int j1,int i2,int j2)
     m[i2][j2] = fTemp;
 }
 
-//void HMatrixQ4F::print()
-//{
-    //cout<<endl;
-    //for(int i=0;i< 4;i++)
-    //{
-        //for(int j=0;j< 4;j++)
-            //cout<<m[i][j]<<"    ";
-        //cout<<endl;
-    //}
-//}
-
 void matrix4x4::swapLine(int i1,int i2)
 {
     __m128 line1 = _mm_load_ps(m[i1]);
@@ -523,6 +512,19 @@ void matrix4x4::swapLine(int i1,int i2)
 matrix4x4::matrix4x4(const matrix4x4& mat)
 {
     memcpy(m,mat.m,sizeof(float)<<4);
+}
+
+matrix4x4 matrix4x4::toNormalMat()
+{
+    matrix4x4 matNormal;
+    for(int i = 0; i < 3; i++)
+    {
+        __m128 first = _mm_load_ps(m[i]);
+        _mm_store_ps(matNormal.m[i],first);
+    }
+    matNormal.Transpose();
+    matNormal.Inverse();
+    return matNormal;
 }
 
 //non-member operator overloading
@@ -546,3 +548,4 @@ matrix4x4 operator * (const matrix4x4& mat1,const matrix4x4& mat2)
     res *= mat2;
     return res;
 }
+

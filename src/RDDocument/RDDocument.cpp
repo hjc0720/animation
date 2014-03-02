@@ -27,6 +27,7 @@
 #include "RDStory.h"
 #include "RDLayer.h"
 #include "RDCamera.h"
+#include "RDLight.h"
 
 // =====================================================================================
 class RDUndoRedo :public QUndoCommand
@@ -84,6 +85,10 @@ RDDocument::RDDocument(bool bCreateNewProj)
         for(size_t i = 0; i < pLayer->GetCameraCount(); i++)
         {
             pLayer->GetCamera(i)->AddSection(m_nCurFrame - pStory->GetStartTime(false),1000000000,pStory->GetStoryId());
+        }
+        for(size_t i = 0; i < pLayer->GetLightCount(); i++)
+        {
+            pLayer->GetLight(i)->AddSection(m_nCurFrame - pStory->GetStartTime(false),1000000000,pStory->GetStoryId());
         }
 
         PushTopNode(pLayer);

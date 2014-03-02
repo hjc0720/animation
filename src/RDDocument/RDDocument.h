@@ -32,6 +32,7 @@ class RDNode;
 class RDScene;
 class RDUndoCommand;
 
+
 enum RDEditItemType
 {
     RDEdit_ModifyItem,

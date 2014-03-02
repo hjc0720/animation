@@ -6,19 +6,19 @@ layout (location = 3) in vec2 uv;
 
 out vec3 oNormal;
 out vec2 oUv;
-out vec4 oWorldPos;
+out vec3 oWorldPos;
 
 layout(binding = 0, std140) uniform Mat
 {
 	mat4 MVP;
-	mat3 NormalMat;
 	mat4 ModelMat;
+	mat4 NormalMat;
 };
 
 void main()
 {
 	gl_Position = MVP * pos;
-    oNormal = normalize(NormalMat * normal.xyz);
+    oNormal = normalize(vec3(NormalMat * normal));
     oUv = uv;
-    oWorldPos = ModelMat * pos;
+    oWorldPos = vec3(ModelMat * pos);
 }

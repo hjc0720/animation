@@ -77,7 +77,7 @@ public:
 
     const RDSceneRenderData& GetSceneRD()const{return  m_SceneRenderData;}
 
-    RDSection*      GetCurSection(){return m_pCurSection;}
+    RDSection*      GetCurSection()const{return m_pCurSection;}
     const RDStory*  GetCurStory()const;
     void            SetCurSection(RDSection* pSection){m_pCurSection = pSection;}
     bool            IsPlay()const;

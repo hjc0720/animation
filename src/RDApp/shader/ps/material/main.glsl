@@ -3,7 +3,7 @@ layout(location = 0) out vec4 vColor;
 
 in vec3 oNormal;
 in vec2 oUv;
-in vec4 oWorldPos;
+in vec3 oWorldPos;
 
 layout(binding = 1, std140)uniform Material
 {
@@ -17,8 +17,10 @@ layout(binding = 1, std140)uniform Material
 //end param
 void main()
 {
-    vec4 vDiffuse = DiffuseColor, vSpec = vec4(0);
+    vec3 vDiffuse = DiffuseColor.rgb, vSpec = vec3(0);
+    float fOutAlpha = fAlpha * DiffuseColor.a;
     //begin code
     //end code
-    vColor = vDiffuse + vSpec; 
+    //vColor = vDiffuse + vSpec; 
+    vColor = vec4(vDiffuse ,1);
 }

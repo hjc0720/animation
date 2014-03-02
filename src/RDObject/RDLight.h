@@ -23,7 +23,8 @@ enum RDLightType
 {
     RDPointLight,
     RDLineLight,
-    RDSpotLight
+    RDSpotLight,
+    RDLightTypeCount,
 };
 
 struct RDSpotParam
@@ -46,6 +47,7 @@ public:
 
     virtual void Serialize(RDFileDataStream& buffer,bool bSave);
     size_t    GenerateShaderParam(char* pBuffer,const QString& name);
+    RDLightType GetLightType()const{return m_nType;}
 protected:
     ~RDLight(){}
 protected:

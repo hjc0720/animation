@@ -26,6 +26,7 @@
 #include "RDStory.h"
 #include "RDLayer.h"
 #include "RDCamera.h"
+#include "RDRenderDevice.h"
 
 using namespace std;
 
@@ -104,6 +105,9 @@ void RDNode::Render(const RDTime& nTime,const QString& pRDName)
     RDRenderData& RenderData = *GetRenderData(pRDName);
     if(m_pObj)
     {
+        const RDLayer* pLayer = GetLayerNode();
+        RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
+        pDevice->SetShaderParam(3,pLayer->GetLightParam(pRDName));
         RenderData.SetMVPMatrix(RenderData.GetGlobalMatrix() * GetViewProjMat(pRDName));
         m_pObj->Render(nTime,RenderData);
     }
@@ -115,6 +119,17 @@ void RDNode::CalNodeMatrix(RDRenderData& RenderData)
     const float3& vPos = RenderData.GetPos();
     RenderData.SetItemMatrix(matrix4x4(vPos.x(),vPos.y(),vPos.z(),HMatrixQ4F_POS));
     RenderData.SetGlobalMatrix(RenderData.GetItemMatrix());
+}
+
+void RDNode::CalChildFrame(const RDTime& nTime,const QString& pRDName)
+{
+    RDRenderData* RenderData = GetRenderData(pRDName);
+
+    std::for_each(m_vecChildObj.begin(),m_vecChildObj.end(),
+            [&](RDNode* pChild){
+            pChild->CalFrame(nTime,pRDName);
+            RenderData->UnionDirty(pChild->GetRenderData(pRDName)->GetDirty());
+            });
 }
 
 void RDNode::CalFrame(const RDTime& nTime,const QString& pRDName) 
@@ -135,12 +150,6 @@ void RDNode::CalFrame(const RDTime& nTime,const QString& pRDName)
     if(RenderData.GetChangeLevel() >= RDRender_TransChange)
         CalNodeMatrix(RenderData);
 
-
-    for(size_t i = 0; i < GetChildCount(); i++)
-    {
-        GetChild(i)->CalFrame(nTime,pRDName);
-        RenderData.UnionDirty(GetChild(i)->GetRenderData(pRDName)->GetDirty());
-    }
     if(m_pObj)
     {
         m_pObj->CalFrame(nSectionTime,RenderData);
@@ -152,6 +161,7 @@ void RDNode::CalFrame(const RDTime& nTime,const QString& pRDName)
             RenderData.UnionDirty(RenderData.GetScaleBound());
         }
     }
+    CalChildFrame(nTime,pRDName);
     RenderData.SetRenderChangeLevel(RenderData.GetChangeLevel());
     RenderData.ResetChangeLevel();
     RenderData.SetSectionTime(nSectionTime);

@@ -20,6 +20,7 @@
 #include <QDataStream>
 #include <QStringList>
 #include <QString>
+#include <QDebug>
 
 class float3;
 class RDMd5;
@@ -89,4 +90,9 @@ size_t RDLoadDataArray(char*& pBuffer,T* data,int nCount)
     }
     return sizeof(T) * nCount;
 }
+
+class matrix4x4;
+QDebug operator<<(QDebug dbg, const matrix4x4 &mat);
+QDebug operator<<(QDebug dbg, const float3 & vec);
+
 #endif   // ----- #ifndef rddatastream_INC  -----

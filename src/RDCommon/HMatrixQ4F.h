@@ -55,6 +55,7 @@ public:
     void ResetPos(const float3& vPos);
     void ResetPos(float fX,float fY,float fZ);
 
+    matrix4x4 toNormalMat();
 public:
     //运算符
     matrix4x4& operator += (const matrix4x4& m);

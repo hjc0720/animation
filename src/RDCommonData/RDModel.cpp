@@ -130,7 +130,7 @@ RDModel* RDModel::CreateSegmentModel()
     pModel->m_vPos[5].Set(-1,-1,0,1);
     pModel->m_vUV[5].u = 0;
     pModel->m_vUV[5].v = 0;
-    float4 vNormal(0,0,1,0);
+    float4 vNormal(0,0,-1,0);
     for(int i = 0; i < pModel->m_nCount; i++)
     {
         pModel->m_vNormal[i] = vNormal;

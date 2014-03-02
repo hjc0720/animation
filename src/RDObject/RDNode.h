@@ -99,6 +99,7 @@ public:
 
     size_t GetSectionCount(const QUuid& idStory)const;
     RDSection* GetSection(const QUuid& idStory,size_t nIndex);
+    RDSection* GetCurSection(const QString& pName)const{return GetRenderData(pName)->GetCurSection();}
 
     virtual const matrix4x4&     GetViewProjMat(const QString& RDName);
     RDCamera* GetCamera(const QString &strName) const;
@@ -106,6 +107,7 @@ public:
     virtual QRectF GetSceneRt(const QString &)const;
     const matrix4x4& GetNodeMatrix(const QString& strName)const;
 protected:
+    virtual void    CalChildFrame(const RDTime& nTime,const QString& pRDName);
     void            MoveSection(const RDTime& nSteps, RDSectionList pStart,RDSectionList pEnd );
     void            UpdateSection(const RDTime& nFrame /*global frame*/,RDRenderData& pRD);
     RDSection*      GetLastSectionBefore(size_t nCurStoryIndex);

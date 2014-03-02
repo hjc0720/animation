@@ -28,6 +28,7 @@ enum RDLayerType
 class RDCamera;
 class RDLight;
 class RDLayerRenderData;
+class RDUBO;
 class RDLayer : public RDNode
 {
 public:
@@ -56,13 +57,16 @@ public:
     RDLight* RemoveLight(size_t nIndex);
     size_t GetLightCount()const{return m_vecLight.size();}
     const RDLight* GetLight(size_t i)const{return m_vecLight[i];}
-    RDLight* GetLight(size_t i){return m_vecLight[i];}
+    RDLight*    GetLight(size_t i){return m_vecLight[i];}
+    size_t      GetLightTypeCount(RDLayerType nType);
 
-    virtual void CalFrame(const RDTime& nTime,const QString& pRDName) ;
+    RDUBO*      GetLightParam(const QString& name)const;
 protected:
     RDCamera* GetCurCamera(const RDLayerRenderData& pLayerRD) const;
     float2      CalObjMinMax(const QString& pRDName);
     virtual RDRenderData*  CreateRenderData(const QString& pName);
+
+    virtual void    CalChildFrame(const RDTime& nTime,const QString& pRDName);
 protected:
     RDLayerType m_nType;
     std::vector<RDCamera*> m_vecCameraObj;
