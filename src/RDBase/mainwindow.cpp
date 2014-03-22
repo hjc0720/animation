@@ -164,7 +164,8 @@ void MainWindow::AddMenuBar()
 	redoAction->setShortcuts(QKeySequence::Redo);
 	pEditMenu->addAction(redoAction);
 
-    //qDebug() << "Test" << endl;
+    connect(undoAction, SIGNAL(triggered(bool)), m_pCenterWidget, SLOT(updateGL()));
+    connect(redoAction, SIGNAL(triggered(bool)), m_pCenterWidget, SLOT(updateGL()));
 }
 void MainWindow::AddStatusBar()
 {

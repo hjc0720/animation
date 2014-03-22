@@ -72,6 +72,7 @@ RDRenderWidget::RDRenderWidget(int nWidth, int nHeight,const QGLFormat& format,Q
      ,m_document(true)
      ,m_swapChain(nWidth,nHeight)
 {
+    RDEditerManager::GetEditerManager().SetDocument(&m_document);
 }
 
 RDRenderWidget::~RDRenderWidget()

@@ -22,6 +22,9 @@
 #include "HVector4f.h"
 #include "RDNode.h"
 #include "RDDocument.h"
+#include "RDFileDataStream.h"
+#include <QDebug>
+#include "RDEditerManager.h"
 RDBaseEdit::RDBaseEdit(const RDMd5& md5)
     :RDBaseToolEdit(md5.GetMd5String())
     ,m_EditMd5(md5)
@@ -54,6 +57,9 @@ bool            RDBaseEdit::UpdateCommonValue(const RDMd5& pCell,RDNode& pNode)
 {
     if(pCell == RDSpaceCell::GetSpaceCell()->GetCellMd5())
     {
+        RDEditerManager& pManager = RDEditerManager::GetEditerManager();
+        RDDocument* pDoc = pManager.GetDocument();
+        pDoc->AddUndoCommand(new RDPosUndo(pNode));
         float3 vPos;
         RDSpaceCell::GetSpaceCell()->GetPos(vPos);
         pNode.Lock();

@@ -20,7 +20,7 @@
 #include "RDCell.h"
 
 class float3;
-class QLineEdit;
+class RDVec3Widget;
 class RDSpaceCell :public RDCell
 {
 public:
@@ -32,8 +32,6 @@ protected:
     RDSpaceCell(QWidget* parent);
     static RDSpaceCell* m_pCell ;
 protected:
-    QLineEdit* m_pPosX ;
-    QLineEdit* m_pPosY ;
-    QLineEdit* m_pPosZ ;
+    RDVec3Widget* m_pPos;
 };
 #endif   // ----- #ifndef rdposcell_INC  -----

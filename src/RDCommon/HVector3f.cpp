@@ -149,8 +149,8 @@ float3& float3::operator *= (float fScale)
 }
 float3& float3::operator *= (const float3& vSrc)
 {	
-    float4 src1(GetY() * vSrc.GetZ(),GetZ() * vSrc.GetX(),GetX() * vSrc.GetY(),0);
-    float4 src2(GetZ() * vSrc.GetY(),GetX() * vSrc.GetZ(),GetY() * vSrc.GetX(),0);
+    float4 src1(y() * vSrc.z(),z() * vSrc.x(),x() * vSrc.y(),0);
+    float4 src2(z() * vSrc.y(),x() * vSrc.z(),y() * vSrc.x(),0);
     *this = src1 - src2;
     return *this;
 }

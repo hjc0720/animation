@@ -25,6 +25,7 @@ class RDRenderData;
 class RDNode;
 class RDCell;
 class RDBaseEdit;
+class RDDocument;
 class RDEditerManager :public QObject
 {
     Q_OBJECT
@@ -34,6 +35,9 @@ public:
     void    UpdateProperty(RDNode* pData);
     void    UpdateCell(const RDMd5* pCell,const RDNode& pData);
 	void 	AddNode(RDNode& pNode){emit AddNoded(pNode);}
+
+    void SetDocument(RDDocument* pDoc){m_pCurDoc = pDoc;}
+    RDDocument* GetDocument(){return m_pCurDoc;}
 signals:
     void 	PropertyChanged(RDCell** pCellArray,int nCount);
 	void 	AddNoded(RDNode&);
@@ -51,5 +55,6 @@ protected:
     RDNode*           m_pCurNode;
     std::map<RDMd5,RDCell*> m_CellList;
     std::map<RDMd5,RDBaseEdit*> m_EditList;
+    RDDocument*  m_pCurDoc;
 };
 #endif   // ----- #ifndef rdeditermanager_INC  -----

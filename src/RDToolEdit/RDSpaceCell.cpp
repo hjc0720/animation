@@ -21,6 +21,7 @@
 #include <QDoubleValidator>
 #include <QGroupBox>
 #include "HVector3f.h"
+#include "RDVec3Widget.h"
 
 RDSpaceCell* RDSpaceCell::m_pCell = NULL;
 
@@ -34,32 +35,17 @@ RDSpaceCell::RDSpaceCell(QWidget* parent)
     :RDCell(tr("space"),parent)
 {
     QGroupBox* pPos = new QGroupBox(tr("pos"),this);
-    QHBoxLayout* pHLayoutPos = new QHBoxLayout();
-    QLabel* pPosLabelX = new QLabel(tr("X"),this);
-    m_pPosX = new QLineEdit(this);
-    m_pPosX->setValidator(new QDoubleValidator(m_pPosX));
-
-    QLabel* pPosLabelY = new QLabel(tr("Y"),this);
-    m_pPosY = new QLineEdit(this);
-    m_pPosY->setValidator(new QDoubleValidator(m_pPosY));
-
-    QLabel* pPosLabelZ = new QLabel(tr("Z"),this);
-    m_pPosZ = new QLineEdit(this);
-    m_pPosZ->setValidator(new QDoubleValidator(m_pPosZ));
-
-    pHLayoutPos->addWidget(pPosLabelX);
-    pHLayoutPos->addWidget(m_pPosX);
-    pHLayoutPos->addWidget(pPosLabelY);
-    pHLayoutPos->addWidget(m_pPosY);
-    pHLayoutPos->addWidget(pPosLabelZ);
-    pHLayoutPos->addWidget(m_pPosZ);
-
-    pPos->setLayout(pHLayoutPos);
+    QHBoxLayout* pHLayout = new QHBoxLayout(this);
+    m_pPos = new RDVec3Widget(this);
+    m_pPos->SetDecimals(0);
+    m_pPos->SetRange(-10000,10000);
+    m_pPos->SetStep(1);
+    pHLayout->addWidget(m_pPos);
+    pPos->setLayout(pHLayout);
     AddWidget(pPos);
-    connect(m_pPosX, SIGNAL(textEdited(const QString &)), this, SLOT(CellChange()));
-    connect(m_pPosY, SIGNAL(textEdited(const QString &)), this, SLOT(CellChange()));
-    connect(m_pPosZ, SIGNAL(textEdited(const QString &)), this, SLOT(CellChange()));
+    connect(m_pPos, SIGNAL(Changed(const float3&)), this, SLOT(CellChange()));
 }
+
 const RDMd5& RDSpaceCell::GetCellMd5()
 {
     const static RDMd5 SpaceCellMd5("RDSpaceCell",-1);
@@ -67,14 +53,10 @@ const RDMd5& RDSpaceCell::GetCellMd5()
 }
 void   RDSpaceCell::SetPos(const float3& newPos)
 {
-    m_pPosX->setText(QString::number(newPos.x()));
-    m_pPosY->setText(QString::number(newPos.y()));
-    m_pPosZ->setText(QString::number(newPos.z()));
+    m_pPos->SetValue(newPos);
 }
 
 void    RDSpaceCell::GetPos(float3& newPos)
 {
-    newPos.SetX(m_pPosX->text().toFloat());
-    newPos.SetY(m_pPosY->text().toFloat());
-    newPos.SetZ(m_pPosZ->text().toFloat());
+    newPos = m_pPos->value();
 }

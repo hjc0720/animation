@@ -476,6 +476,7 @@ bool RDNode::CalSpaceVector(const RDTime& nSectionTime,RDRenderData& RenderData)
     vOffsetPos += m_vPos;
     ret |= (vOffsetPos != RenderData.GetPos());
     RenderData.SetPos(vOffsetPos);
+    qDebug() << m_vPos;
     //================================================================================
     return ret;
 }

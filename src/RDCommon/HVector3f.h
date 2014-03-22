@@ -41,9 +41,6 @@ public:
     inline const float* GetData()const{return m_data;}
     void Set(float fx,float fy,float fz);
 
-    inline float GetX()const{return m_data[0];}
-    inline float GetY()const{return m_data[1];}
-    inline float GetZ()const{return m_data[2];}
     inline float x()const{return m_data[0];}
     inline float y()const{return m_data[1];}
     inline float z()const{return m_data[2];}

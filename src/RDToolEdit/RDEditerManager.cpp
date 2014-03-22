@@ -59,15 +59,17 @@ RDEditerManager::RDEditerManager()
     RegisterEditer();
     RegisterCell();
 }
+
 RDEditerManager::~RDEditerManager()
 {
-
 }
+
 void RDEditerManager::RegisterEditer()
 {
     RDBaseEdit* pNewEdit = new RDImageEdit(RDMd5("RDImageObject"));
     m_EditList[pNewEdit->GetEditerMd5()] = pNewEdit;
 }
+
 void RDEditerManager::RegisterCell()
 {
     for(auto it = m_EditList.begin(); it != m_EditList.end(); it++)
@@ -82,13 +84,13 @@ void RDEditerManager::RegisterCell()
         }
     }
 }
+
 void    RDEditerManager::UpdateCell(const RDMd5* pCell,const RDNode& pData)
 {
     RDBaseEdit* pEdit = m_EditList[pData.GetObject()->GetObjMd5()];
     if(!pEdit)
         return;
     pEdit->UpdateCell(pCell,pData);
-
 }
 
 void    RDEditerManager::CellChange(const RDMd5& pCell)
@@ -96,7 +98,8 @@ void    RDEditerManager::CellChange(const RDMd5& pCell)
     if(!m_pCurNode)
         return;
     RDBaseEdit* pEdit = m_EditList[m_pCurNode->GetObject()->GetObjMd5()];
-    pEdit->UpdateValue(pCell,*m_pCurNode);
     if(!pEdit)
         return;
+    pEdit->UpdateValue(pCell,*m_pCurNode);
+    emit SceneChange();
 }

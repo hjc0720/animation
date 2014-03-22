@@ -44,7 +44,6 @@ RDToolManager::RDToolManager()
 
 RDToolManager::~RDToolManager()
 {
-
 }
 
 void RDToolManager::RegisterTool()
@@ -52,10 +51,12 @@ void RDToolManager::RegisterTool()
     RegisterTool(new RDSelectTool);
     RegisterTool(new RDImageTool);
 }
+
 void RDToolManager::RegisterTool(RDBaseTool* pTool)
 {
     m_vecTool[pTool->GetName()] = pTool;
 }
+
 bool RDToolManager::SwitchTool(const QString* pNewToolName,RDDocument& pDocument)
 {
     if(!m_pCurTool && !pNewToolName)

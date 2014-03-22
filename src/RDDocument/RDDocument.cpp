@@ -55,6 +55,7 @@ inline void RDUndoRedo::undo()
     qDebug() << m_cmd->GetText() << pNode->GetNodeID();
     m_cmd->undo();
 }
+
 inline void RDUndoRedo::redo()
 {
     RDNode* pNode = m_pDoc->GetNode(m_cmd->GetNodeID());

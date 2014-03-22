@@ -42,7 +42,6 @@ RDPropertySheet::~RDPropertySheet()
 }
 void RDPropertySheet::PropertyChanged(RDCell** pCellArray,int nCount)
 {
-    qDebug() << "property count:" <<m_pLayOut->count();
     for(int i = m_pLayOut->count() - 1; i >= 0 ;i--)
     {
         QLayoutItem* pItem = m_pLayOut->itemAt(i);
