@@ -22,8 +22,6 @@
 #include "HVector4f.h"
 #include "RDNode.h"
 #include "RDDocument.h"
-#include "RDFileDataStream.h"
-#include <QDebug>
 #include "RDEditerManager.h"
 RDBaseEdit::RDBaseEdit(const RDMd5& md5)
     :RDBaseToolEdit(md5.GetMd5String())
@@ -31,16 +29,19 @@ RDBaseEdit::RDBaseEdit(const RDMd5& md5)
 {
     
 }
+
 bool    RDBaseEdit::UpdateCommonCell(const RDMd5& pCell,const RDNode& pData)
 {
     if(pCell == RDSpaceCell::GetSpaceCell()->GetCellMd5())
     {
         auto pRenderData = pData.GetRenderData(DEFAULT_RD);
         RDSpaceCell::GetSpaceCell()->SetPos(pRenderData ? pRenderData->GetPos() : pData.GetPos());
+        RDSpaceCell::GetSpaceCell()->SetAngle(pRenderData ? pRenderData->GetAngle() : pData.GetAngle());
         return true;
     }
     return false;
 }
+
 void    RDBaseEdit::UpdateCell(const RDMd5* pCell,const RDNode& pData) 
 {
     if(pCell)
@@ -53,6 +54,7 @@ void    RDBaseEdit::UpdateCell(const RDMd5* pCell,const RDNode& pData)
     for(int i = 0; i < nCount;i++)
         UpdateCell(pCellArray[i]->GetCellMd5(),pData);
 }
+
 bool            RDBaseEdit::UpdateCommonValue(const RDMd5& pCell,RDNode& pNode) 
 {
     if(pCell == RDSpaceCell::GetSpaceCell()->GetCellMd5())
@@ -62,10 +64,11 @@ bool            RDBaseEdit::UpdateCommonValue(const RDMd5& pCell,RDNode& pNode)
         pDoc->AddUndoCommand(new RDPosUndo(pNode));
         float3 vPos;
         RDSpaceCell::GetSpaceCell()->GetPos(vPos);
-        pNode.Lock();
-        pNode.SetPos(vPos);
-        pNode.SetChangeLevel(RDRender_TransChange);
-        pNode.UnLock();
+        MoveItemPos(vPos,pNode,false);
+        float3 vAngle;
+        RDSpaceCell::GetSpaceCell()->GetAngle(vAngle);
+        vAngle *= 3.14/180;
+        MoveItemAngle(vAngle,pNode,false);
         return true;
     }
     return false;

@@ -25,9 +25,6 @@ class matrix4x4;
 void RDSceneToBuffer(float3& pOut,const float3& pIn,float fBufferLeft,float fBufferTop);
 void RDBufferToScene(float3& pOut,const float3& pIn,float fBufferLeft,float fBufferTop);
 
-void FillBox(float3 vBox[],const float3& vMin,const float3& vMax);
-void RDCalBoxMinMax(float& fNear,float& fFar,const float3& vMin,const float3& vMax,const matrix4x4& WorldView);
-
 struct RDRay;
 class RDSpaceParam
 {

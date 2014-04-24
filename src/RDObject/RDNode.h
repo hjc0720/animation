@@ -57,12 +57,17 @@ public:
     void MovePos(const float3& vOffset){ m_vPos += vOffset;}
     void SetPos(const float3& vPos){ m_vPos = vPos;}
 
+    const float3& GetAngle()const{return m_vAngle;}
+    void MoveAngle(const float3& vOffset){m_vAngle += vOffset;}
+    void SetAngle(const float3& vAngle){m_vAngle = vAngle;}
+
     //dynamic
     const float3& GetDynamicPos(const QString& pName)const;
 
     bool AddSection(const RDTime& nStoryTime,const RDTime& nLength,const QUuid& storyId);
 	RDTime GetSectionMaxLength(const QUuid& idStory)const;
-	void AddPosKey(const RDTime& nFrame,const float3& vOffsetPos );
+	void AddPosKey(const RDTime& nTime,const float3& vOffsetPos );
+	void AddAngleKey(const RDTime& nTime,const float3& vOffsetAngle );
 
     RDObject* GetObject(){return m_pObj;}
     const RDObject* GetObject()const{return m_pObj;}
@@ -119,6 +124,7 @@ protected:
     void            CalNodeMatrix(RDRenderData& RenderData);
 protected:
     float3      m_vPos;
+    float3      m_vAngle;
     float3      m_vScale;
     QString     m_strName;
     QUuid       m_NodeID;

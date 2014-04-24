@@ -98,7 +98,6 @@ void RDImageObject::Render(unsigned long ,RDRenderData& RenderData)
     pPrivateData->m_pMaterial->SetParamToDevice();
     for(size_t i = 0; i <  pModel->GetSubsetCount(); i++)
         pModel->DrawSubset(i);
-    qDebug() << "image render";
     return;
 }
 

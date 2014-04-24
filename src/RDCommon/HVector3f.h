@@ -28,18 +28,17 @@ class float3
 {
 public:
     static const float3& GetZero();
+    static const float3& GetOne();
 public:
     float3();
     float3(const float2& src);
     float3(const float3& src);
     float3(const float4& src);
     float3(float fx,float fy,float fz);
-    float Mode()const;
-    float Mode2()const;
-    void Normalize();
-	
+
     inline const float* GetData()const{return m_data;}
     void Set(float fx,float fy,float fz);
+    void Set(float value);
 
     inline float x()const{return m_data[0];}
     inline float y()const{return m_data[1];}
@@ -48,6 +47,13 @@ public:
     inline void SetX(float fX ){m_data[0] = fX;}
     inline void SetY(float fY ){m_data[1] = fY;}
     inline void SetZ(float fZ ){m_data[2] = fZ;}
+
+    float Mode()const;
+    float Mode2()const;
+    void Normalize();
+	
+    void Min(const float3& value);
+    void Max(const float3& value);
 public:
     //operator overriding
     float3& operator = (const float4& m);

@@ -47,7 +47,7 @@ void RDSectionItem::SetSectionType()
         m_imgSectionType.load(":/cycle");
         break;
     }
-    qDebug() << "image initialization type" << m_pSection->GetType() ;
+    //qDebug() << "image initialization type" << m_pSection->GetType() ;
 }
 
 void RDSectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * , QWidget *)
@@ -61,8 +61,8 @@ void RDSectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * , 
             m_pSection->GetLength(),m_nHeight,line);
     qreal fScale = painter->worldTransform().m11();
     qreal fRealSize = 16 / fScale;
-    qDebug() << fRealSize << m_pSection->GetLength() / 2;
-    qDebug() << "image width" << m_imgSectionType.size();
+    //qDebug() << fRealSize << m_pSection->GetLength() / 2;
+    //qDebug() << "image width" << m_imgSectionType.size();
     if(fRealSize < m_pSection->GetLength() / 2)
     {
         QRectF target(m_pSection->GetStartTime() + m_pSection->GetLength() - fRealSize,0,fRealSize,m_nHeight);

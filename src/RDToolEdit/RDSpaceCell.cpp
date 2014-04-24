@@ -34,16 +34,23 @@ RDSpaceCell* RDSpaceCell::GetSpaceCell()
 RDSpaceCell::RDSpaceCell(QWidget* parent)
     :RDCell(tr("space"),parent)
 {
-    QGroupBox* pPos = new QGroupBox(tr("pos"),this);
-    QHBoxLayout* pHLayout = new QHBoxLayout(this);
-    m_pPos = new RDVec3Widget(this);
-    m_pPos->SetDecimals(0);
-    m_pPos->SetRange(-10000,10000);
-    m_pPos->SetStep(1);
-    pHLayout->addWidget(m_pPos);
-    pPos->setLayout(pHLayout);
-    AddWidget(pPos);
-    connect(m_pPos, SIGNAL(Changed(const float3&)), this, SLOT(CellChange()));
+    m_pPos = CreateVectorWidget(tr("pos"),-10000,10000,0,1);
+    m_pAngle = CreateVectorWidget(tr("Angle"),-360,360,2,0.1);
+}
+
+RDVec3Widget*  RDSpaceCell::CreateVectorWidget(const QString& name,double fMin,double fMax,int decimals,double step)
+{
+    QGroupBox* pGroup = new QGroupBox(name,this);
+    QHBoxLayout* pHLayout = new QHBoxLayout();
+    RDVec3Widget* pWidget = new RDVec3Widget(this);
+    pWidget->SetDecimals(decimals);
+    pWidget->SetRange(fMin,fMax);
+    pWidget->SetStep(step);
+    pHLayout->addWidget(pWidget);
+    pGroup->setLayout(pHLayout);
+    AddWidget(pGroup);
+    connect(pWidget, SIGNAL(Changed(const float3&)), this, SLOT(CellChange()));
+    return pWidget;
 }
 
 const RDMd5& RDSpaceCell::GetCellMd5()
@@ -59,4 +66,14 @@ void   RDSpaceCell::SetPos(const float3& newPos)
 void    RDSpaceCell::GetPos(float3& newPos)
 {
     newPos = m_pPos->value();
+}
+
+void    RDSpaceCell::SetAngle(const float3& newPos)
+{
+    m_pAngle->SetValue(newPos);
+}
+
+void    RDSpaceCell::GetAngle(float3& newPos)
+{
+    newPos = m_pAngle->value();
 }

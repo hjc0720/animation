@@ -27,6 +27,7 @@
 #include "RDLight.h"
 #include <algorithm>
 #include "RDRenderDevice.h"
+#include "RDBox.h"
 
 RDObjectCreator<RDLayer,false> LayerCreator;
 
@@ -109,7 +110,7 @@ float2      RDLayer::CalObjMinMax(const QString& pRDName)
     vNearFar.y = FLT_MAX;
 
     size_t nCount = GetChildCount();
-    for(size_t i = GetCameraCount();i < nCount;i++)
+    for(size_t i = GetCameraCount() + GetLightCount();i < nCount;i++)
     {
         nodeSt.push(GetChild(i));
     }
@@ -120,6 +121,7 @@ float2      RDLayer::CalObjMinMax(const QString& pRDName)
         vNearFar.y = -10000;
         return vNearFar;
     }
+    RDBox cameraBox;
     while(!nodeSt.empty())
     {
         RDNode* pNode = nodeSt.top();
@@ -129,13 +131,17 @@ float2      RDLayer::CalObjMinMax(const QString& pRDName)
         {
             nodeSt.push(pNode->GetChild(i));
         }
-        RDCalBoxMinMax(vNearFar.y,vNearFar.x,pRD->GetMin(),pRD->GetMax(),pCamera->GetViewMatrix(pRDName));
+        cameraBox.UnionBox(RDBox(pRD->GetMin(),pRD->GetMax()),
+                pRD->GetGlobalMatrix() * pCamera->GetViewMatrix(pRDName));
         nodeSt.pop();
     }
-    vNearFar.x = min(-0.001,vNearFar.x + 0.1);
-    vNearFar.y = max(vNearFar.x * 10e7,vNearFar.y - 0.1);
+    vNearFar.x = min(-0.001,cameraBox.GetMax().z() + 0.1);
+    vNearFar.y = max(vNearFar.x * 10e7,cameraBox.GetMin().z() - 0.1);
     if(vNearFar.y >= vNearFar.x)
         vNearFar.y = vNearFar.x + 100;
+    qDebug() << "min" << cameraBox.GetMin();
+    qDebug() << "max" << cameraBox.GetMax();
+    qDebug() << "near" << vNearFar.x << "far" << vNearFar.y << endl;
     return vNearFar;
 }
 

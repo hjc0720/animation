@@ -21,6 +21,8 @@
 #include "RDNode.h"
 #include "RDDocument.h"
 #include "RDToolManager.h"
+#include <QDebug>
+#include "RDFileDataStream.h"
 
 RDImageTool::RDImageTool()
     :RDBaseTool("image tool")
@@ -75,6 +77,7 @@ bool RDImageTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const floa
     pNewObject->SetWidth(m_nImageWidth);
     pNewObject->SetHeight(m_nImageHeight);
     QString imageName( QString(QObject::tr("Image %1")).arg(nObjIndex));
+    qDebug() << vPos;
     RDNode* pNewNode = new RDNode(imageName,vPos,pNewObject);
 	pNewNode->SetParent(m_pFieldNode);
 	pNewObject->SetNode(pNewNode);

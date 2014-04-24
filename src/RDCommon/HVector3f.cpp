@@ -21,9 +21,15 @@
 #include <smmintrin.h>
 
 const float3 vZero;
+const float3 vOne(1,1,1);
 const float3& float3::GetZero()
 {
     return vZero;
+}
+
+const float3& float3::GetOne()
+{
+    return vOne;
 }
 
 float3::float3()
@@ -66,6 +72,14 @@ void float3::Set(float fx,float fy,float fz)
     _mm_store_ss(m_data + 2,l);
 }
 
+void float3::Set(float value)
+{
+    __m128 fm = _mm_set_ps1(value);
+    __m128 l = _mm_movehl_ps(fm,fm);
+    _mm_storel_pi((__m64*)m_data,fm);
+    _mm_store_ss(m_data + 2,l);
+}
+
 float float3::Mode ()const
 {
     return sqrtf(Mode2());
@@ -95,6 +109,42 @@ void float3::Normalize ()
     _mm_store_ss(m_data + 2, high);
 }		// -----  end of method float3::Normalize  -----
 
+void float3::Min(const float3& value)
+{
+    __m128 high = _mm_load_ss(m_data+2);
+    high = _mm_movelh_ps(high,high);
+    __m128 vec1 = _mm_loadl_pi(high,(__m64*)m_data);
+
+    high = _mm_load_ss(value.m_data+2);
+    high = _mm_movelh_ps(high,high);
+    __m128 vec2 = _mm_loadl_pi(high,(__m64*)value.m_data);
+
+    vec1 = _mm_min_ps(vec1,vec2);
+
+    high = _mm_movehl_ps(vec1,vec1);
+    _mm_storel_pi((__m64*)m_data,vec1);
+    _mm_store_ss(m_data + 2, high);
+}
+
+void float3::Max(const float3& value)
+{
+    __m128 high = _mm_load_ss(m_data+2);
+    high = _mm_movelh_ps(high,high);
+    __m128 vec1 = _mm_loadl_pi(high,(__m64*)m_data);
+
+    high = _mm_load_ss(value.m_data+2);
+    high = _mm_movelh_ps(high,high);
+    __m128 vec2 = _mm_loadl_pi(high,(__m64*)value.m_data);
+
+    vec1 = _mm_max_ps(vec1,vec2);
+
+    high = _mm_movehl_ps(vec1,vec1);
+    _mm_storel_pi((__m64*)m_data,vec1);
+    _mm_store_ss(m_data + 2, high);
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
 float3& float3::operator = (const float4& m)
 {
     memcpy(m_data,m.GetData(),3 * sizeof(float));

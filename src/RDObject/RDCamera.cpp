@@ -94,7 +94,7 @@ void RDCamera::CalFrame(const RDTime& nTime,const QString& pRDName)
     if(nSectionTime == pRenderData->GetSectionTime() && GetMaxChangeLevel(pRDName) == RDRender_NoChange)
         return;
 
-    qDebug() << "cal Camera frame: section time:"<<nSectionTime;
+    //qDebug() << "cal Camera frame: section time:"<<nSectionTime;
     if(CalSpaceVector(nSectionTime,*pRenderData))
     {
         pRenderData->CalViewMat();

@@ -23,7 +23,7 @@
 template <typename KeyType>
 KeyType RDKeyList<KeyType>::GetKeyValue(const RDTime& nSectionTime)
 {
-    qDebug() << "key list count:"<< m_KeyList.size();
+    //qDebug() << "key list count:"<< m_KeyList.size();
     if(m_KeyList.size() == 0)
         return KeyType();
     else if(m_KeyList.size() == 1)

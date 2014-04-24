@@ -49,12 +49,12 @@ void RDTimeMarker::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QW
     painter->setPen(widget->palette().highlight().color());
     painter->drawLine(0,0,0,m_nHeight);
 
-    qreal fScale = painter->worldTransform().m11();
+    //qreal fScale = painter->worldTransform().m11();
     painter->scale(m_dScale,1);
     painter->setBrush(widget->palette().highlight());
     painter->drawPolygon(m_tri);
-    qDebug() << "ScalePt :" << m_dScale << "real Scale :" << fScale; 
-    qDebug() << "paint rect" << "boundingRect" << boundingRect();
+    //qDebug() << "ScalePt :" << m_dScale << "real Scale :" << fScale; 
+    //qDebug() << "paint rect" << "boundingRect" << boundingRect();
 }
 
 void RDTimeMarker::mouseMoveEvent(QGraphicsSceneMouseEvent *event)

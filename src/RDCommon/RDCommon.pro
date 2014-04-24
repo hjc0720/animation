@@ -20,11 +20,13 @@ SOURCES += HMatrixQ4F.cpp HVector4f.cpp
 SOURCES += HVector3f.cpp 
 SOURCES += RDSpaceConvert.cpp
 SOURCES += RDMd5.cpp
+SOURCES += RDBox.cpp
 
 HEADERS += HMatrixQ4F.h HVector4f.h 
 HEADERS += HVector3f.h 
 HEADERS += RDSpaceConvert.h
 HEADERS += RDMd5.h
+HEADERS += RDBox.h
 
 CONFIG += dll
 VERSION = 1.0.1

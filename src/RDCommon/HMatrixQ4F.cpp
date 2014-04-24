@@ -69,6 +69,16 @@ const matrix4x4& matrix4x4::CreateViewMat(matrix4x4& mat,const float3& vEyePos,c
     return mat;
 }
 
+const matrix4x4& matrix4x4::CreateWorldMat(matrix4x4& mat,const float3& vCenter,const float3& vScale, const float3& vRot,const float3& vPos)
+{
+    matrix4x4 centerMat(vCenter,HMatrixQ4F_POS);
+    matrix4x4 posMat(vPos,HMatrixQ4F_POS);
+    matrix4x4 scaleMat(vScale,HMatrixQ4F_Scale);
+    matrix4x4 rotMat(vRot,HMatrixQ4F_Rotate);
+    mat = centerMat * scaleMat * rotMat * posMat;
+    return mat;
+}
+
 const matrix4x4& matrix4x4::CreateProjectMat(matrix4x4& mat,float l,float r,float t,float b,float zn,float zf)
 {
     float r_l = 1 / (r - l);

@@ -28,10 +28,14 @@ public:
     virtual const RDMd5& GetCellMd5();
     void    SetPos(const float3& newPos);
     void    GetPos(float3& newPos);
+    void    SetAngle(const float3& newPos);
+    void    GetAngle(float3& newPos);
 protected:
+    RDVec3Widget*  CreateVectorWidget(const QString& name,double fMin,double fMax,int decimals,double step);
     RDSpaceCell(QWidget* parent);
     static RDSpaceCell* m_pCell ;
 protected:
     RDVec3Widget* m_pPos;
+    RDVec3Widget* m_pAngle;
 };
 #endif   // ----- #ifndef rdposcell_INC  -----

@@ -116,8 +116,9 @@ void RDNode::Render(const RDTime& nTime,const QString& pRDName)
 
 void RDNode::CalNodeMatrix(RDRenderData& RenderData)
 {
-    const float3& vPos = RenderData.GetPos();
-    RenderData.SetItemMatrix(matrix4x4(vPos.x(),vPos.y(),vPos.z(),HMatrixQ4F_POS));
+    matrix4x4 mat;
+    matrix4x4::CreateWorldMat(mat,float3::GetZero(),float3::GetOne(),RenderData.GetAngle(),RenderData.GetPos());
+    RenderData.SetItemMatrix(mat);
     RenderData.SetGlobalMatrix(RenderData.GetItemMatrix());
 }
 
@@ -143,7 +144,7 @@ void RDNode::CalFrame(const RDTime& nTime,const QString& pRDName)
     RDTime nSectionTime = nTime - RenderData.GetCurStory()->GetStartTime(RenderData.IsPlay()) - RenderData.GetCurSection()->GetStartTime();
     if(nSectionTime == RenderData.GetSectionTime() && GetMaxChangeLevel(pRDName) == RDRender_NoChange)
         return;
-    qDebug() << "cal frame: section time:"<<nSectionTime;
+    //qDebug() << "cal frame: section time:"<<nSectionTime;
     if(CalSpaceVector(nSectionTime,RenderData))
         SetChangeLevel(RDRender_TransChange);
 
@@ -430,13 +431,23 @@ RDSection* RDNode::GetSection(const QUuid& nStoryId,const RDTime& nStoryFrame)
     }
     return 0;
 }
+
+void RDNode::AddAngleKey(const RDTime& nTime,const float3& vOffsetAngle )
+{
+    const RDScene* pScene = GetSceneNode();
+    const RDStory* pCurStory = pScene->GetStory(nTime,false);
+    RDTime nStoryTime = nTime - pCurStory->GetStartTime(false);
+    RDSection* pSection = GetSection(pCurStory->GetStoryId(),nStoryTime);
+    pSection->AddAngleKey(nStoryTime,vOffsetAngle);
+}
+
 void RDNode::AddPosKey(const RDTime& nTime,const float3& vOffsetPos )
 {
     const RDScene* pScene = GetSceneNode();
     const RDStory* pCurStory = pScene->GetStory(nTime,false);
     RDTime nStoryTime = nTime - pCurStory->GetStartTime(false);
     RDSection* pSection = GetSection(pCurStory->GetStoryId(),nStoryTime);
-    qDebug() << "add key Story Time" << nStoryTime << nTime;
+    //qDebug() << "add key Story Time" << nStoryTime << nTime;
     pSection->AddPosKey(nStoryTime,vOffsetPos);
 }
 
@@ -469,14 +480,19 @@ RDNode* RDNode::GetChild(const QUuid& NodeId)
 bool RDNode::CalSpaceVector(const RDTime& nSectionTime,RDRenderData& RenderData)
 {
     bool ret = false;
+    RDSection* pSection = RenderData.GetCurSection();
     //================================================================================
     //cal pos
-    RDSection* pSection = RenderData.GetCurSection();
     float3 vOffsetPos = pSection->GetPosVector(nSectionTime);
     vOffsetPos += m_vPos;
     ret |= (vOffsetPos != RenderData.GetPos());
     RenderData.SetPos(vOffsetPos);
-    qDebug() << m_vPos;
+    //================================================================================
+    //cal Rotate
+    float3 vOffsetAngle = pSection->GetAngleVector(nSectionTime);
+    vOffsetAngle += m_vAngle;
+    ret |= (vOffsetAngle != RenderData.GetAngle());
+    RenderData.SetAngle(vOffsetAngle);
     //================================================================================
     return ret;
 }
@@ -539,7 +555,7 @@ void RDNode::Serialize(RDFileDataStream& buffer,bool bSave)
     int nVersion = g_nNowVersion;
     buffer.Serialize(nVersion,bSave);
     buffer.Serialize(m_strName,bSave);
-    qDebug() << "begin to serialize node :" << m_strName;
+    //qDebug() << "begin to serialize node :" << m_strName;
     buffer.Serialize(m_vPos,bSave);
     buffer.Serialize(m_NodeID,bSave);
 
@@ -607,7 +623,7 @@ void RDNode::Serialize(RDFileDataStream& buffer,bool bSave)
             pNode = m_vecChildObj[i];
             QString pTypeName(typeid(*pNode).name());
 
-            qDebug() << "serialize node type" << pTypeName;
+            //qDebug() << "serialize node type" << pTypeName;
             buffer.Serialize(pTypeName,true);
         }
         else
@@ -621,7 +637,7 @@ void RDNode::Serialize(RDFileDataStream& buffer,bool bSave)
         pNode->Serialize(buffer,bSave);
     }
 
-    qDebug() << "end to serialize node :" << m_strName;
+    //qDebug() << "end to serialize node :" << m_strName;
 }
 
 const float3& RDNode::GetDynamicPos(const QString& pName)const
@@ -640,11 +656,11 @@ RDPosUndo::RDPosUndo(RDNode& pNode)
 void RDPosUndo::undo()
 {
     float3 vOldPos = m_OldPos;
+    qDebug() << "oldPos" << vOldPos.x() << vOldPos.y() << vOldPos.z();
     m_OldPos = m_pNode->GetPos();
     m_pNode->SetPos(vOldPos);
     m_pNode->SetChangeLevel(RDRender_TransChange);
-    qDebug() << "oldPos" << vOldPos.x() << vOldPos.y() << vOldPos.z();
-    qDebug() << "newPos" << m_OldPos.x() << m_OldPos.y() << m_OldPos.z();
+    //qDebug() << "newPos" << m_OldPos.x() << m_OldPos.y() << m_OldPos.z();
 }
 
 void RDPosUndo::redo()

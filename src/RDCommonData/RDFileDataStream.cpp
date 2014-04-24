@@ -108,6 +108,5 @@ QDebug operator<<(QDebug dbg, const float3 & vec)
 {
     for(int i = 0; i < 3; i++)
         dbg.nospace() << vec.GetData()[i] << "\t";
-    dbg.nospace() << ";\n";
     return dbg.space();
 }

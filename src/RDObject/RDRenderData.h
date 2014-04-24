@@ -99,6 +99,8 @@ public:
     //space info
     const float3&    GetPos()const { return m_vPos; }
     void             SetPos(const float3& vPos){m_vPos = vPos;}
+    const float3&    GetAngle()const { return m_vAngle; }
+    void             SetAngle(const float3& vAngle){m_vAngle = vAngle;}
 
     const matrix4x4& GetItemMatrix()const{return m_vItemMatrix;}
     const matrix4x4& GetMVPMatrix()const{return m_vMVPMatrix;}
@@ -127,6 +129,7 @@ protected:
     float3              m_vMax;
 
     float3              m_vPos;
+    float3              m_vAngle;
     float3              m_vScale;
     matrix4x4          m_vItemMatrix;
     matrix4x4          m_vMVPMatrix;

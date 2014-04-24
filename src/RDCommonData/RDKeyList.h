@@ -68,7 +68,7 @@ inline void RDKeyList<KeyType>::AddKey(const RDTime& nSectionTime,const KeyType&
     else
     {
         m_KeyList[nSectionTime]->SetValue(keyValue);
-        qDebug() << "modify Key";
+        //qDebug() << "modify Key";
     }
 }
 

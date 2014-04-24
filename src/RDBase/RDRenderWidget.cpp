@@ -161,7 +161,7 @@ void RDRenderWidget::paintGL()
         pDoc->UnLock();
         return;
     }
-    qDebug() << "On Time :" << pDoc->GetCurTime();
+    //qDebug() << "On Time :" << pDoc->GetCurTime();
     pDoc->UnLock();
 }
 

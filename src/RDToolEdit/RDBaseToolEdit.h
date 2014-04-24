@@ -39,7 +39,8 @@ protected:
     void   AddSelectItem(RDNode& selItem);
     void   CancelSelectItem();
     void   AddChild(RDNode& pParent,RDNode& pChild);
-    void   MoveItemPos(const float3& vNewPos,RDNode& pNode);
+    void   MoveItemPos(const float3& vNewPos,RDNode& pNode,bool bUpdateCell = true);
+    void   MoveItemAngle(const float3& vAngle,RDNode& pNode,bool bUpdateCell = true);
 protected:
     RDNode* m_pFieldNode;
 private:

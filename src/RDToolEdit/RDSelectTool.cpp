@@ -22,6 +22,7 @@
 #include "RDNode.h"
 #include "RDEditerManager.h"
 #include "RDSpaceCell.h"
+#include "RDFileDataStream.h"
 
 
 RDSelectTool::RDSelectTool()
@@ -58,6 +59,7 @@ bool RDSelectTool::OnMouseMove(const float3& vMov,Qt::MouseButtons buttons,const
 
         float3 vNeedMov = vMov - m_vStartPos;
         vNeedMov.SetY(-vNeedMov.y());
+        //qDebug() << "mov offset" << vNeedMov;
         for(size_t i = 0; i < pDoc->GetSelItemCount(); i++)
         {
             RDNode*  pNode = pDoc->GetSelItem(i);
