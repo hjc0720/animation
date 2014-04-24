@@ -80,7 +80,6 @@ void   RDBaseToolEdit::MoveItemPos(const float3& vNewPos,RDNode& pNode,bool bUpd
         pNode.MovePos(vNewPos - pRenderData->GetPos());
         break;
     case RDEdit_AutoKey:
-        qDebug() << "add key doc frame" << (vNewPos - pNode.GetPos());
         pNode.AddPosKey(pDoc->GetCurTime(),vNewPos - pNode.GetPos());
         break;
     default:
@@ -100,7 +99,6 @@ void   RDBaseToolEdit::MoveItemAngle(const float3& vAngle,RDNode& pNode,bool bUp
     RDEditItemType nType = pDoc->GetEditType();
     pNode.Lock();
     RDRenderData* pRenderData = pNode.GetRenderData(DEFAULT_RD);
-    qDebug() << "add key doc frame" << vAngle;
     switch(nType)
     {
     case RDEdit_ModifyItem:
@@ -108,6 +106,31 @@ void   RDBaseToolEdit::MoveItemAngle(const float3& vAngle,RDNode& pNode,bool bUp
         break;
     case RDEdit_AutoKey:
         pNode.AddAngleKey(pDoc->GetCurTime(),vAngle - pNode.GetAngle());
+        break;
+    default:
+        pNode.UnLock();
+        return;
+    }
+    pNode.SetChangeLevel(RDRender_TransChange);
+    pNode.UnLock();
+    if(bUpdateCell)
+        RDEditerManager::GetEditerManager().UpdateCell(&RDSpaceCell::GetSpaceCell()->GetCellMd5(),pNode);
+}
+
+void   RDBaseToolEdit::MoveItemScale(const float3& vScale,RDNode& pNode,bool bUpdateCell)
+{
+    RDToolManager* pManager = RDToolManager::GetToolManager();
+    RDDocument* pDoc = pManager->GetDocument();
+    RDEditItemType nType = pDoc->GetEditType();
+    pNode.Lock();
+    RDRenderData* pRenderData = pNode.GetRenderData(DEFAULT_RD);
+    switch(nType)
+    {
+    case RDEdit_ModifyItem:
+        pNode.MoveScale(vScale / pRenderData->GetScale());
+        break;
+    case RDEdit_AutoKey:
+        pNode.AddScaleKey(pDoc->GetCurTime(),vScale / pNode.GetScale());
         break;
     default:
         pNode.UnLock();

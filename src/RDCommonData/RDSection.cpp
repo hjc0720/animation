@@ -40,6 +40,13 @@ void RDSection::AddAngleKey(const RDTime& nStoryTime,const float3& value)
     m_nLength = max(m_nLength,nSectionTime);
 }
 
+void RDSection::AddScaleKey(const RDTime& nStoryTime,const float3& value)
+{
+    RDTime nSectionTime = nStoryTime - m_nStartTime;
+    m_ScaleKey.AddKey(nSectionTime,value);
+    m_nLength = max(m_nLength,nSectionTime);
+}
+
 void RDSection::AddPosKey(const RDTime& nStoryTime,const float3& value)
 {
     RDTime nSectionTime = nStoryTime - m_nStartTime;
@@ -57,6 +64,10 @@ float3 RDSection::GetAngleVector(const RDTime& nSectionTime)
     return m_RotateKey.GetKeyValue(nSectionTime);
 }
 
+float3 RDSection::GetScaleVector(const RDTime& nSectionTime)
+{
+    return m_ScaleKey.GetKeyValue(nSectionTime,float3::GetOne());
+}
 // =====================================================================================
 RDFileDataStream& operator << (RDFileDataStream& buffer,const RDSection& Section)
 {

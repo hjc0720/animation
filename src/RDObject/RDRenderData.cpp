@@ -43,9 +43,9 @@ RDRenderData::~RDRenderData()
         m_Node.GetObject()->ReleaseRenderData(*this);
     SAFE_DELETE(m_pPrivateData);
 }
-float RDRenderData::GetScale()const
+float RDRenderData::GetSceneScale()const
 { 
-    return m_SceneRenderData.GetScale();
+    return m_SceneRenderData.GetSceneScale();
 }
 void RDRenderData::SetChangeLevel(RDRenderChangeLevel nLevel)
 {
@@ -59,7 +59,7 @@ void RDRenderData::SetRenderChangeLevel(RDRenderChangeLevel nLevel)
     m_nRenderChangeLevel = nLevel > m_nRenderChangeLevel ? nLevel : m_nRenderChangeLevel;
 }
 
-void RDRenderData::SetScale(float )
+void RDRenderData::SetSceneScale(float )
 {
     SetChangeLevel(RDRender_GraphicChange);
 }

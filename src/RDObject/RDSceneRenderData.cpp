@@ -38,7 +38,7 @@ RDSceneRenderData::RDSceneRenderData(int nWidth,int nHeight,RDNode& obj)
     scene.CreateRenderData(*this);
 }
 
-void RDSceneRenderData::SetScale(float fScale)
+void RDSceneRenderData::SetSceneScale(float fScale)
 {
     if(floatIsEqualNear(fScale,m_fScale))
         return;

@@ -144,6 +144,23 @@ void float3::Max(const float3& value)
 
 }
 
+void float3::Mul(const float3& v)
+{
+    __m128 high = _mm_load_ss(m_data+2);
+    high = _mm_movelh_ps(high,high);
+    __m128 vec1 = _mm_loadl_pi(high,(__m64*)m_data);
+
+    high = _mm_load_ss(v.m_data+2);
+    high = _mm_movelh_ps(high,high);
+    __m128 vec2 = _mm_loadl_pi(high,(__m64*)v.m_data);
+
+    vec1 = _mm_mul_ps(vec1,vec2);
+
+    high = _mm_movehl_ps(vec1,vec1);
+    _mm_storel_pi((__m64*)m_data,vec1);
+    _mm_store_ss(m_data + 2, high);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 float3& float3::operator = (const float4& m)
 {
@@ -184,6 +201,24 @@ float3& float3::operator /= (float fScale)
     return *this;
 }
 
+float3& float3::operator /= (const float3& v)
+{
+    __m128 high = _mm_load_ss(m_data+2);
+    high = _mm_movelh_ps(high,high);
+    __m128 vec1 = _mm_loadl_pi(high,(__m64*)m_data);
+
+    high = _mm_load_ss(v.m_data+2);
+    high = _mm_movelh_ps(high,high);
+    __m128 vec2 = _mm_loadl_pi(high,(__m64*)v.m_data);
+
+    vec1 = _mm_div_ps(vec1,vec2);
+
+    high = _mm_movehl_ps(vec1,vec1);
+    _mm_storel_pi((__m64*)m_data,vec1);
+    _mm_store_ss(m_data + 2, high);
+    return *this;
+}
+
 float3& float3::operator *= (const matrix4x4& m)
 {
     float4 dst(*this);
@@ -199,8 +234,8 @@ float3& float3::operator *= (float fScale)
 }
 float3& float3::operator *= (const float3& vSrc)
 {	
-    float4 src1(y() * vSrc.z(),z() * vSrc.x(),x() * vSrc.y(),0);
-    float4 src2(z() * vSrc.y(),x() * vSrc.z(),y() * vSrc.x(),0);
+    float3 src1(y() * vSrc.z(),z() * vSrc.x(),x() * vSrc.y());
+    float3 src2(z() * vSrc.y(),x() * vSrc.z(),y() * vSrc.x());
     *this = src1 - src2;
     return *this;
 }

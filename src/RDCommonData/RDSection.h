@@ -43,9 +43,11 @@ public:
 
     void AddPosKey(const RDTime& nStoryTime,const float3& value);
     void AddAngleKey(const RDTime& nStoryTime,const float3& value);
+    void AddScaleKey(const RDTime& nStoryTime,const float3& value);
 
     float3 GetPosVector(const RDTime& nSectionTime);
     float3 GetAngleVector(const RDTime& nSectionTime);
+    float3 GetScaleVector(const RDTime& nSectionTime);
 protected:
     RDKeyList<float3> m_PosKey;
     RDKeyList<float3> m_RotateKey;

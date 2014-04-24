@@ -44,7 +44,7 @@ class RDKeyList : public RDBaseKeyList
 {
 public:
     void AddKey(const RDTime& nFrame,const KeyType& keyValue);
-    KeyType GetKeyValue(const RDTime& nSectionTime);
+    KeyType GetKeyValue(const RDTime& nSectionTime,const KeyType& vDefaultValue=KeyType());
 protected:
     bool IsKeyTime(const RDTime& nSectionTime); 
     KeyType Interpolation(const RDTime& nTime, const RDKey<KeyType>& FirstKey,const RDTime& nFirstTime, const RDKey<KeyType>& SecondKey,const RDTime& nSecondTime);

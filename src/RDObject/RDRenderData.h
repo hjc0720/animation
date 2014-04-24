@@ -72,8 +72,8 @@ public:
     const RDTime&   GetTime()const;
     const RDTime&   GetSectionTime()const{return m_nSectionTime;}
     void            SetSectionTime(const RDTime& nSectionTime){m_nSectionTime = nSectionTime;}
-    virtual float   GetScale()const;
-    virtual void    SetScale(float fScale);
+    virtual float   GetSceneScale()const;
+    virtual void    SetSceneScale(float fScale);
 
     const RDSceneRenderData& GetSceneRD()const{return  m_SceneRenderData;}
 
@@ -97,10 +97,12 @@ public:
     const float3&   GetMax()const{return m_vMax;}
 
     //space info
-    const float3&    GetPos()const { return m_vPos; }
-    void             SetPos(const float3& vPos){m_vPos = vPos;}
-    const float3&    GetAngle()const { return m_vAngle; }
-    void             SetAngle(const float3& vAngle){m_vAngle = vAngle;}
+    const float3&   GetPos()const { return m_vPos; }
+    void            SetPos(const float3& vPos){m_vPos = vPos;}
+    const float3&   GetAngle()const { return m_vAngle; }
+    void            SetAngle(const float3& vAngle){m_vAngle = vAngle;}
+    const float3&   GetScale()const{return m_vScale;}
+    void            SetScale(const float3& vScale){m_vScale = vScale;}
 
     const matrix4x4& GetItemMatrix()const{return m_vItemMatrix;}
     const matrix4x4& GetMVPMatrix()const{return m_vMVPMatrix;}
@@ -138,9 +140,9 @@ protected:
 
 inline QRectF RDRenderData::GetScaleBound()const
 {
-    return QRectF(m_rtBound.left() * GetScale(),
-            m_rtBound.top() * GetScale(),
-            m_rtBound.width() * GetScale(),
-            m_rtBound.height() * GetScale());
+    return QRectF(m_rtBound.left() * GetSceneScale(),
+            m_rtBound.top() * GetSceneScale(),
+            m_rtBound.width() * GetSceneScale(),
+            m_rtBound.height() * GetSceneScale());
 }
 #endif   // ----- #ifndef rdrenderdata_INC  -----

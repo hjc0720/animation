@@ -54,12 +54,15 @@ public:
 	
     void Min(const float3& value);
     void Max(const float3& value);
+
+    void Mul(const float3& v);
 public:
     //operator overriding
     float3& operator = (const float4& m);
     float3& operator += (const float3& m);
     float3& operator -= (const float3& m);
     float3& operator /= (float fScale);
+    float3& operator /= (const float3& v);
     float3& operator *= (const matrix4x4& m);
     float3& operator *= (float fScale);
     float3& operator *= (const float3& vSrc);
@@ -91,41 +94,53 @@ inline float3 operator + (const float3& v1,const float3& v2)
     ret += v2;
     return ret;
 }
+
 inline float3 operator - (const float3& v1,const float3& v2)
 {
     float3 ret(v1);
     ret -= v2;
     return ret;
 }
+
 inline float3 operator / (const float3& v1,float fScale)
 {
     float3 ret(v1);
     ret /= fScale;
     return ret;
 }
+
+inline float3 operator / (const float3& v1,const float3& v2)
+{
+    float3 ret(v1);
+    ret /= v2;
+    return ret;
+}
+
 inline float3 operator * (const float3& v1,const matrix4x4& m)
 {
     float3 ret(v1);
     ret *= m;
     return ret;
 }
+
 inline float3 operator * (const float3& v1,float fScale)
 {
     float3 ret(v1);
     ret *= fScale;
     return ret;
 }
+
 inline float3 operator * (float fScale,const float3& v1)
 {
     float3 ret(v1);
     ret *= fScale;
     return ret;
 }
+
 inline float3 operator * (const float3& v1,const float3& v2)
 {
     float3 ret(v1);
     ret *= v2;
     return ret;
 }
-
 #endif

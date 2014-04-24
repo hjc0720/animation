@@ -26,8 +26,8 @@ class RDSceneRenderData : public RDRenderData
 public:
     RDSceneRenderData(RDNode& obj);
     RDSceneRenderData(int nWidth,int nHeight,RDNode& obj);
-    virtual void SetScale(float fScale);
-    virtual float GetScale()const{ return m_fScale;}
+    virtual void SetSceneScale(float fScale)override;
+    virtual float GetSceneScale()const override{ return m_fScale;}
     void    SetWidthHeight(int nWidth,int nHeight){m_nWidth = nWidth;m_nHeight = nHeight;}
 
     uint     GetWidth()const{return m_nWidth;}
@@ -38,7 +38,6 @@ public:
 
     const RDTime& GetTime()const{return m_nCurFrame ;}
     void SetTime(const RDTime& nTime){m_nCurFrame = nTime ;}
-
 protected:
     bool    m_bPlay;
     uint    m_nWidth;

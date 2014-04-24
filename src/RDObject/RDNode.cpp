@@ -117,7 +117,7 @@ void RDNode::Render(const RDTime& nTime,const QString& pRDName)
 void RDNode::CalNodeMatrix(RDRenderData& RenderData)
 {
     matrix4x4 mat;
-    matrix4x4::CreateWorldMat(mat,float3::GetZero(),float3::GetOne(),RenderData.GetAngle(),RenderData.GetPos());
+    matrix4x4::CreateWorldMat(mat,float3::GetZero(),RenderData.GetScale(),RenderData.GetAngle(),RenderData.GetPos());
     RenderData.SetItemMatrix(mat);
     RenderData.SetGlobalMatrix(RenderData.GetItemMatrix());
 }
@@ -345,7 +345,7 @@ const RDRenderData*   RDNode::GetRenderData(const QString& pName)const
 void  RDNode::SetRenderScale(float fScale,const QString& pName)
 {
     RDRenderData* pRD = GetRenderData(pName);
-    pRD->SetScale(fScale);
+    pRD->SetSceneScale(fScale);
     for(size_t i = 0; i < GetChildCount(); i++)
     {
         GetChild(i)->SetRenderScale(fScale,pName);
@@ -441,6 +441,15 @@ void RDNode::AddAngleKey(const RDTime& nTime,const float3& vOffsetAngle )
     pSection->AddAngleKey(nStoryTime,vOffsetAngle);
 }
 
+void RDNode::AddScaleKey(const RDTime& nTime,const float3& vOffsetScale )
+{
+    const RDScene* pScene = GetSceneNode();
+    const RDStory* pCurStory = pScene->GetStory(nTime,false);
+    RDTime nStoryTime = nTime - pCurStory->GetStartTime(false);
+    RDSection* pSection = GetSection(pCurStory->GetStoryId(),nStoryTime);
+    pSection->AddScaleKey(nStoryTime,vOffsetScale);
+}
+
 void RDNode::AddPosKey(const RDTime& nTime,const float3& vOffsetPos )
 {
     const RDScene* pScene = GetSceneNode();
@@ -481,19 +490,24 @@ bool RDNode::CalSpaceVector(const RDTime& nSectionTime,RDRenderData& RenderData)
 {
     bool ret = false;
     RDSection* pSection = RenderData.GetCurSection();
-    //================================================================================
+    //======================================================================================================================
     //cal pos
     float3 vOffsetPos = pSection->GetPosVector(nSectionTime);
     vOffsetPos += m_vPos;
     ret |= (vOffsetPos != RenderData.GetPos());
     RenderData.SetPos(vOffsetPos);
-    //================================================================================
+    //======================================================================================================================
     //cal Rotate
     float3 vOffsetAngle = pSection->GetAngleVector(nSectionTime);
     vOffsetAngle += m_vAngle;
     ret |= (vOffsetAngle != RenderData.GetAngle());
     RenderData.SetAngle(vOffsetAngle);
-    //================================================================================
+    //======================================================================================================================
+    //cal Scale
+    float3 vOffsetScale = pSection->GetScaleVector(nSectionTime);
+    vOffsetScale.Mul(m_vScale);
+    ret |= (vOffsetScale != RenderData.GetScale());
+    RenderData.SetScale(vOffsetScale);
     return ret;
 }
 

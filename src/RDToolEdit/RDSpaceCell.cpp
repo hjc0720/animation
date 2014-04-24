@@ -36,6 +36,7 @@ RDSpaceCell::RDSpaceCell(QWidget* parent)
 {
     m_pPos = CreateVectorWidget(tr("pos"),-10000,10000,0,1);
     m_pAngle = CreateVectorWidget(tr("Angle"),-360,360,2,0.1);
+    m_pScale = CreateVectorWidget(tr("Scale"),0.001,100,3,0.1);
 }
 
 RDVec3Widget*  RDSpaceCell::CreateVectorWidget(const QString& name,double fMin,double fMax,int decimals,double step)
@@ -63,9 +64,9 @@ void   RDSpaceCell::SetPos(const float3& newPos)
     m_pPos->SetValue(newPos);
 }
 
-void    RDSpaceCell::GetPos(float3& newPos)
+const float3&    RDSpaceCell::GetPos()const
 {
-    newPos = m_pPos->value();
+    return m_pPos->value();
 }
 
 void    RDSpaceCell::SetAngle(const float3& newPos)
@@ -73,7 +74,17 @@ void    RDSpaceCell::SetAngle(const float3& newPos)
     m_pAngle->SetValue(newPos);
 }
 
-void    RDSpaceCell::GetAngle(float3& newPos)
+const float3&    RDSpaceCell::GetAngle()const
 {
-    newPos = m_pAngle->value();
+    return m_pAngle->value();
+}
+
+void    RDSpaceCell::SetScale(const float3& newScale) 
+{
+    m_pScale->SetValue(newScale);
+}
+
+const float3&     RDSpaceCell::GetScale() const
+{
+    return m_pScale->value();
 }

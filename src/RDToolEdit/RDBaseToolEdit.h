@@ -41,6 +41,7 @@ protected:
     void   AddChild(RDNode& pParent,RDNode& pChild);
     void   MoveItemPos(const float3& vNewPos,RDNode& pNode,bool bUpdateCell = true);
     void   MoveItemAngle(const float3& vAngle,RDNode& pNode,bool bUpdateCell = true);
+    void   MoveItemScale(const float3& vScale,RDNode& pNode,bool bUpdateCell = true);
 protected:
     RDNode* m_pFieldNode;
 private:

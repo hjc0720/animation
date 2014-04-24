@@ -21,11 +21,11 @@
 #include <QDebug>
 
 template <typename KeyType>
-KeyType RDKeyList<KeyType>::GetKeyValue(const RDTime& nSectionTime)
+KeyType RDKeyList<KeyType>::GetKeyValue(const RDTime& nSectionTime,const KeyType& vDefaultValue)
 {
     //qDebug() << "key list count:"<< m_KeyList.size();
     if(m_KeyList.size() == 0)
-        return KeyType();
+        return vDefaultValue;
     else if(m_KeyList.size() == 1)
     {
         auto it = m_KeyList.begin();
@@ -59,7 +59,7 @@ KeyType RDKeyList<KeyType>::GetKeyValue(const RDTime& nSectionTime)
         }
         return Interpolation(nSectionTime,*(first->second),first->first,*(second->second),second->first);
     }
-    return KeyType();
+    return vDefaultValue;
 }
 
 template <typename KeyType>

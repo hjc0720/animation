@@ -139,9 +139,6 @@ float2      RDLayer::CalObjMinMax(const QString& pRDName)
     vNearFar.y = max(vNearFar.x * 10e7,cameraBox.GetMin().z() - 0.1);
     if(vNearFar.y >= vNearFar.x)
         vNearFar.y = vNearFar.x + 100;
-    qDebug() << "min" << cameraBox.GetMin();
-    qDebug() << "max" << cameraBox.GetMax();
-    qDebug() << "near" << vNearFar.x << "far" << vNearFar.y << endl;
     return vNearFar;
 }
 

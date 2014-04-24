@@ -56,10 +56,14 @@ public:
     const float3& GetPos()const{return m_vPos;}
     void MovePos(const float3& vOffset){ m_vPos += vOffset;}
     void SetPos(const float3& vPos){ m_vPos = vPos;}
-
+    //angle
     const float3& GetAngle()const{return m_vAngle;}
     void MoveAngle(const float3& vOffset){m_vAngle += vOffset;}
     void SetAngle(const float3& vAngle){m_vAngle = vAngle;}
+    //scale
+    const float3& GetScale()const{return m_vScale;}
+    void MoveScale(const float3& vOffset){m_vScale.Mul(vOffset);}
+    void SetScale(const float3& vScale){m_vScale = vScale;}
 
     //dynamic
     const float3& GetDynamicPos(const QString& pName)const;
@@ -68,6 +72,7 @@ public:
 	RDTime GetSectionMaxLength(const QUuid& idStory)const;
 	void AddPosKey(const RDTime& nTime,const float3& vOffsetPos );
 	void AddAngleKey(const RDTime& nTime,const float3& vOffsetAngle );
+	void AddScaleKey(const RDTime& nTime,const float3& vOffsetScale );
 
     RDObject* GetObject(){return m_pObj;}
     const RDObject* GetObject()const{return m_pObj;}
