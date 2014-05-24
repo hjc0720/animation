@@ -186,7 +186,11 @@ void RDMaterial::AddTex(RDMatTextureType nTexType,const uint* pBuffer,int nWidth
 void RDMaterial::AddTex(RDMatTextureType nTexType,const RDTexture*  hTex,const QRectF& texBound)
 {
     if(m_MatTexture[nTexType])
+    {
+        if(m_MatTexture[nTexType]->GetTex() == hTex)
+            return;
         SAFE_DELETE(m_MatTexture[nTexType]);
+    }
     m_MatTexture[nTexType] = new RDMatTexture(hTex,texBound);
     SetChange(RD_ADD_TEXTURE);
 }

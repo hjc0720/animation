@@ -30,8 +30,10 @@ public:
     virtual const RDMd5& GetCellMd5() = 0 ;
     void AddWidget(QWidget* pWidget){m_pMainLayout->addWidget(pWidget);};
     void AddLayout(QLayout* pLayout){m_pMainLayout->addLayout(pLayout);}
+protected:
+    virtual int GetCurChangeIndex() = 0;
 signals:
-    void    CellChanged(const RDMd5& pCell);
+    void    CellChanged(const RDMd5& pCell,int nIndex);
 protected slots:
     void    ShowLayout(bool checked);
     void    CellChange();

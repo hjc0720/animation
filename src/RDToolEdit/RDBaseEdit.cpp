@@ -29,14 +29,18 @@ RDBaseEdit::RDBaseEdit(const RDMd5& md5)
 {
 }
 
+RDBaseEdit::~RDBaseEdit()
+{
+}
+
 bool    RDBaseEdit::UpdateCommonCell(const RDMd5& pCell,const RDNode& pData)
 {
-    if(pCell == RDSpaceCell::GetSpaceCell()->GetCellMd5())
+    if(pCell == RDSpaceCell::GetSpaceCell().GetCellMd5())
     {
         auto pRenderData = pData.GetRenderData(DEFAULT_RD);
-        RDSpaceCell::GetSpaceCell()->SetPos(pRenderData ? pRenderData->GetPos() : pData.GetPos());
-        RDSpaceCell::GetSpaceCell()->SetAngle((pRenderData ? pRenderData->GetAngle() : pData.GetAngle()) * (180/3.14));
-        RDSpaceCell::GetSpaceCell()->SetScale(pRenderData ? pRenderData->GetScale() : pData.GetScale());
+        RDSpaceCell::GetSpaceCell().SetPos(pRenderData ? pRenderData->GetPos() : pData.GetPos());
+        RDSpaceCell::GetSpaceCell().SetAngle((pRenderData ? pRenderData->GetAngle() : pData.GetAngle()) * (180/3.14));
+        RDSpaceCell::GetSpaceCell().SetScale(pRenderData ? pRenderData->GetScale() : pData.GetScale());
         return true;
     }
     return false;
@@ -55,18 +59,21 @@ void    RDBaseEdit::UpdateCell(const RDMd5* pCell,const RDNode& pData)
         UpdateCell(pCellArray[i]->GetCellMd5(),pData);
 }
 
-bool            RDBaseEdit::UpdateCommonValue(const RDMd5& pCell,RDNode& pNode) 
+bool            RDBaseEdit::UpdateSpaceValue(RDNode& pNode) 
 {
-    if(pCell == RDSpaceCell::GetSpaceCell()->GetCellMd5())
-    {
         RDEditerManager& pManager = RDEditerManager::GetEditerManager();
         RDDocument* pDoc = pManager.GetDocument();
         pDoc->AddUndoCommand(new RDPosUndo(pNode));
-        RDSpaceCell* pCell = RDSpaceCell::GetSpaceCell();
-        MoveItemPos(pCell->GetPos(),pNode,false);
-        MoveItemAngle(pCell->GetAngle() * (3.14 / 180),pNode,false);
-        MoveItemScale(pCell->GetScale() ,pNode,false);
+        RDSpaceCell& cell = RDSpaceCell::GetSpaceCell();
+        MoveItemPos(cell.GetPos(),pNode,false);
+        MoveItemAngle(cell.GetAngle() * (3.14 / 180),pNode,false);
+        MoveItemScale(cell.GetScale() ,pNode,false);
         return true;
-    }
+}
+
+bool            RDBaseEdit::UpdateCommonValue(const RDMd5& pCell,int ,RDNode& pNode) 
+{
+    if(pCell == RDSpaceCell::GetSpaceCell().GetCellMd5())
+        return UpdateSpaceValue(pNode);
     return false;
 }

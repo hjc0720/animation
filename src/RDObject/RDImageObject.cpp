@@ -58,8 +58,7 @@ RDImageObject::RDImageObject()
 
 RDImageObject::RDImageObject(const QString& fileName)
 {
-    RDResourceManager* pResManger = RDResourceManager::GetResourceManager();
-    m_Image = pResManger->AddResource(fileName,RDResource_Image)->GetMd5();
+    SetFile(fileName,true);
 }
 
 RDImageObject::RDImageObject(const RDMd5& image)
@@ -75,9 +74,45 @@ RDImageObject::RDImageObject(const RDMd5& image)
 RDImageObject::~RDImageObject()
 {
     RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
-    pResManager->RemoveResource(&m_Image);
+    pResManager->RemoveResource(m_Image);
 }
 
+void RDImageObject::SetFile(const QString& fileName,bool bInit )
+{
+    qDebug() << fileName;
+    RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
+    if(!bInit)
+        pResManager->RemoveResource(m_Image);
+    m_Image = pResManager->AddResource(fileName,RDResource_Image)->GetMd5();
+}
+
+const QString& RDImageObject::GetFile()const
+{
+    static QString strNull("");
+    RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
+    RDImageResource* pResource = dynamic_cast<RDImageResource*>(pResManager->GetResource(m_Image));
+    if(!pResource)
+        return strNull;
+    return pResource->GetPath();
+}
+
+int RDImageObject::GetOriginWidth()const
+{
+    RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
+    RDImageResource* pResource = dynamic_cast<RDImageResource*>(pResManager->GetResource(m_Image));
+    if(!pResource)
+        return 1;
+    return pResource->GetBuffer()->GetWidth();
+}
+
+int RDImageObject::GetOriginHeight()const
+{
+    RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
+    RDImageResource* pResource = dynamic_cast<RDImageResource*>(pResManager->GetResource(m_Image));
+    if(!pResource)
+        return 1;
+    return pResource->GetBuffer()->GetHeight();
+}
 
 void RDImageObject::Render(unsigned long ,RDRenderData& RenderData) 
 {
@@ -105,8 +140,14 @@ void RDImageObject::CalFrame(const RDTime& time,RDRenderData& RenderData)
 {
     RDImagePrivateData* pPrivateData = dynamic_cast<RDImagePrivateData*>( RenderData.GetPrivateData());
     if(RenderData.GetChangeLevel() >= RDRender_TransChange)
-    {
         pPrivateData->m_vRenderMatrix = matrix4x4(m_nWidth / 2,m_nHeight / 2,1,HMatrixQ4F_Scale);
+    if(RenderData.GetChangeLevel() >= RDRender_GraphicChange)
+    {
+        RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
+        RDImageResource* pResource = dynamic_cast<RDImageResource*>(pResManager->GetResource(m_Image));
+        pPrivateData->m_pImage = pResource->GetBuffer();
+        QRectF bound(0,0,pPrivateData->m_pImage->GetWidth(),pPrivateData->m_pImage->GetHeight());
+        pPrivateData->m_pMaterial->AddTex(RDNormalMatTexture,pPrivateData->m_pImage,bound);
     }
     pPrivateData->m_pMaterial->UpdateFrame(time,0,0,0);
 }

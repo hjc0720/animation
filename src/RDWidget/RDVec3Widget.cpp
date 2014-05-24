@@ -39,6 +39,7 @@ RDVec3Widget::RDVec3Widget(QWidget* parent,bool bHorizon /*= false*/)
         pItem->addWidget(pLabel);
         pItem->addWidget(m_pVector[i]);
         pLayout->addLayout(pItem);
+        pLayout->addStretch();
     }
     setLayout(pLayout);
 }

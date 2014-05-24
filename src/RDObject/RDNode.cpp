@@ -144,7 +144,6 @@ void RDNode::CalFrame(const RDTime& nTime,const QString& pRDName)
     RDTime nSectionTime = nTime - RenderData.GetCurStory()->GetStartTime(RenderData.IsPlay()) - RenderData.GetCurSection()->GetStartTime();
     if(nSectionTime == RenderData.GetSectionTime() && GetMaxChangeLevel(pRDName) == RDRender_NoChange)
         return;
-    //qDebug() << "cal frame: section time:"<<nSectionTime;
     if(CalSpaceVector(nSectionTime,RenderData))
         SetChangeLevel(RDRender_TransChange);
 

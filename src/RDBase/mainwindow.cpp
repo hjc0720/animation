@@ -204,7 +204,7 @@ void MainWindow::UpdateEditTool()
 }
 void MainWindow::AddProperty()
 {
-    m_pProperty = new RDPropertySheet(200,this);
+    m_pProperty = new RDPropertySheet(360,this);
     addDockWidget(Qt::RightDockWidgetArea,m_pProperty);
     connect(&RDEditerManager::GetEditerManager(), SIGNAL(PropertyChanged(RDCell** ,int )), m_pProperty, SLOT(PropertyChanged(RDCell** ,int )));
 }

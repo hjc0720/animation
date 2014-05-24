@@ -43,7 +43,7 @@ signals:
 	void 	AddNoded(RDNode&);
     void    SceneChange();
 public slots:
-    void    CellChange(const RDMd5& pCell);
+    void    CellChange(const RDMd5& pCell,int nIndex);
 protected:
     RDEditerManager();
     ~RDEditerManager();

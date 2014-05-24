@@ -42,5 +42,5 @@ void RDCell::ShowLayout(bool checked)
 }
 void    RDCell::CellChange()
 {
-    emit CellChanged(GetCellMd5());
+    emit CellChanged(GetCellMd5(),GetCurChangeIndex());
 }

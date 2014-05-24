@@ -27,6 +27,7 @@ public:
     const QString&  GetFileName()const{return m_strFile;}
     void            SetParamToDevice(int nIndex,RDRenderDevice* pDevice );
     void            UpdateFrame(RDRenderDevice* pDevice ,const RDTime& time);
+    const RDTexture*  GetTex()const{return m_hTex;}
 protected:
     void        InitData();
 protected:

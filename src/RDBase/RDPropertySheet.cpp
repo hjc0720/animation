@@ -40,6 +40,7 @@ RDPropertySheet::RDPropertySheet(int width,QWidget* parent /*= 0*/)
 RDPropertySheet::~RDPropertySheet()
 {
 }
+
 void RDPropertySheet::PropertyChanged(RDCell** pCellArray,int nCount)
 {
     for(int i = m_pLayOut->count() - 1; i >= 0 ;i--)

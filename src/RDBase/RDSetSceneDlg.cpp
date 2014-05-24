@@ -106,7 +106,7 @@ void RDSetSceneDlg::ReleaseResource()
     if(m_data.m_nBackType == RDScene_Back_Picture )
     {
         RDResourceManager* pManager = RDResourceManager::GetResourceManager();
-        pManager->RemoveResource( m_data.pImage);
+        pManager->RemoveResource( *m_data.pImage);
         //m_data.pImage = NULL;
     }
 }

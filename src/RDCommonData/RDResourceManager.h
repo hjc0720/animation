@@ -44,7 +44,7 @@ public:
     RDResource* AddModelResource(const QString& modelName);
     RDResource* AddResource(const RDMd5& pMd5);
     RDResource* GetResource(const RDMd5& pMd5);
-    bool RemoveResource(const RDMd5* pMd5);
+    bool RemoveResource(const RDMd5& pMd5);
     void SetResPath(const QString& strPath){m_strResDir = strPath;}
     const QString& GetResourcePath()const{return m_strResDir;}
 protected:

@@ -81,7 +81,6 @@ RDResourceManager::~RDResourceManager()
 
 RDResource* RDResourceManager::AddResource(const QString& resPath,RDResouceType nType)
 {
-    qDebug() << resPath;
     QFile srcFile(resPath);
     if(!srcFile.open(QIODevice::ReadOnly))
         return 0;
@@ -167,10 +166,10 @@ RDResource* RDResourceManager::AddResource(const RDMd5& pMd5)
     return NULL;
 }
 
-bool RDResourceManager::RemoveResource(const RDMd5* pMd5)
+bool RDResourceManager::RemoveResource(const RDMd5& pMd5)
 {
     QMutexLocker locker(&m_lock);
-    RDMd5 data = *pMd5;
+    RDMd5 data = pMd5;
     map<RDMd5*,RDResource*>::iterator it;
     it = m_resource.find(&data);
     RDMd5* pGetMd5 = const_cast<RDMd5*>(it->first);

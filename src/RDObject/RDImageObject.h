@@ -33,10 +33,14 @@ public:
 
     const RDMd5& GetObjMd5()const ;
 
+    void SetFile(const QString& fileName,bool bInit = false);
+    const QString& GetFile()const;
     void SetWidth(int nWidth){m_nWidth = nWidth;}
     void SetHeight( int nHeight){m_nHeight = nHeight;}
     int GetWidth()const {return m_nWidth;}
     int GetHeight()const {return m_nHeight;}
+    int GetOriginWidth()const;
+    int GetOriginHeight()const;
     virtual void Render(unsigned long nTime,RDRenderData& RenderData) ;
     virtual void CalFrame(const RDTime& nTime,RDRenderData& RenderData) ;
     virtual void UpdateBound(const RDTime& nTime,RDRenderData& RenderData) ;

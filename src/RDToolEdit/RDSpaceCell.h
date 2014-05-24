@@ -24,7 +24,7 @@ class RDVec3Widget;
 class RDSpaceCell :public RDCell
 {
 public:
-    static RDSpaceCell* GetSpaceCell();
+    static RDSpaceCell& GetSpaceCell();
     virtual const RDMd5& GetCellMd5();
     void            SetPos(const float3& newPos);
     const float3&   GetPos()const;
@@ -35,9 +35,9 @@ public:
     void            SetScale(const float3& newScale);
     const float3&   GetScale()const;
 protected:
+    virtual int GetCurChangeIndex(){return -1;};
     RDVec3Widget*  CreateVectorWidget(const QString& name,double fMin,double fMax,int decimals,double step);
     RDSpaceCell(QWidget* parent);
-    static RDSpaceCell* m_pCell ;
 protected:
     RDVec3Widget* m_pPos;
     RDVec3Widget* m_pAngle;

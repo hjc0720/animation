@@ -56,7 +56,7 @@ RDScenePrivateData::~RDScenePrivateData()
 {
     if(m_pResource)
     {
-        RDResourceManager::GetResourceManager()->RemoveResource(&m_pResource->GetMd5());
+        RDResourceManager::GetResourceManager()->RemoveResource(m_pResource->GetMd5());
         m_pResource = NULL;
     }
 }
@@ -166,7 +166,7 @@ void RDScene::CalFrame(const RDTime& nTime,const QString& pRDName)
             RDResourceManager* pManager = RDResourceManager::GetResourceManager();
             if(pResource && pResource->GetMd5() != *m_BackData.pImage)
             {
-                pManager->RemoveResource(&pData->GetResource()->GetMd5());
+                pManager->RemoveResource(pData->GetResource()->GetMd5());
                 pData->SetResource(NULL);
             }
             if(!pData->GetResource())

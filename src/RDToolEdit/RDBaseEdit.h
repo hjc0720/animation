@@ -25,14 +25,16 @@ class RDBaseEdit : public RDBaseToolEdit
 {
 public:
     RDBaseEdit(const RDMd5& md5);
+    ~RDBaseEdit();
     const RDMd5& GetEditerMd5()const{return m_EditMd5;};
     virtual RDCell** GetEditCell(int& nCount)const = 0;
     void            UpdateCell(const RDMd5* pCell,const RDNode& pData) ;
-    virtual void    UpdateValue(const RDMd5& pCell,RDNode& pData) = 0;
+    virtual void    UpdateValue(const RDMd5& pCell,int nIndex,RDNode& pData) = 0;
 protected:
     virtual bool    UpdateCell(const RDMd5& pCell,const RDNode& pData) = 0;
     bool            UpdateCommonCell(const RDMd5& pCell,const RDNode& pData);
-    bool            UpdateCommonValue(const RDMd5& pCell,RDNode& pData) ;
+    bool            UpdateCommonValue(const RDMd5& pCell,int nIndex,RDNode& pNode) ;
+    bool            UpdateSpaceValue(RDNode& pNode) ;
 private:
     RDMd5 m_EditMd5;
 };

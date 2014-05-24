@@ -9,10 +9,12 @@ SOURCES += RDToolManager.cpp RDBaseToolEdit.cpp RDBaseTool.cpp RDGroupTool.cpp R
 SOURCES += RDImageTool.cpp RDSelectTool.cpp
 SOURCES += RDImageEdit.cpp
 SOURCES += RDSpaceCell.cpp
+SOURCES += RDImageCell.cpp
 HEADERS += RDToolManager.h RDBaseToolEdit.h RDBaseTool.h RDGroupTool.h RDEditerManager.h RDBaseEdit.h
 HEADERS += RDImageTool.h RDSelectTool.h
 HEADERS += RDImageEdit.h
 HEADERS += RDSpaceCell.h
+HEADERS += RDImageCell.h
 
 #RESOURCES = resource.qrc
 

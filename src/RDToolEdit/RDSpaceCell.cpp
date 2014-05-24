@@ -22,19 +22,18 @@
 #include <QGroupBox>
 #include "HVector3f.h"
 #include "RDVec3Widget.h"
+#include "mac_define.h"
 
-RDSpaceCell* RDSpaceCell::m_pCell = NULL;
-
-RDSpaceCell* RDSpaceCell::GetSpaceCell()
+RDSpaceCell& RDSpaceCell::GetSpaceCell()
 {
-    if(!m_pCell)
-        m_pCell = new RDSpaceCell(0);
-    return m_pCell;
+    static RDSpaceCell space(nullptr);
+    return space;
 }
+
 RDSpaceCell::RDSpaceCell(QWidget* parent)
     :RDCell(tr("space"),parent)
 {
-    m_pPos = CreateVectorWidget(tr("pos"),-10000,10000,0,1);
+    m_pPos = CreateVectorWidget(tr("Pos"),-10000,10000,0,1);
     m_pAngle = CreateVectorWidget(tr("Angle"),-360,360,2,0.1);
     m_pScale = CreateVectorWidget(tr("Scale"),0.001,100,3,0.1);
 }

@@ -33,10 +33,12 @@ RDEditerManager& RDEditerManager::GetEditerManager()
     }
     return *m_pEditerManager;
 }
+
 void RDEditerManager::ReleaseEditerManager()
 {
     SAFE_DELETE(m_pEditerManager);
 }
+
 void RDEditerManager::UpdateProperty(RDNode* pData)
 {
     if(m_pCurNode == pData)
@@ -54,6 +56,7 @@ void RDEditerManager::UpdateProperty(RDNode* pData)
     }
     emit  PropertyChanged(pCellArray,nCount);
 }
+
 RDEditerManager::RDEditerManager()
 {
     RegisterEditer();
@@ -80,7 +83,7 @@ void RDEditerManager::RegisterCell()
         for(int i = 0; i < nCellCount; i++)
         {
             m_CellList[pCellArray[i]->GetCellMd5()] = pCellArray[i];
-            connect(pCellArray[i], SIGNAL(CellChanged(const RDMd5& )), this, SLOT(CellChange(const RDMd5& )));
+            connect(pCellArray[i], SIGNAL(CellChanged(const RDMd5&,int )), this, SLOT(CellChange(const RDMd5&,int )));
         }
     }
 }
@@ -93,13 +96,13 @@ void    RDEditerManager::UpdateCell(const RDMd5* pCell,const RDNode& pData)
     pEdit->UpdateCell(pCell,pData);
 }
 
-void    RDEditerManager::CellChange(const RDMd5& pCell)
+void    RDEditerManager::CellChange(const RDMd5& pCell,int nIndex)
 {
     if(!m_pCurNode)
         return;
     RDBaseEdit* pEdit = m_EditList[m_pCurNode->GetObject()->GetObjMd5()];
     if(!pEdit)
         return;
-    pEdit->UpdateValue(pCell,*m_pCurNode);
+    pEdit->UpdateValue(pCell,nIndex,*m_pCurNode);
     emit SceneChange();
 }

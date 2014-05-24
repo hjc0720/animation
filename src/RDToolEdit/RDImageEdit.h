@@ -25,7 +25,7 @@ class RDImageEdit : public RDBaseEdit
 public:
     RDImageEdit(const RDMd5& md5);
     virtual RDCell** GetEditCell(int& nCount) const;
-    void    UpdateValue(const RDMd5& pCell,RDNode& pData) ;
+    void    UpdateValue(const RDMd5& pCell,int nIndex,RDNode& pData) ;
 protected:
     bool    UpdateCell(const RDMd5& pCell,const RDNode& pData);
 };
