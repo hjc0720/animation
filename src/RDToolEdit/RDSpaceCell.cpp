@@ -24,9 +24,9 @@
 #include "RDVec3Widget.h"
 #include "mac_define.h"
 
-RDSpaceCell& RDSpaceCell::GetSpaceCell()
+RDSpaceCell* RDSpaceCell::GetSpaceCell()
 {
-    static RDSpaceCell space(nullptr);
+    static RDSpaceCell* space = new RDSpaceCell(nullptr);
     return space;
 }
 

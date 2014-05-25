@@ -36,7 +36,7 @@ class RDImageCell : public RDCell
 {
     Q_OBJECT
 public:
-    static RDImageCell& GetImageCell();
+    static RDImageCell* GetImageCell();
     virtual const RDMd5& GetCellMd5();
 
     void    SetImageFileName(const QString& fileName);
@@ -48,6 +48,9 @@ public:
     int     GetImageHeight()const;
 protected slots:
     void GetImageFile();
+    void OnKeepWidth();
+    void OnKeepHeight();
+    void OnOriginSize();
 protected:
     RDImageCell(QWidget* parent);
     virtual int GetCurChangeIndex(){return RDImageSizeChange;};

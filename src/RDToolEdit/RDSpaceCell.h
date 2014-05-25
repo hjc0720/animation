@@ -24,7 +24,7 @@ class RDVec3Widget;
 class RDSpaceCell :public RDCell
 {
 public:
-    static RDSpaceCell& GetSpaceCell();
+    static RDSpaceCell* GetSpaceCell();
     virtual const RDMd5& GetCellMd5();
     void            SetPos(const float3& newPos);
     const float3&   GetPos()const;

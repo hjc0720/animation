@@ -24,9 +24,9 @@
 #include <QSpinBox>
 #include <QFileDialog>
 
-RDImageCell& RDImageCell::GetImageCell()
+RDImageCell* RDImageCell::GetImageCell()
 {
-    static RDImageCell image(nullptr);
+    static RDImageCell* image = new RDImageCell(nullptr);
     return image;
 }
 
@@ -68,14 +68,19 @@ RDImageCell::RDImageCell(QWidget* parent)
     pHLayout->addWidget(pHeight);
     pHLayout->addWidget(m_pHeight);
     pHLayout->addStretch();
+    AddLayout(pHLayout);
     
-//    QPushButton* pKeepSize = new QPushButton(QIcon(":/img_origin"),"");
-//    pHLayout->addWidget(pKeepSize);
-//    QPushButton* pKeepWidth = new QPushButton(QIcon(":/img_width"),"");
-//    pHLayout->addWidget(pKeepWidth);
-//    QPushButton* pKeepHeight = new QPushButton(QIcon(":/img_height"),"");
-//    pHLayout->addWidget(pKeepHeight);
-
+    pHLayout = new QHBoxLayout();
+    QPushButton* pKeepSize = new QPushButton(QIcon(":/img_origin"),"");
+    connect(pKeepSize, SIGNAL(clicked()), this, SLOT(OnOriginSize()));
+    pHLayout->addWidget(pKeepSize);
+    QPushButton* pKeepWidth = new QPushButton(QIcon(":/img_width"),"");
+    connect(pKeepWidth, SIGNAL(clicked()), this, SLOT(OnKeepWidth()));
+    pHLayout->addWidget(pKeepWidth);
+    QPushButton* pKeepHeight = new QPushButton(QIcon(":/img_height"),"");
+    connect(pKeepHeight, SIGNAL(clicked()), this, SLOT(OnKeepHeight()));
+    pHLayout->addWidget(pKeepHeight);
+    pHLayout->addStretch();
     AddLayout(pHLayout);
 }
 
@@ -110,7 +115,7 @@ void    RDImageCell::SetImageOriginSize(int nWidth,int nHeight)
 {
     m_pWidth->setMaximum(nWidth);
     m_pHeight->setMaximum(nHeight);
-    static QString strResolution(tr("Resolution"));
+    static QString strResolution(tr("Resolution:\t"));
     m_pResolution->setText(strResolution + QString::number(nWidth) + " * " + QString::number(nHeight));
 }
 
@@ -128,4 +133,23 @@ int     RDImageCell::GetImageWidth()const
 int     RDImageCell::GetImageHeight()const
 {
     return m_pHeight->value();
+}
+
+void RDImageCell::OnKeepWidth()
+{
+    m_pHeight->setValue(m_pHeight->maximum() * m_pWidth->value() / m_pWidth->maximum());
+    emit CellChanged(GetCellMd5(),RDImageSizeChange);
+}
+
+void RDImageCell::OnKeepHeight()
+{
+    m_pWidth->setValue(m_pWidth->maximum() * m_pHeight->value() / m_pHeight->maximum());
+    emit CellChanged(GetCellMd5(),RDImageSizeChange);
+}
+
+void RDImageCell::OnOriginSize()
+{
+    m_pWidth->setValue(m_pWidth->maximum());
+    m_pHeight->setValue(m_pHeight->maximum());
+    emit CellChanged(GetCellMd5(),RDImageSizeChange);
 }

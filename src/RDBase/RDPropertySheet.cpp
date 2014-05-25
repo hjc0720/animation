@@ -48,6 +48,7 @@ void RDPropertySheet::PropertyChanged(RDCell** pCellArray,int nCount)
         QLayoutItem* pItem = m_pLayOut->itemAt(i);
         if(pItem->widget())
             pItem->widget()->setVisible(false);
+
         m_pLayOut->removeItem(pItem);
         SAFE_DELETE(pItem);
     }

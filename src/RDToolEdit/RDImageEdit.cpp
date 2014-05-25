@@ -27,8 +27,8 @@ RDImageEdit::RDImageEdit(const RDMd5& md5)
 RDCell** RDImageEdit::GetEditCell(int& nCount) const
 {
     static RDCell* pCellArray[] = {
-        &RDImageCell::GetImageCell(),
-        &RDSpaceCell::GetSpaceCell()
+        RDImageCell::GetImageCell(),
+        RDSpaceCell::GetSpaceCell()
     };
     nCount = sizeof(pCellArray) / sizeof(RDCell*);
     return pCellArray;
@@ -36,16 +36,16 @@ RDCell** RDImageEdit::GetEditCell(int& nCount) const
 
 bool    RDImageEdit::UpdateCell(const RDMd5& pCell,const RDNode& pData)
 {
-    if(pCell == RDImageCell::GetImageCell().GetCellMd5())
+    if(pCell == RDImageCell::GetImageCell()->GetCellMd5())
     {
         const RDImageObject* pImage = dynamic_cast<const RDImageObject*>( pData.GetObject());
         if(!pImage)
             return false;
-        RDImageCell& cell = RDImageCell::GetImageCell();
+        RDImageCell* pCell = RDImageCell::GetImageCell();
         pImage->Lock();
-        cell.SetImageFileName(pImage->GetFile());
-        cell.SetImageOriginSize(pImage->GetOriginWidth(),pImage->GetOriginHeight());
-        cell.SetImageSize(pImage->GetWidth(),pImage->GetHeight());
+        pCell->SetImageFileName(pImage->GetFile());
+        pCell->SetImageOriginSize(pImage->GetOriginWidth(),pImage->GetOriginHeight());
+        pCell->SetImageSize(pImage->GetWidth(),pImage->GetHeight());
         pImage->UnLock();
         return true;
     }
@@ -54,23 +54,23 @@ bool    RDImageEdit::UpdateCell(const RDMd5& pCell,const RDNode& pData)
 
 void    RDImageEdit::UpdateValue(const RDMd5& pCell,int nIndex,RDNode& pData) 
 {
-    if(pCell == RDImageCell::GetImageCell().GetCellMd5())
+    if(pCell == RDImageCell::GetImageCell()->GetCellMd5())
     {
         RDImageObject* pImage = dynamic_cast<RDImageObject*>( pData.GetObject());
         if(!pImage)
             return;
-        RDImageCell& cell = RDImageCell::GetImageCell();
+        RDImageCell* pCell = RDImageCell::GetImageCell();
         pImage->Lock();
         if(nIndex == RDImageFileChange)
         {
-            pImage->SetFile(cell.GetImageFileName());
+            pImage->SetFile(pCell->GetImageFileName());
             pData.SetChangeLevel(RDRender_GraphicChange);
-            cell.SetImageOriginSize(pImage->GetOriginWidth(),pImage->GetOriginHeight());
+            pCell->SetImageOriginSize(pImage->GetOriginWidth(),pImage->GetOriginHeight());
         }
         else if(nIndex == RDImageSizeChange) 
         {
-            pImage->SetWidth(cell.GetImageWidth());
-            pImage->SetHeight(cell.GetImageHeight());
+            pImage->SetWidth(pCell->GetImageWidth());
+            pImage->SetHeight(pCell->GetImageHeight());
             pData.SetChangeLevel(RDRender_TransChange);
         }
         pImage->UnLock();
