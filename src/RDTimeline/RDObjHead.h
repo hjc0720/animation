@@ -27,7 +27,7 @@ class RDObjHead :public QWidget
     Q_OBJECT
 public:
 		RDObjHead(RDNode& pNode,QWidget* parent);
-//        virtual void paintEvent(QPaintEvent * /*e*/);
+        virtual void paintEvent(QPaintEvent * /*e*/);
 protected:
 		int CalSpaceCount(const RDNode& pNode);
 protected:

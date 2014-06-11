@@ -47,10 +47,9 @@ int RDObjHead::CalSpaceCount(const RDNode& pNode)
 }
 
 //
-//void RDObjHead::paintEvent(QPaintEvent * e)
-//{
-//    qDebug() << "object head size:"<<rect();
-//    QPainter p(this);
-//    p.drawRect(rect());
-//    QWidget::paintEvent(e);
-//}
+void RDObjHead::paintEvent(QPaintEvent * e)
+{
+    QPainter p(this);
+    p.drawRect(rect().adjusted(0,0,-1,-1));
+    QWidget::paintEvent(e);
+}
