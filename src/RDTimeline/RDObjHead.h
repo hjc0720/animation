@@ -27,6 +27,7 @@ class RDObjHead :public QWidget
     Q_OBJECT
 public:
 		RDObjHead(RDNode& pNode,QWidget* parent);
+        void SetBackGround(bool bDark){setBackgroundRole(bDark?QPalette::AlternateBase : QPalette::Base);};
         virtual void paintEvent(QPaintEvent * /*e*/);
 protected:
 		int CalSpaceCount(const RDNode& pNode);

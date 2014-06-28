@@ -22,6 +22,9 @@
 #include "RDTimeRuler.h"
 #include <QDebug>
 #include "RDScetionView.h"
+#include <QRect>
+#include <QPaintEvent>
+#include <QPainter>
 
 RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
 	:QDockWidget(pParent)
@@ -69,22 +72,37 @@ RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
     connect(m_pSectionView,SIGNAL(FrameChanged(const RDTime&)),this,SIGNAL(FrameChanged(const RDTime&)));
 }
 
-void RDTimelineView::RDFillHead(RDNode& pNode)
+void RDTimelineView::RDFillHead(RDNode& pNode,bool bDark)
 {
 	RDObjHead* pHead = new RDObjHead(pNode,this);
+    pHead->SetBackGround(bDark);
 	m_pHeadLayout->addWidget(pHead);
 	for(size_t i = 0; i < pNode.GetChildCount();i++)
 	{
-		RDFillHead(*pNode.GetChild(i));
+        bDark = !bDark;
+		RDFillHead(*pNode.GetChild(i),bDark);
 	}
+}
+
+void RDTimelineView::UpdateBackground(int nStartIndex)
+{
+    for(int i = nStartIndex; i < m_pHeadLayout->count(); i++)
+    {
+        QLayoutItem* item = m_pHeadLayout->itemAt(i);
+        RDObjHead* pHead = dynamic_cast<RDObjHead* >(item->widget());
+        if(pHead)
+            pHead->SetBackGround((i + 1) % 2);
+    } 
 }
 
 void RDTimelineView::InsertObj(RDNode& pNewNode)
 {
 	int nIndex = GetHeadIndex(pNewNode);
 	RDObjHead* pHead = new RDObjHead(pNewNode,this);
+    pHead->SetBackGround((nIndex + 1) % 2);
 	m_pHeadLayout->insertWidget(nIndex,pHead);
     m_pSectionView->SetSceneNode(m_pScene);
+    UpdateBackground(nIndex + 1);
 }
 
 int RDTimelineView::GetHeadIndex(const RDNode& pNode)
@@ -102,6 +120,7 @@ int RDTimelineView::GetHeadIndex(const RDNode& pNode)
 	}
 	return nIndex;
 }
+
 void RDTimelineView::DelObj(RDNode& pNewNode)
 {
 	for(int i = pNewNode.GetChildCount() - 1; i >=0; i++)
@@ -116,4 +135,5 @@ void RDTimelineView::DelObj(RDNode& pNewNode)
         delete item;
         if (wid) wid->deleteLater();
 	}
+    UpdateBackground(nIndex );
 }

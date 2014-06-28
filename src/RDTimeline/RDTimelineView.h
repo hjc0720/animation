@@ -34,8 +34,9 @@ public:
 signals:
         void    FrameChanged(const RDTime& );
 protected:
-		void RDFillHead(RDNode& pNode);
+		void RDFillHead(RDNode& pNode,bool bDark = true);
 		int GetHeadIndex(const RDNode& pNode);
+        void UpdateBackground(int nStartIndex);
 protected slots:
 		void InsertObj(RDNode& pNewNode);
 		void DelObj(RDNode& pNewNode);

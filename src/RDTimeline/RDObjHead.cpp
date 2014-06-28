@@ -36,6 +36,7 @@ RDObjHead::RDObjHead(RDNode& pNode,QWidget* parent)
 	pLayout->addWidget(m_pObjName);
 	pLayout->setContentsMargins(0,0,0,0);
 	setLayout(pLayout);
+    setAutoFillBackground(true);
 }
 
 int RDObjHead::CalSpaceCount(const RDNode& pNode)
