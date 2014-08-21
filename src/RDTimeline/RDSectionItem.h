@@ -16,20 +16,25 @@
  * =====================================================================================
  */
 #include <QGraphicsItem>
+#include "mac_define.h"
 
 class RDSection;
 class RDSectionItem : public QGraphicsItem
 {
 public:
-    RDSectionItem(const RDSection* pSection,int nHeight,int nXOffset,int nYOffset);
+    RDSectionItem(RDSection* pSection,int nHeight,int nXOffset,int nYOffset);
     QRectF boundingRect()const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 protected:
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+//    void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void SetSectionType();
+    bool    HitTest(RDTime pos);
 protected:
-    const RDSection* m_pSection;
+    bool        m_bHitTest;
     int         m_nHeight;
     int         m_nXOffset;
     int         m_nYOffset;
+    RDSection* m_pSection;
     QImage      m_imgSectionType;
 };

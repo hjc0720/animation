@@ -47,7 +47,7 @@ RDShader::RDShader(const QString &code, const QString &shaderName, RDShaderType 
     glCompileShader(m_hShader);
 
 #ifdef _DEBUG
-    qDebug() << code;
+    //qDebug() << code;
     GLint result;
     glGetShaderiv(m_hShader,GL_COMPILE_STATUS,&result);
     if(GL_FALSE == result)

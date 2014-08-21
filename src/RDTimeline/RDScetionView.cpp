@@ -34,6 +34,7 @@ RDSectionView::RDSectionView(RDScene* pScene,QWidget* pWidget )
     SetSceneNode(pScene);
     SetScale(m_pScene->GetSceneLength() / 1920);
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 }
 
 void RDSectionView::resizeEvent(QResizeEvent* event)
@@ -93,8 +94,9 @@ void RDSectionView::AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& i
         RDNode* pChildNode = pNode->GetChild(i);
         for(size_t j = 0; j < pChildNode->GetSectionCount(idStory); j++)
         {
-            const RDSection* pSection = pChildNode->GetSection(idStory,j);
+            RDSection* pSection = pChildNode->GetSection(idStory,j);
             RDSectionItem* pItem = new RDSectionItem(pSection,RDTRACK_HEIGTH,0,nIndex * RDTRACK_HEIGTH);
+            qDebug() << "cur section" << (size_t)pItem <<":"<< nIndex << pNode->GetName();
             scene()->addItem(pItem);
         }
         nIndex++;

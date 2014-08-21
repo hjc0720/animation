@@ -21,7 +21,7 @@
 #include <QRectF>
 //#include "HVector3f.h"
 
-bool RenderManager::RenderScene(const QPointF& ,const QRectF& ,unsigned long nTime)
+bool RenderManager::RenderScene(const QPointF& ,const QRectF& ,RDTime nTime)
 {
     if( m_RenderName.isEmpty())
         return false;

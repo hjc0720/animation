@@ -22,15 +22,22 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QDebug>
+#include <QGraphicsSceneMouseEvent>
+#include "RDScetionView.h"
 
-RDSectionItem::RDSectionItem(const RDSection* pSection,int nHeight,int nXOffset,int nYOffset)
-    :m_pSection(pSection)
+class RDSectionScene;
+
+RDSectionItem::RDSectionItem(RDSection* pSection,int nHeight,int nXOffset,int nYOffset)
+    :m_bHitTest(false)
      ,m_nHeight(nHeight)
      ,m_nXOffset(nXOffset)
      ,m_nYOffset(nYOffset)
+      ,m_pSection(pSection)
 {
     SetSectionType();
     setPos(m_nXOffset + m_pSection->GetStartTime(),m_nYOffset);
+    setFlag(ItemIsMovable);
+//    setAcceptedMouseButtons(Qt::LeftButton);
 }
 
 void RDSectionItem::SetSectionType()
@@ -73,6 +80,38 @@ void RDSectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * , 
 
 QRectF RDSectionItem::boundingRect()const
 {
-    float fLeft = m_pSection->GetStartTime() + m_nXOffset;
-    return QRectF(fLeft,m_nYOffset,m_pSection->GetLength(),m_nHeight);
+    return QRectF(0,0,m_pSection->GetLength(),m_nHeight);
+}
+
+void RDSectionItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    RDTime offsetPos = event->scenePos().x() - event->lastScenePos().x();
+    m_pSection->MovSection(offsetPos);
+    event->accept();
+    update();
+    qDebug() << "cur start Time:" << m_pSection->GetStartTime();
+}
+
+//void RDSectionItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+//{
+//    if(event->buttons().testFlag(Qt::LeftButton))
+//    {
+//        float fHeight = event->scenePos().y();
+//        qDebug() << "hit test section " << (size_t)this <<":" << event->scenePos() << "cur height" << m_nYOffset;
+//        if(fHeight  > m_nYOffset && fHeight < m_nYOffset + m_nHeight)
+//        {
+//            RDTime oldPos = event->scenePos().x();
+//            if(HitTest(oldPos))
+//            {
+//                m_bHitTest = true;
+//                event->accept();
+//            }
+//        }
+//    }
+//
+//}
+
+bool    RDSectionItem::HitTest(RDTime pos)
+{
+    return (pos >= m_pSection->GetStartTime() && pos <= m_pSection->GetEndTime());
 }

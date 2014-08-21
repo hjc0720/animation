@@ -175,7 +175,7 @@ RDTime RDNode::GetSectionMaxLength(const QUuid& idStory)const
 	{
 		auto it = pSectionList->second.rbegin();
 		RDSection* pSection = *it;
-		nTime = pSection->GetEndFrame();
+		nTime = pSection->GetEndTime();
 	}
 	for(size_t i = 0;i < GetChildCount(); i++)
 	{
@@ -204,7 +204,7 @@ bool RDNode::AddSection(const RDTime& nStoryTime,const RDTime& nLength,const QUu
             MoveSection(nLength,it,pSectionList.end());
             return true;
         }
-       else if(nStoryTime >= (*it)->GetStartTime() && nStoryTime < (*it)->GetEndFrame())
+       else if(nStoryTime >= (*it)->GetStartTime() && nStoryTime < (*it)->GetEndTime())
         {
             return false;
         }

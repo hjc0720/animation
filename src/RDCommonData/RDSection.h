@@ -36,10 +36,10 @@ public:
     RDSection(const RDTime& nStartFrame,const RDTime& nLength);
     const RDTime& GetStartTime()const{return m_nStartTime;}
     const RDTime& GetLength()const{return m_nLength;}
-    RDTime GetEndFrame()const{return m_nStartTime + m_nLength;}
+    RDTime GetEndTime()const{return m_nStartTime + m_nLength;}
     RDSectionOutType GetType()const{return m_nType;}
 
-    void MovSection(const RDTime& nSteps){m_nStartTime += nSteps;}
+    void MovSection(const RDTime& nSteps){m_nStartTime += nSteps;m_nStartTime = std::max<RDTime>(m_nStartTime,0);}
 
     void AddPosKey(const RDTime& nStoryTime,const float3& value);
     void AddAngleKey(const RDTime& nStoryTime,const float3& value);

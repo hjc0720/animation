@@ -26,7 +26,7 @@
 #define  SAFE_DELETE_ARRAY(p) {if(p) delete[]p;p=0;}
 #endif   // ----- #ifndef safe_delete_array_INC  -----
 
-typedef unsigned long long RDTime;
+typedef long long RDTime;
 typedef unsigned int uint;
 
 

@@ -17,6 +17,7 @@
 #ifndef  RDRENDERMANAGER_INC
 #define  RDRENDERMANAGER_INC
 #include <QString>
+#include "mac_define.h"
 
 class RDScene;
 class QPointF;
@@ -28,7 +29,7 @@ class RenderManager
 public:
     void SetRenderName(const QString& pName){m_RenderName = pName;}
     void SetScene(RDScene* pScene){m_pScene = pScene;}
-    bool RenderScene(const QPointF& offSceneToScreen,const QRectF& rtScene,unsigned long nTime);
+    bool RenderScene(const QPointF& offSceneToScreen,const QRectF& rtScene,RDTime nTime);
 protected:
     RDScene*      m_pScene;
     QString       m_RenderName;
