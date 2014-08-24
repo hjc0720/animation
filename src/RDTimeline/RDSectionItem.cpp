@@ -24,14 +24,14 @@
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
 #include "RDScetionView.h"
+#include "RDNode.h"
 
-class RDSectionScene;
-
-RDSectionItem::RDSectionItem(RDSection* pSection,int nHeight,int nXOffset,int nYOffset)
+RDSectionItem::RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int nXOffset,int nYOffset)
     :m_bHitTest(false)
      ,m_nHeight(nHeight)
      ,m_nXOffset(nXOffset)
      ,m_nYOffset(nYOffset)
+     ,m_pNode(pNode)
       ,m_pSection(pSection)
 {
     SetSectionType();
@@ -86,10 +86,14 @@ QRectF RDSectionItem::boundingRect()const
 void RDSectionItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     RDTime offsetPos = event->scenePos().x() - event->lastScenePos().x();
-    m_pSection->MovSection(offsetPos);
     event->accept();
     update();
-    qDebug() << "cur start Time:" << m_pSection->GetStartTime();
+    m_pSection->MovSection(offsetPos);
+    m_pNode->SetChangeLevel(RDRender_TransChange);
+    RDSectionScene* pScene = dynamic_cast<RDSectionScene*>(scene());
+    if(pScene)
+        pScene->SectionChange();
+    //qDebug() << "cur start Time:" << m_pSection->GetStartTime();
 }
 
 //void RDSectionItem::mousePressEvent(QGraphicsSceneMouseEvent *event)

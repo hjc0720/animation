@@ -44,8 +44,10 @@ public:
         }
         void SetTimeMarker(RDTimeMarker* pMarker ){m_pTimeMarker = pMarker;}
         RDTimeMarker* GetTimeMarker(){return m_pTimeMarker;}
+        void    SectionChange(){emit SectionChanged();};
 signals:
         void    FrameChanged(const RDTime& nFrame);
+        void    SectionChanged();
 protected:
         RDTimeMarker* m_pTimeMarker;
 };
@@ -59,6 +61,7 @@ public:
     void SetScale(const RDTime& nScale); 
 signals:
     void    FrameChanged(const RDTime& nFrame);
+    void    SectionChanged();
 protected:
     void AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& idStory);
     virtual void resizeEvent(QResizeEvent* event);

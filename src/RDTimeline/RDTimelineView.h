@@ -33,6 +33,7 @@ public:
 		RDTimelineView(RDScene& pScene,QWidget* pParent);
 signals:
         void    FrameChanged(const RDTime& );
+        void    SectionChanged();
 protected:
 		void RDFillHead(RDNode& pNode,bool bDark = true);
 		int GetHeadIndex(const RDNode& pNode);

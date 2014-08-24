@@ -137,9 +137,8 @@ void RDRenderWidget::paintGL()
 {
     static RenderManager* pRDManager = 0;
     if(!pRDManager)
-    {
         pRDManager = new RenderManager;
-    }
+
     RDDocument* pDoc = &m_document;
     pDoc->Lock();
     RDScene* pScene = pDoc->GetCurScene();

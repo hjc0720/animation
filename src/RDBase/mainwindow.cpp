@@ -216,8 +216,10 @@ void MainWindow::OnReloadTimeLine(RDScene& pScene)
     connect(&RDEditerManager::GetEditerManager(),SIGNAL(AddNoded(RDNode&)),m_pTimeLineView,SLOT(InsertObj(RDNode&)));
     connect(m_pCenterWidget,SIGNAL(DelNoded(RDNode&)),m_pTimeLineView,SLOT(DelObj(RDNode&)));
     connect(m_pTimeLineView,SIGNAL(FrameChanged(const RDTime& )),this,SLOT(OnFrameChanged(const RDTime&)));
+    connect(m_pTimeLineView,SIGNAL(SectionChanged()),m_pCenterWidget,SLOT(updateGL()));
     addDockWidget(Qt::BottomDockWidgetArea,m_pTimeLineView);
 }
+
 void MainWindow::OnFrameChanged(const RDTime& nTime)
 {
     GetCurDocument()->SetCurTime(nTime);

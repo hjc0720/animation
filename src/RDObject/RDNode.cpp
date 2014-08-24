@@ -98,11 +98,16 @@ RDNode* RDNode::RemoveChild(size_t i)
 void RDNode::Render(const RDTime& nTime,const QString& pRDName) 
 {
     QMutexLocker locker(&m_lock);
+    RDRenderData& RenderData = *GetRenderData(pRDName);
+    if(!RenderData.GetCurSection())
+    {
+        qDebug() << typeid(*this).name() << "no section";   
+        return;
+    }
     for(size_t i = 0; i < GetChildCount(); i++)
     {
         GetChild(i)->Render(nTime,pRDName);
     }
-    RDRenderData& RenderData = *GetRenderData(pRDName);
     if(m_pObj)
     {
         const RDLayer* pLayer = GetLayerNode();
@@ -233,14 +238,17 @@ void RDNode::UpdateSection(const RDTime& nFrame,RDRenderData& pRD)
             {
                 //find last action of prev story;
                 RDSection* pLastSection = GetLastSectionBefore(pScene.GetCurStoryIndex(pSceneRD));
-                if(pLastSection->GetType() == RDSectionFinish)
+                if(pLastSection && pLastSection->GetType() == RDSectionFinish)
                     pRD.SetCurSection(0);
                 else
                     pRD.SetCurSection(pLastSection);
                 return;
             }
             else if(nStoryFrame < (*oldIt)->GetStartTime() + (*oldIt)->GetLength())
+            {
                 pRD.SetCurSection(*oldIt);
+                return;
+            }
             else if(it == pSectionList.end())
             {
                 if((*oldIt)->GetType() != RDSectionFinish)
@@ -272,7 +280,7 @@ void RDNode::UpdateSection(const RDTime& nFrame,RDRenderData& pRD)
 RDSection* RDNode::GetLastSectionBefore(size_t nCurStoryIndex)
 {
     const RDScene* pScene = GetSceneNode();
-    auto pCurStory = pScene->GetStory(nCurStoryIndex--);
+    auto pCurStory = pScene->GetStory(--nCurStoryIndex);
     while(pCurStory)
     {
         auto pFindRes = m_vecSetctionListMap.find(pCurStory->GetStoryId());
@@ -282,7 +290,7 @@ RDSection* RDNode::GetLastSectionBefore(size_t nCurStoryIndex)
             auto it = pSectionList.rbegin();
             return *it;
         }
-        pCurStory = pScene->GetStory(nCurStoryIndex--);
+        pCurStory = pScene->GetStory(--nCurStoryIndex);
     }
     return 0;
 }

@@ -19,10 +19,11 @@
 #include "mac_define.h"
 
 class RDSection;
+class RDNode;
 class RDSectionItem : public QGraphicsItem
 {
 public:
-    RDSectionItem(RDSection* pSection,int nHeight,int nXOffset,int nYOffset);
+    RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int nXOffset,int nYOffset);
     QRectF boundingRect()const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 protected:
@@ -35,6 +36,7 @@ protected:
     int         m_nHeight;
     int         m_nXOffset;
     int         m_nYOffset;
-    RDSection* m_pSection;
+    RDNode*     m_pNode;
+    RDSection*  m_pSection;
     QImage      m_imgSectionType;
 };

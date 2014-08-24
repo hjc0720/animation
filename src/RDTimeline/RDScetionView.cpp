@@ -68,6 +68,7 @@ void RDSectionView::SetSceneNode(RDScene* pScene)
 
     RDSectionScene* pGraphicScene = new RDSectionScene(0,0,fWidth,fHeight);
     connect(pGraphicScene,SIGNAL(FrameChanged(const RDTime&)),this,SIGNAL(FrameChanged(const RDTime&)));
+    connect(pGraphicScene,SIGNAL(SectionChanged()),this,SIGNAL(SectionChanged()));
     setScene(pGraphicScene);
 
     size_t nStoryCount = pScene->GetStoryCount();
@@ -95,7 +96,7 @@ void RDSectionView::AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& i
         for(size_t j = 0; j < pChildNode->GetSectionCount(idStory); j++)
         {
             RDSection* pSection = pChildNode->GetSection(idStory,j);
-            RDSectionItem* pItem = new RDSectionItem(pSection,RDTRACK_HEIGTH,0,nIndex * RDTRACK_HEIGTH);
+            RDSectionItem* pItem = new RDSectionItem(pChildNode,pSection,RDTRACK_HEIGTH,0,nIndex * RDTRACK_HEIGTH);
             qDebug() << "cur section" << (size_t)pItem <<":"<< nIndex << pNode->GetName();
             scene()->addItem(pItem);
         }

@@ -120,24 +120,27 @@ void RDScene::SetBackType(RDScene_BackType nType,const void* pData)
 void RDScene::Render(const RDTime& nTime,const QString& pRDName)
 {
     QMutexLocker locker(&m_lock);
-    RDSceneRenderData& pSceneData = *dynamic_cast<RDSceneRenderData*>(GetRenderData(pRDName));
-    if(pSceneData.GetRenderChangeLevel() >= RDRender_GraphicChange)
+    for(size_t i = 0; i < GetChildCount(); i++)
     {
-        pSceneData.m_RenderBuffer.ResizeBuffer(pSceneData.GetNowWidth(),pSceneData.GetNowHeight());
+        GetChild(i)->Render(nTime,pRDName);
     }
-    switch(m_BackData.m_nBackType)
-    {
-    case RDScene_Back_Color:
-        pSceneData.m_RenderBuffer.FillColor(m_BackData.backColor);
-        break;
-    case RDScene_Back_Picture:
-        RenderImage(pSceneData,nTime);
-        break;
-    default:
-        return;
-    }
-    RDNode::Render(nTime,pRDName);
-    //BlendChild(pRDName);
+//    RDSceneRenderData& pSceneData = *dynamic_cast<RDSceneRenderData*>(GetRenderData(pRDName));
+//    if(pSceneData.GetRenderChangeLevel() >= RDRender_GraphicChange)
+//    {
+//        pSceneData.m_RenderBuffer.ResizeBuffer(pSceneData.GetNowWidth(),pSceneData.GetNowHeight());
+//    }
+//    switch(m_BackData.m_nBackType)
+//    {
+//    case RDScene_Back_Color:
+//        pSceneData.m_RenderBuffer.FillColor(m_BackData.backColor);
+//        break;
+//    case RDScene_Back_Picture:
+//        RenderImage(pSceneData,nTime);
+//        break;
+//    default:
+//        return;
+//    }
+//    RDNode::Render(nTime,pRDName);
 }
 
 void RDScene::RenderImage(RDSceneRenderData& /*pSceneData*/,unsigned long )
@@ -270,7 +273,7 @@ bool RDScene::TriggerStory(const RDTime& nFrame,RDSceneRenderData& pSceneData)
 RDStory* RDScene::GetStory(size_t nIndex)
 {
     if(nIndex >= m_StoryList.size())
-        return NULL;
+        return nullptr;
     std::list<RDStory*>::iterator it = m_StoryList.begin();
     for(size_t i = 0; i < nIndex; i++)
         it++;
