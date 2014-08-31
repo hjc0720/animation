@@ -71,38 +71,36 @@ RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
     setWidget(pTimeLineWidget);
     connect(m_pSectionView,SIGNAL(FrameChanged(const RDTime&)),this,SIGNAL(FrameChanged(const RDTime&)));
     connect(m_pSectionView,SIGNAL(SectionChanged()),this,SIGNAL(SectionChanged()));
-
 }
 
-void RDTimelineView::RDFillHead(RDNode& pNode,bool bDark)
+void RDTimelineView::RDFillHead(RDNode& pNode)
 {
-	RDObjHead* pHead = new RDObjHead(pNode,this);
-    pHead->SetBackGround(bDark);
-	m_pHeadLayout->addWidget(pHead);
+    InsertObj(pNode,-1);
 	for(size_t i = 0; i < pNode.GetChildCount();i++)
 	{
-        bDark = !bDark;
-		RDFillHead(*pNode.GetChild(i),bDark);
+		RDFillHead(*pNode.GetChild(i));
 	}
 }
 
 void RDTimelineView::UpdateBackground(int nStartIndex)
 {
+    bool bDark = (nStartIndex + 1) % 2;
     for(int i = nStartIndex; i < m_pHeadLayout->count(); i++)
     {
         QLayoutItem* item = m_pHeadLayout->itemAt(i);
         RDObjHead* pHead = dynamic_cast<RDObjHead* >(item->widget());
         if(pHead)
-            pHead->SetBackGround((i + 1) % 2);
+        {
+            pHead->SetBackGround(bDark);
+            bDark = !bDark;
+        }
     } 
 }
 
 void RDTimelineView::InsertObj(RDNode& pNewNode)
 {
-	int nIndex = GetHeadIndex(pNewNode);
-	RDObjHead* pHead = new RDObjHead(pNewNode,this);
-    pHead->SetBackGround((nIndex + 1) % 2);
-	m_pHeadLayout->insertWidget(nIndex,pHead);
+    int nIndex = GetHeadIndex(pNewNode);
+    InsertObj(pNewNode,nIndex);
     m_pSectionView->SetSceneNode(m_pScene);
     UpdateBackground(nIndex + 1);
 }
@@ -125,17 +123,45 @@ int RDTimelineView::GetHeadIndex(const RDNode& pNode)
 
 void RDTimelineView::DelObj(RDNode& pNewNode)
 {
-	for(int i = pNewNode.GetChildCount() - 1; i >=0; i++)
-	{
-		DelObj(*pNewNode.GetChild(i));
-	}	
 	int nIndex = GetHeadIndex(pNewNode);
-	QLayoutItem* item = m_pHeadLayout->takeAt(nIndex);
-	if(item)
-	{
-        QWidget *wid = item->widget();
-        delete item;
-        if (wid) wid->deleteLater();
-	}
+    int nTotalChildCount = pNewNode.GetTotalChildCount();
+
+    auto pDelObj = [](RDObjHead* pHead){delete pHead;};
+
+    for_each(m_objHead.begin() + nIndex ,m_objHead.begin() + nIndex + nTotalChildCount,pDelObj);
+    m_objHead.erase(m_objHead.begin() + nIndex ,m_objHead.begin() + nIndex + nTotalChildCount + 1);
+
+    m_pSectionView->SetSceneNode(m_pScene);
     UpdateBackground(nIndex );
+}
+
+void RDTimelineView::collapseNode(RDNode& pNode)
+{
+    int nTotalChildCount = pNode.GetTotalChildCount();
+	int nIndex = GetHeadIndex(pNode);
+    auto pSetVisible = [](RDObjHead* pHead){pHead->updateVisible();};
+    for_each(m_objHead.begin() + nIndex + 1,m_objHead.begin() + nIndex + nTotalChildCount + 1,pSetVisible);
+
+    m_pSectionView->SetSceneNode(m_pScene);
+    UpdateBackground(nIndex + 1);
+}
+
+void RDTimelineView::InsertObj(RDNode& pNewNode,int nIndex)
+{
+    RDObjHead* pHead = new RDObjHead(pNewNode,this);
+    connect(pHead, SIGNAL(collapseNode(RDNode&)), this, SLOT(collapseNode(RDNode&)));
+
+    int nRealCount = nIndex >= 0 ? nIndex : m_objHead.size();
+    pHead->SetBackGround((nRealCount + 1) % 2);
+
+    if(nIndex >= 0)
+    {
+        m_pHeadLayout->insertWidget(nIndex,pHead);
+        m_objHead.insert(m_objHead.begin() + nIndex,pHead);
+    }
+    else
+    {
+        m_pHeadLayout->addWidget(pHead);
+        m_objHead.push_back(pHead);
+    }
 }

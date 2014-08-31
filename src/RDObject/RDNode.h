@@ -16,9 +16,7 @@
 #ifndef  RDNODE_INC
 #define  RDNODE_INC
 #include <vector>
-#include <QString>
 #include <QUuid>
-#include <QMutex>
 #include "mac_define.h"
 #include <list>
 #include <map>
@@ -27,6 +25,8 @@
 #include "HVector4f.h"
 #include <QRectF>
 #include "RDSpaceConvert.h"
+#include <mutex>
+#include <string>
 
 class RDObject;
 class RDRenderData;
@@ -35,22 +35,27 @@ class RDSection;
 class RDLayer;
 
 typedef std::vector<RDSection*>::iterator RDSectionList;
+typedef std::lock_guard<std::mutex> RDSingleLock;
+
 class RDScene;
 class RDCamera;
 class RDNode
 {
 public:
-    RDNode();
-    RDNode(const QString& strName);
-    RDNode(const QString& strName,const float3& pos,RDObject* pObj);
+    RDNode() = default;
+    RDNode(const std::string& strName);
+    RDNode(const std::string& strName,const float3& pos,RDObject* pObj);
     virtual ~RDNode();
     void Lock(){ m_lock.lock();}
     void UnLock(){m_lock.unlock();}
 
     virtual void Serialize(RDFileDataStream& buffer,bool bSave);
 
-    const QString& GetName()const {return m_strName;}
+    const std::string& GetName()const {return m_strName;}
     const QUuid& GetNodeID()const{return m_NodeID;}
+    bool    collapse()const{return m_bCollapse;}
+    void    setCollapse(bool bCollapse){m_bCollapse = bCollapse;}
+    bool    isParentCollapse()const;
 
     //static pos
     const float3& GetPos()const{return m_vPos;}
@@ -66,7 +71,7 @@ public:
     void SetScale(const float3& vScale){m_vScale = vScale;}
 
     //dynamic
-    const float3& GetDynamicPos(const QString& pName)const;
+    const float3& GetDynamicPos(const std::string& pName)const;
 
     bool AddSection(const RDTime& nStoryTime,const RDTime& nLength,const QUuid& storyId);
 	RDTime GetSectionMaxLength(const QUuid& idStory)const;
@@ -78,8 +83,8 @@ public:
     const RDObject* GetObject()const{return m_pObj;}
     void SetObject(RDObject* pObj){m_pObj = pObj;}
 
-    virtual void Render(const RDTime& nTime,const QString& pRDName) ;
-    virtual void CalFrame(const RDTime& nTime,const QString& pRDName) ;
+    virtual void Render(const RDTime& nTime,const std::string& pRDName) ;
+    virtual void CalFrame(const RDTime& nTime,const std::string& pRDName) ;
 
     //child operation function
     size_t GetTotalChildCount()const;
@@ -96,51 +101,51 @@ public:
     const RDNode* GetParent()const{return m_pParent;}
     void SetParent(RDNode* pParent){m_pParent = pParent;}
 
-    RDRenderData*   GetRenderData(const QString& pName);
-    const RDRenderData*   GetRenderData(const QString& pName)const;
+    RDRenderData*   GetRenderData(const std::string& pName);
+    const RDRenderData*   GetRenderData(const std::string& pName)const;
     void            RemoveRenderData();
-    void            SetRenderScale(float fScale,const QString& pName);
 
-    RDRenderChangeLevel GetMaxChangeLevel(const QString& pName)const;
-    RDRenderChangeLevel GetMaxRenderChangeLevel(const QString& pName)const;
+    RDRenderChangeLevel GetMaxChangeLevel(const std::string& pName)const;
+    RDRenderChangeLevel GetMaxRenderChangeLevel(const std::string& pName)const;
     void SetChangeLevel(RDRenderChangeLevel nLevel);
-    RDRenderChangeLevel GetChangeLevel(const QString& pName)const;
-    RDRenderChangeLevel GetRenderChangeLevel(const QString& pName)const;
+    RDRenderChangeLevel GetChangeLevel(const std::string& pName)const;
+    RDRenderChangeLevel GetRenderChangeLevel(const std::string& pName)const;
 
     size_t GetSectionCount(const QUuid& idStory)const;
     RDSection* GetSection(const QUuid& idStory,size_t nIndex);
-    RDSection* GetCurSection(const QString& pName)const{return GetRenderData(pName)->GetCurSection();}
+    RDSection* GetCurSection(const std::string& pName)const{return GetRenderData(pName)->GetCurSection();}
 
-    virtual const matrix4x4&     GetViewProjMat(const QString& RDName);
-    RDCamera* GetCamera(const QString &strName) const;
-    RDSpaceParam GetEditSpaceParam(const QString &strName, const matrix4x4 *pWorldMat)const;
-    virtual QRectF GetSceneRt(const QString &)const;
-    const matrix4x4& GetNodeMatrix(const QString& strName)const;
+    virtual const matrix4x4&     GetViewProjMat(const std::string& RDName);
+    RDCamera* GetCamera(const std::string& strName) const;
+    RDSpaceParam GetEditSpaceParam(const std::string &strName, const matrix4x4 *pWorldMat)const;
+    virtual QRectF GetSceneRt(const std::string& strName)const;
+    const matrix4x4& GetNodeMatrix(const std::string &strName)const;
 protected:
-    virtual void    CalChildFrame(const RDTime& nTime,const QString& pRDName);
+    virtual void    CalChildFrame(const RDTime& nTime,const std::string& pRDName);
     void            MoveSection(const RDTime& nSteps, RDSectionList pStart,RDSectionList pEnd );
     void            UpdateSection(const RDTime& nFrame /*global frame*/,RDRenderData& pRD);
     RDSection*      GetLastSectionBefore(size_t nCurStoryIndex);
     RDSection*      GetSection(const QUuid& nStoryId,const RDTime& nStoryFrame);
-    virtual RDRenderData*  CreateRenderData(const QString& pName);
+    virtual RDRenderData*  CreateRenderData(const std::string& pName);
     const RDScene *GetSceneNode()const;
     const RDLayer*        GetLayerNode()const;
     bool            CalSpaceVector(const RDTime& nFrame,RDRenderData& RenderData);
     void            CalNodeMatrix(RDRenderData& RenderData);
 protected:
+    bool        m_bCollapse = false;
     float3      m_vPos;
     float3      m_vAngle;
-    float3      m_vScale;
-    QString     m_strName;
-    QUuid       m_NodeID;
+    float3      m_vScale=float3(1,1,1);
+    std::string m_strName;
+    QUuid       m_NodeID=QUuid::createUuid();
     std::vector<RDNode*> m_vecChildObj;
     std::map<QUuid,std::vector<RDSection*>> m_vecSetctionListMap;
-    std::map<QString,RDRenderData*> m_vecRenderData;
+    std::map<std::string,RDRenderData*> m_vecRenderData;
 
-    RDNode*     m_pParent;
-    RDObject*   m_pObj;
+    RDNode*     m_pParent = nullptr;
+    RDObject*   m_pObj = nullptr;
 
-    mutable QMutex m_lock;
+    mutable std::mutex m_lock;
 
     friend RDFileDataStream& operator << (RDFileDataStream& buffer,const RDNode& proj);
     friend RDFileDataStream& operator >> (RDFileDataStream& buffer,RDNode& proj);

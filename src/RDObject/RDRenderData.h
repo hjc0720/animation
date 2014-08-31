@@ -24,6 +24,7 @@
 #include "HVector3f.h"
 #include "HVector4f.h"
 #include "HMatrixQ4F.h"
+#include <string>
 
 enum RDRenderChangeLevel
 {
@@ -51,10 +52,11 @@ public:
 class RDRenderData 
 {
 public:
-    RDRenderData(RDNode& node,const RDSceneRenderData& SceneRenderData);
+    RDRenderData(const std::string& name,RDNode& node,const RDSceneRenderData& SceneRenderData);
     virtual         ~RDRenderData();
     RDRenderChangeLevel GetChangeLevel()const{return m_nChangeLevel;}
     void            SetChangeLevel(RDRenderChangeLevel nLevel);
+    void            setChildChangeLevel(RDRenderChangeLevel nLevel);
     void            ResetChangeLevel(){m_nChangeLevel = RDRender_NoChange;}
     RDRenderChangeLevel  GetRenderChangeLevel()const{return m_nRenderChangeLevel;}
     void            SetRenderChangeLevel(RDRenderChangeLevel nLevel);
@@ -73,7 +75,6 @@ public:
     const RDTime&   GetSectionTime()const{return m_nSectionTime;}
     void            SetSectionTime(const RDTime& nSectionTime){m_nSectionTime = nSectionTime;}
     virtual float   GetSceneScale()const;
-    virtual void    SetSceneScale(float fScale);
 
     const RDSceneRenderData& GetSceneRD()const{return  m_SceneRenderData;}
 
@@ -117,6 +118,7 @@ public:
     RDBuffer            m_RenderBuffer;
     RDBuffer            m_ItemBuffer;
 protected:
+    std::string         m_strName;
     RDRenderChangeLevel m_nChangeLevel;
     RDRenderChangeLevel m_nRenderChangeLevel;
     RDNode&             m_Node;

@@ -76,7 +76,7 @@ RDDocument::RDDocument(bool bCreateNewProj)
     {
         m_pProject = new RDProject(1920,1080,50);
         SetCurScene(0);
-        RDLayer* pLayer = new RDLayer(RD3DLayer,"");
+        RDLayer* pLayer = new RDLayer(RD3DLayer,"layer");
         pLayer->SetParent(GetCurScene());
         GetCurScene()->AddChild(*pLayer);
 
@@ -207,7 +207,7 @@ void RDDocument::SetCurScene(int nSceneIndex)
         pData->SetChangeLevel(RDRender_GraphicChange);
         pScene->SetWidthHeight(m_pProject->GetWidth(),m_pProject->GetHeight());
         PushTopNode(pScene);
-        pScene->SetRenderScale(m_fScale,DEFAULT_RD);
+        pScene->setRenderScale(m_fScale,DEFAULT_RD);
     }
 }
 void RDDocument::CreateTempProjDir()
@@ -329,7 +329,7 @@ void RDDocument::SetScale(float fScale)
 {
     Lock();
     m_fScale = fScale;
-    GetCurScene()->SetRenderScale(m_fScale,DEFAULT_RD);
+    GetCurScene()->setRenderScale(m_fScale,DEFAULT_RD);
     UnLock();
 }
 void RDDocument::AddUndoCommand(RDUndoCommand* cmd)

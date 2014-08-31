@@ -17,7 +17,6 @@
 #ifndef  RDSCENE_INC
 #define  RDSCENE_INC
 #include <QColor>
-#include <QString>
 #include "RDNode.h"
 #include "RDResource.h"
 #include <map>
@@ -46,14 +45,14 @@ class RDScene: public RDNode
 {
 public:
     RDScene();
-    RDScene(const QString& strName);
+    RDScene(const std::string& strName);
     virtual ~RDScene();
     virtual void Serialize(RDFileDataStream& buffer,bool bSave);
     void SetWidthHeight(int nWidth,int nHeight);
     void SetBackType(RDScene_BackType nType,const void* pData);
     const RDSceneData& GetBackData()const {return m_BackData;}
-    virtual void Render(const RDTime& nTime,const QString& pRDName);
-    virtual void CalFrame(const RDTime& nTime,const QString& pRDName);
+    virtual void Render(const RDTime& nTime,const std::string& pRDName);
+    virtual void CalFrame(const RDTime& nTime,const std::string& pRDName)override;
     void CreateRenderData(RDRenderData& RenderData);
     //void ReleaseRenderData(RDRenderData& RenderData);
     void CreateSceneNodeMap();
@@ -70,14 +69,14 @@ public:
     RDStory* GetStory(size_t nIndex);
 	RDTime  GetSceneLength()const;
 	void RefreshStoryLength();
+    void            setRenderScale(float fScale,const std::string& pName);
 
     virtual void AddChild(RDNode& pChild);
 
-    virtual QRectF GetSceneRt(const QString &strName) const;
+    virtual QRectF GetSceneRt(const std::string& strName) const;
 protected:
     void RenderImage(RDSceneRenderData& pSceneData,unsigned long nTime);
-    void BlendChild(const QString& pRDName);
-    RDRenderData*  CreateRenderData(const QString& pName);
+    RDRenderData*  CreateRenderData(const std::string& pName)override;
 protected:
     RDSceneData m_BackData;
     std::map<QUuid,const RDNode*> m_NodeMap;

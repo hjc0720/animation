@@ -33,7 +33,7 @@ class RDLayer : public RDNode
 {
 public:
     RDLayer(){};
-    RDLayer(RDLayerType nType,const QString& strName);
+    RDLayer(RDLayerType nType,const std::string& strName);
     virtual ~RDLayer();
     virtual void Serialize(RDFileDataStream& buffer,bool bSave);
 
@@ -49,8 +49,8 @@ public:
     const RDCamera* GetCamera(size_t i)const{return m_vecCameraObj[i];}
     RDCamera* GetCamera(size_t i){return m_vecCameraObj[i];}
 
-    RDCamera*   GetCurCamera(const QString& pRDName) const;
-    void        SetCurCamera(const QString& pRDName,size_t nIndex);
+    RDCamera*   GetCurCamera(const std::string& pRDName) const;
+    void        SetCurCamera(const std::string& pRDName,size_t nIndex);
 
     //light function
     void AddLight(RDLight* pLight){m_vecLight.push_back(pLight);}
@@ -60,13 +60,13 @@ public:
     RDLight*    GetLight(size_t i){return m_vecLight[i];}
     size_t      GetLightTypeCount(RDLayerType nType);
 
-    RDUBO*      GetLightParam(const QString& name)const;
+    RDUBO*      GetLightParam(const std::string& name)const;
 protected:
     RDCamera* GetCurCamera(const RDLayerRenderData& pLayerRD) const;
-    float2      CalObjMinMax(const QString& pRDName);
-    virtual RDRenderData*  CreateRenderData(const QString& pName);
+    float2      CalObjMinMax(const std::string& pRDName);
+    virtual RDRenderData*  CreateRenderData(const std::string &pName)override;
 
-    virtual void    CalChildFrame(const RDTime& nTime,const QString& pRDName);
+    virtual void    CalChildFrame(const RDTime& nTime,const std::string& pRDName)override;
 protected:
     RDLayerType m_nType;
     std::vector<RDCamera*> m_vecCameraObj;

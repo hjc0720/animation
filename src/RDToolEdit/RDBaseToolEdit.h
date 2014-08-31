@@ -33,7 +33,7 @@ public:
 // event process
     virtual bool OnMouseMove(const float3& ,Qt::MouseButtons,const QString&){ return false;}
     virtual bool OnMousePress(const Qt::MouseButtons& ,const float3& ,const QString&) { return false;}
-    virtual bool OnMouseRelease(const Qt::MouseButtons& ,const float3&,const QString& ) { return false;}
+    virtual bool OnMouseRelease(const Qt::MouseButtons& ,const float3& ,const std::string& ) { return false;}
     virtual bool OnKeyPress(int ) { return false;}
 protected:
     void   AddSelectItem(RDNode& selItem);

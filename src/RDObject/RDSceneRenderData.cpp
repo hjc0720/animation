@@ -16,8 +16,10 @@
 
 #include "RDSceneRenderData.h"
 #include "RDScene.h"
-RDSceneRenderData::RDSceneRenderData(RDNode& obj)
-    :RDRenderData(obj,*this)
+#include <string>
+
+RDSceneRenderData::RDSceneRenderData(const std::string& name,RDNode& obj)
+    :RDRenderData(name,obj,*this)
      ,m_nWidth(0)
      ,m_nHeight(0)
      ,m_fScale(1)
@@ -27,8 +29,9 @@ RDSceneRenderData::RDSceneRenderData(RDNode& obj)
     scene.CreateRenderData(*this);
     m_bPlay = false;
 }
-RDSceneRenderData::RDSceneRenderData(int nWidth,int nHeight,RDNode& obj)
-    :RDRenderData(obj,*this)
+
+RDSceneRenderData::RDSceneRenderData(const std::string& name,int nWidth,int nHeight,RDNode& obj)
+    :RDRenderData(name,obj,*this)
      ,m_nWidth(nWidth)
      ,m_nHeight(nHeight)
      ,m_fScale(1)

@@ -91,6 +91,22 @@ RDFileDataStream& operator >> (RDFileDataStream& buffer,RDMd5& md5)
     return buffer;
 }
 
+RDFileDataStream& operator << (RDFileDataStream& buffer,const std::string& str)
+{
+    buffer.writeBytes(str.c_str(), str.length());
+    return buffer;
+}
+
+RDFileDataStream& operator >> (RDFileDataStream& buffer,std::string& str)
+{
+    char* pData = nullptr;
+    uint length = 0;
+    buffer.readBytes(pData,length);
+    str = std::string(pData,length);
+    return buffer;
+}
+
+//================================================================================
 QDebug operator<<(QDebug dbg, const matrix4x4 &mat)
 {
     for(int i = 0; i < 4; i++)
@@ -108,5 +124,12 @@ QDebug operator<<(QDebug dbg, const float3 & vec)
 {
     for(int i = 0; i < 3; i++)
         dbg.nospace() << vec.GetData()[i] << "\t";
+    return dbg.space();
+}
+
+QDebug operator<<(QDebug dbg, const std::string & vec)
+{
+    if(!vec.empty())
+        dbg << vec.c_str();
     return dbg.space();
 }

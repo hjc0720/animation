@@ -56,12 +56,12 @@ RDImageCell::RDImageCell(QWidget* parent)
     pHLayout = new QHBoxLayout();
     QLabel* pWidth = new QLabel(tr("Width"));
     m_pWidth = new QSpinBox();
-    connect(m_pWidth, SIGNAL(valueChanged(int)), this, SLOT(CellChange()));
+    connect(m_pWidth, SIGNAL(editingFinished()), this, SLOT(CellChange()));
     m_pWidth->setMinimum(1);
     QLabel* pHeight = new QLabel(tr("Height"));
     m_pHeight = new QSpinBox();
     m_pHeight->setMinimum(1);
-    connect(m_pHeight, SIGNAL(valueChanged(int)), this, SLOT(CellChange()));
+    connect(m_pHeight, SIGNAL(editingFinished()), this, SLOT(CellChange()));
     pHLayout->addWidget(pWidth);
     pHLayout->addWidget(m_pWidth);
     pHLayout->addStretch();

@@ -24,9 +24,9 @@
 class RDSceneRenderData : public RDRenderData
 {
 public:
-    RDSceneRenderData(RDNode& obj);
-    RDSceneRenderData(int nWidth,int nHeight,RDNode& obj);
-    virtual void SetSceneScale(float fScale)override;
+    RDSceneRenderData(const std::string& name,RDNode& obj);
+    RDSceneRenderData(const std::string& name,int nWidth,int nHeight,RDNode& obj);
+    void SetSceneScale(float fScale);
     virtual float GetSceneScale()const override{ return m_fScale;}
     void    SetWidthHeight(int nWidth,int nHeight){m_nWidth = nWidth;m_nHeight = nHeight;}
 

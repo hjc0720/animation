@@ -45,7 +45,7 @@ public:
     virtual void CalFrame(const RDTime& nTime,RDRenderData& RenderData) ;
     virtual void UpdateBound(const RDTime& nTime,RDRenderData& RenderData) ;
 
-    virtual bool HitTest(const float3& vScenePt,const RDNode& pNode,const QString& RDName) const;
+    virtual bool HitTest(const float3& vScenePt,const RDNode& pNode,const std::string& RDName) const override;
 
     virtual void Serialize(RDFileDataStream& buffer,bool bSave);
 protected:

@@ -17,7 +17,6 @@
 #include <typeinfo>
 #include "RDSceneRenderData.h"
 #include <iostream>
-#include <QMutexLocker>
 #include "mac_define.h"
 #include "RDResource.h"
 #include "RDResourceManager.h"
@@ -65,8 +64,8 @@ RDScene::RDScene()
 {
     memset(&m_BackData,0,sizeof(RDSceneData));
 }
-RDScene::RDScene(const QString& strName)
-    :RDNode(strName,float3(0,0,0),NULL)
+RDScene::RDScene(const std::string& strName)
+    :RDNode(strName,float3(0,0,0),nullptr)
      //,m_nSceneVersion(g_nSceneVersion)
 {
     unsigned long newColor = 0xffffffff;
@@ -88,22 +87,14 @@ RDScene::~RDScene()
 }
 void RDScene::CreateRenderData(RDRenderData& RenderData)
 {
-    QMutexLocker locker(&m_lock);
+    RDSingleLock locker(m_lock);
     RDScenePrivateData* pPrivateData = new RDScenePrivateData;
     RenderData.SetPrivateData(pPrivateData);
 }
 
-//void RDScene::ReleaseRenderData(RDRenderData& RenderData)
-//{
-    //QMutexLocker locker(&m_lock);
-    //RDScenePrivateData* pPrivateData = (RDScenePrivateData* )RenderData.GetPrivateData();
-    //SAFE_DELETE(pPrivateData);
-    //RenderData.SetPrivateData(0);
-//}
-
 void RDScene::SetBackType(RDScene_BackType nType,const void* pData)
 {
-    QMutexLocker locker(&m_lock);
+    RDSingleLock locker(m_lock);
     m_BackData.m_nBackType = nType;
     switch(nType)
     {
@@ -117,9 +108,9 @@ void RDScene::SetBackType(RDScene_BackType nType,const void* pData)
     SetChangeLevel(RDRender_GraphicChange);
 }
 
-void RDScene::Render(const RDTime& nTime,const QString& pRDName)
+void RDScene::Render(const RDTime& nTime,const std::string& pRDName)
 {
-    QMutexLocker locker(&m_lock);
+    RDSingleLock locker(m_lock);
     for(size_t i = 0; i < GetChildCount(); i++)
     {
         GetChild(i)->Render(nTime,pRDName);
@@ -154,9 +145,9 @@ void RDScene::RenderImage(RDSceneRenderData& /*pSceneData*/,unsigned long )
     //pSceneData.m_RenderBuffer.Draw(dst,*pResource->GetBuffer(),src);
 }
 
-void RDScene::CalFrame(const RDTime& nTime,const QString& pRDName)
+void RDScene::CalFrame(const RDTime& nTime,const std::string& pRDName)
 {
-    QMutexLocker locker(&m_lock);
+    RDSingleLock locker(m_lock);
     RDRenderData& RenderData = *GetRenderData(pRDName);
     RenderData.ResetDirty();
     RDSceneRenderData& pSceneData = dynamic_cast<RDSceneRenderData&>(RenderData);
@@ -183,7 +174,7 @@ void RDScene::CalFrame(const RDTime& nTime,const QString& pRDName)
     for(size_t i = 0; i < GetChildCount(); i++)
     {
         RDNode* pChildNode = GetChild(i);
-        pChildNode ->CalFrame(nTime,pRDName);
+        pChildNode->CalFrame(nTime,pRDName);
         RenderData.UnionDirty(pChildNode->GetRenderData(pRDName)->GetDirty());
         //qDebug() << "Scene Dirty" << RenderData.GetChild(i).GetDirty();
     }
@@ -222,22 +213,6 @@ void RDScene::RemoveSceneNodeMap(const RDNode& pRemoveNode)
 {
     //m_NodeMap[pRemoveNode.GetNodeID()] = NULL;
     m_NodeMap.erase(pRemoveNode.GetNodeID());
-}
-
-void RDScene::BlendChild(const QString& pRDName)
-{
-    RDSceneRenderData& pSceneData = *dynamic_cast<RDSceneRenderData*>(GetRenderData(pRDName));
-    for(size_t i = 0; i < m_vecChildObj.size();i++)
-    {
-        RDNode* pNode = m_vecChildObj[i];
-        RDRenderData* pRenderData = pNode->GetRenderData(pRDName);
-        RDBuffer& pChildBuffer = GetChild(i)->GetRenderData(pRDName)->m_RenderBuffer;
-        float3 bufferPos;
-        RDSceneToBuffer(bufferPos,pRenderData->GetPos() * pSceneData.GetSceneScale(),-pSceneData.GetNowWidth()/ 2,pSceneData.GetNowHeight()/ 2);
-        QRectF dst(bufferPos.x(),bufferPos.y(),pChildBuffer.GetWidth(),pChildBuffer.GetHeight());
-        QRectF src(0,0,pChildBuffer.GetWidth(),pChildBuffer.GetHeight());
-        pSceneData.m_RenderBuffer.Draw(dst,pChildBuffer,src);
-    }
 }
 
 bool RDScene::TriggerStory(const RDTime& nFrame,RDSceneRenderData& pSceneData)
@@ -298,9 +273,9 @@ size_t RDScene::GetCurStoryIndex(const RDSceneRenderData& pSceneData)const
     return pData->GetCurStoryIndex();
 }
 
-RDRenderData*  RDScene::CreateRenderData(const QString& pName)
+RDRenderData*  RDScene::CreateRenderData(const std::string& pName)
 {
-    RDRenderData* pRenderData = new RDSceneRenderData(*this);
+    RDRenderData* pRenderData = new RDSceneRenderData(pName,*this);
     m_vecRenderData[pName] = pRenderData;
     return pRenderData;
 }
@@ -359,7 +334,7 @@ void RDScene::AddChild(RDNode& pChild)
     }
 }
 
-QRectF RDScene::GetSceneRt(const QString& strName)const
+QRectF RDScene::GetSceneRt(const std::string& strName)const
 {
     const RDSceneRenderData* RenderData = dynamic_cast<const RDSceneRenderData*>(GetRenderData(strName));
     return QRectF(0,0,RenderData->GetWidth(),RenderData->GetHeight());
@@ -367,7 +342,7 @@ QRectF RDScene::GetSceneRt(const QString& strName)const
 
 void RDScene::Serialize(RDFileDataStream& buffer,bool bSave)
 {
-    QMutexLocker locker(&m_lock);
+    RDSingleLock locker(m_lock);
 	qDebug() <<"begin to save scene" ;
     RDNode::Serialize(buffer,bSave);
     int nVersion = 0;
@@ -393,4 +368,10 @@ void RDScene::Serialize(RDFileDataStream& buffer,bool bSave)
         }
     }
 	qDebug() <<"end to save scene" ;
+}
+
+void            RDScene::setRenderScale(float fScale,const std::string& pName)
+{
+    RDSceneRenderData* pSceneData = dynamic_cast<RDSceneRenderData*>(GetRenderData(pName));
+    pSceneData->SetSceneScale(fScale);
 }

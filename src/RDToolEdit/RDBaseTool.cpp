@@ -33,7 +33,7 @@ bool RDBaseTool::OnMousePress(const Qt::MouseButtons& nButtonState,const float3&
         return m_pActiveEdit->OnMousePress(nButtonState,ptScene,strName);
     return false;
 }
-bool RDBaseTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ptScene,const QString& strName)
+bool RDBaseTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ptScene,const std::string& strName)
 {
     if(m_pActiveEdit)
         return m_pActiveEdit->OnMouseRelease(nButtonState,ptScene,strName);

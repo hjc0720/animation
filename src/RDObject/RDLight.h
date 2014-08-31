@@ -40,13 +40,13 @@ public:
     RDLight()
         :m_bEnable(true),m_nType(RDPointLight),m_fIntensity(1),m_pSpotParam(nullptr)
     {};
-    RDLight(const QString& strName,RDLightType nType,const float3& vPos);
+    RDLight(const std::string& strName,RDLightType nType,const float3& vPos);
 
     void SetLigthIntensity(float fIntensity){m_fIntensity = fIntensity;}
     float GetLigthIntensity(){return m_fIntensity; }
 
     virtual void Serialize(RDFileDataStream& buffer,bool bSave);
-    size_t    GenerateShaderParam(char* pBuffer,const QString& name);
+    size_t    GenerateShaderParam(char* pBuffer,const std::string& name);
     RDLightType GetLightType()const{return m_nType;}
 protected:
     ~RDLight(){}

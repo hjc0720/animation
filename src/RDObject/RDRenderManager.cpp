@@ -23,7 +23,7 @@
 
 bool RenderManager::RenderScene(const QPointF& ,const QRectF& ,RDTime nTime)
 {
-    if( m_RenderName.isEmpty())
+    if( m_RenderName.empty())
         return false;
     RDRenderData* pSceneRD = m_pScene->GetRenderData(m_RenderName);
     if(m_pScene->GetMaxChangeLevel(m_RenderName) == RDRender_NoChange && nTime == pSceneRD->GetTime())

@@ -30,7 +30,7 @@ public:
     ~RDProject();
     const QString& GetFilePath()const{return m_strFilePath;}
     void SetFilePath(const QString& newFilePath){m_strFilePath = newFilePath;}
-    void CreateNewScene(const QString& strSceneName);
+    void CreateNewScene(const std::string& strSceneName);
     int GetWidth()const{return m_nWidth;}
     int GetHeight()const{return m_nHeight;}
     RDScene* GetScene(int nIndex){try{return m_SceneList.at(nIndex);}catch(std::out_of_range& ){return 0;}}

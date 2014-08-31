@@ -55,7 +55,7 @@ bool RDImageTool::OnMousePress(const Qt::MouseButtons& nButtonState,const float3
     return true;
 }
 
-bool RDImageTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ptScene,const QString& strName)
+bool RDImageTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ptScene,const std::string& strName)
 {
     static int nObjIndex = 1; 
     if(nButtonState.testFlag(Qt::LeftButton) || !m_bDragged)
@@ -78,7 +78,7 @@ bool RDImageTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const floa
     pNewObject->SetHeight(m_nImageHeight);
     QString imageName( QString(QObject::tr("Image %1")).arg(nObjIndex));
     qDebug() << vPos;
-    RDNode* pNewNode = new RDNode(imageName,vPos,pNewObject);
+    RDNode* pNewNode = new RDNode(imageName.toStdString(),vPos,pNewObject);
 	pNewNode->SetParent(m_pFieldNode);
 	pNewObject->SetNode(pNewNode);
     AddChild(*m_pFieldNode,*pNewNode);

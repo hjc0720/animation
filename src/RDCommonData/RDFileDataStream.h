@@ -49,6 +49,8 @@ RDFileDataStream& operator << (RDFileDataStream& ,const float3& );
 RDFileDataStream& operator >> (RDFileDataStream& ,float3& );
 RDFileDataStream& operator << (RDFileDataStream& ,const RDMd5& );
 RDFileDataStream& operator >> (RDFileDataStream& ,RDMd5& );
+RDFileDataStream& operator << (RDFileDataStream& ,const std::string& );
+RDFileDataStream& operator >> (RDFileDataStream& ,std::string& );
 
 template<typename T>
 size_t RDSaveData(char*& pBuffer,const T& data)
@@ -94,5 +96,6 @@ size_t RDLoadDataArray(char*& pBuffer,T* data,int nCount)
 class matrix4x4;
 QDebug operator<<(QDebug dbg, const matrix4x4 &mat);
 QDebug operator<<(QDebug dbg, const float3 & vec);
+QDebug operator<<(QDebug dbg, const std::string & vec);
 
 #endif   // ----- #ifndef rddatastream_INC  -----

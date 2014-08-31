@@ -18,6 +18,7 @@
 #define  RDOBJHEAD_INC
 #include <QWidget>
 #include <QUuid>
+#include <string>
 
 class QLabel;
 class RDNode;
@@ -29,11 +30,16 @@ public:
 		RDObjHead(RDNode& pNode,QWidget* parent);
         void SetBackGround(bool bDark){setBackgroundRole(bDark?QPalette::AlternateBase : QPalette::Base);};
         virtual void paintEvent(QPaintEvent * /*e*/);
+        void updateVisible();
+signals:
+        void    collapseNode(RDNode& pNode);
 protected:
 		int CalSpaceCount(const RDNode& pNode);
+        void mousePressEvent ( QMouseEvent * event ) override;
 protected:
-		QLabel* m_pObjName;
+        std::string m_strName;
 		QUuid 	m_NodeUuid;
 		RDNode* m_pNode;
+        int     m_nSpace;
 };
 #endif   // ----- #ifndef rdobjhead_INC  -----

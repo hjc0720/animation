@@ -89,6 +89,8 @@ void RDSectionView::SetSceneNode(RDScene* pScene)
 
 void RDSectionView::AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& idStory)
 {
+    if(pNode->collapse())
+        return;
     size_t nChildCount = pNode->GetChildCount();
     for(size_t  i = 0; i < nChildCount; i++)
     {

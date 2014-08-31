@@ -31,7 +31,7 @@ public:
 // event process
     virtual bool OnMouseMove(const float3& , Qt::MouseButtons, const QString &strName);
     virtual bool OnMousePress(const Qt::MouseButtons& nButtonState, const float3& ptScene, const QString &strName);
-    virtual bool OnMouseRelease(const Qt::MouseButtons& , const float3& , const QString &strName) ;
+    virtual bool OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ptScene,const std::string& strName) override;
     virtual bool OnKeyPress(int nKeyState);
 protected:
     bool            m_bEnableEdit;

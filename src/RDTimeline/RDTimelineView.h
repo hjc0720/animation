@@ -25,6 +25,7 @@ class QVBoxLayout;
 class QScrollArea;
 class RDTimeRuler;
 class RDSectionView;
+class RDObjHead;
 
 class RDTimelineView :public QDockWidget
 {
@@ -35,16 +36,19 @@ signals:
         void    FrameChanged(const RDTime& );
         void    SectionChanged();
 protected:
-		void RDFillHead(RDNode& pNode,bool bDark = true);
+		void RDFillHead(RDNode& pNode);
 		int GetHeadIndex(const RDNode& pNode);
         void UpdateBackground(int nStartIndex);
+        void InsertObj(RDNode& pNewNode,int nIndex);
 protected slots:
 		void InsertObj(RDNode& pNewNode);
 		void DelObj(RDNode& pNewNode);
+        void collapseNode(RDNode& pNode);
 protected:
 		RDScene* m_pScene;
 		QScrollArea* m_pHead;
         RDSectionView* m_pSectionView;
 		QVBoxLayout* m_pHeadLayout;
+        std::vector<RDObjHead*> m_objHead;
 };
 #endif   // ----- #ifndef rdtimeline_INC  -----

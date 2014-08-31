@@ -22,7 +22,7 @@
 
 RDObjectCreator<RDLight,false> lightCreator;
 
-RDLight::RDLight(const QString& strName,RDLightType nType,const float3& vPos)
+RDLight::RDLight(const std::string& strName,RDLightType nType,const float3& vPos)
     :RDNode(strName, vPos,nullptr)
      ,m_bEnable(true)
      ,m_nType(nType)
@@ -38,7 +38,7 @@ RDLight::RDLight(const QString& strName,RDLightType nType,const float3& vPos)
 
 void RDLight::Serialize(RDFileDataStream& buffer,bool bSave)
 {
-    QMutexLocker locker(&m_lock);
+    RDSingleLock locker(m_lock);
     int nVersion = 0;
     buffer.Serialize(nVersion,bSave);
     buffer.Serialize(m_bEnable,bSave);
@@ -56,7 +56,7 @@ void RDLight::Serialize(RDFileDataStream& buffer,bool bSave)
     }
 }
 
-size_t    RDLight::GenerateShaderParam(char* pBuffer,const QString& name)
+size_t    RDLight::GenerateShaderParam(char* pBuffer,const std::string& name)
 {
     if(!GetCurSection(name))
         return 0;

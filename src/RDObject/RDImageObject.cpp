@@ -152,7 +152,7 @@ void RDImageObject::CalFrame(const RDTime& time,RDRenderData& RenderData)
     pPrivateData->m_pMaterial->UpdateFrame(time,0,0,0);
 }
 
-bool RDImageObject::HitTest(const float3& vScenePt,const RDNode& pNode,const QString& RDName) const
+bool RDImageObject::HitTest(const float3& vScenePt,const RDNode& pNode,const std::string& RDName) const
 {
     const RDRenderData* pRenderData = pNode.GetRenderData(RDName);
     const RDImagePrivateData* pPrivateData = dynamic_cast<const RDImagePrivateData*>( pRenderData->GetPrivateData());

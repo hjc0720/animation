@@ -32,10 +32,12 @@ RDSelectTool::RDSelectTool()
 {
 
 }
+
 QIcon RDSelectTool::GetToolIcon() 
 {
     return QIcon(":/select_tool");
 }
+
 bool RDSelectTool::OnMouseMove(const float3& vMov,Qt::MouseButtons buttons,const QString&)
 {
     RDToolManager* pManager = RDToolManager::GetToolManager();
@@ -80,6 +82,7 @@ bool RDSelectTool::OnMouseMove(const float3& vMov,Qt::MouseButtons buttons,const
     }
     return true;
 }
+
 bool RDSelectTool::OnMousePress(const Qt::MouseButtons& nButtonState,const float3& ptScene,const QString&)
 {
     if(!nButtonState.testFlag(Qt::LeftButton))
@@ -99,7 +102,8 @@ bool RDSelectTool::OnMousePress(const Qt::MouseButtons& nButtonState,const float
     m_bBeginMov = true;
     return true;
 }
-bool RDSelectTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ,const QString&)
+
+bool RDSelectTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ,const std::string &)
 {
     if(nButtonState.testFlag(Qt::LeftButton))
         return false;

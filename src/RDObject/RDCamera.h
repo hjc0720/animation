@@ -30,17 +30,17 @@ class RDCamera :public RDNode
 {
 public:
     RDCamera(){};
-    RDCamera(const QString& strName,uint nHeight,RDProjectType nType);
+    RDCamera(const std::string& strName,uint nHeight,RDProjectType nType);
     virtual void Serialize(RDFileDataStream& buffer,bool bSave);
-    virtual void CalFrame(const RDTime& nTime,const QString& pRDName) ;
-    void    UpdateProject(const QString& pRDName,QRectF& rt,float fZNear,float fFar);
+    virtual void CalFrame(const RDTime& nTime,const std::string& pRDName) override;
+    void    UpdateProject(const std::string& pRDName,QRectF& rt,float fZNear,float fFar);
 
-    const matrix4x4&    GetViewMatrix(const QString& pRDName);
-    const matrix4x4&    GetRenderProjMatrix(const QString& pRDName);
-    const matrix4x4&    GetEditProjMatrix(const QString& pRDName);
-    virtual const matrix4x4&    GetViewProjMat(const QString& pRDName);
+    const matrix4x4&    GetViewMatrix(const std::string& pRDName);
+    const matrix4x4&    GetRenderProjMatrix(const std::string& pRDName);
+    const matrix4x4&    GetEditProjMatrix(const std::string &pRDName);
+    virtual const matrix4x4&    GetViewProjMat(const std::string& pRDName)override;
 protected:
-    virtual RDRenderData*  CreateRenderData(const QString& pName);
+    virtual RDRenderData*  CreateRenderData(const std::string& pName)override;
 protected:
     RDProjectType   m_nProjType;
     float3  m_vUp;

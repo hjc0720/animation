@@ -40,7 +40,7 @@ RDProject::~RDProject()
     }
 }
 
-void RDProject::CreateNewScene(const QString& strSceneName)
+void RDProject::CreateNewScene(const std::string& strSceneName)
 {
    RDScene* pscene = new RDScene(strSceneName);
    m_SceneList.push_back(pscene);

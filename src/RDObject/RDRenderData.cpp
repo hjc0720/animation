@@ -21,9 +21,10 @@
 #include "mac_define.h"
 #include "RDScene.h"
 
-RDRenderData::RDRenderData(RDNode& node,const RDSceneRenderData& SceneRenderData)
-     :m_RenderBuffer(0,0)
+RDRenderData::RDRenderData(const std::string& name,RDNode& node,const RDSceneRenderData& SceneRenderData)
+        :m_RenderBuffer(0,0)
      ,m_ItemBuffer(0,0)
+     ,m_strName(name)
      ,m_nChangeLevel(RDRender_New)
      ,m_nRenderChangeLevel(RDRender_New)
      ,m_Node(node)
@@ -43,15 +44,25 @@ RDRenderData::~RDRenderData()
         m_Node.GetObject()->ReleaseRenderData(*this);
     SAFE_DELETE(m_pPrivateData);
 }
+
 float RDRenderData::GetSceneScale()const
 { 
     return m_SceneRenderData.GetSceneScale();
 }
+
+void            RDRenderData::setChildChangeLevel(RDRenderChangeLevel nLevel)
+{
+    m_nChangeLevel = nLevel > m_nChangeLevel ? nLevel : m_nChangeLevel;
+    for(size_t i = 0; i < m_Node.GetChildCount();i++)
+    {
+        RDRenderData* pRender = m_Node.GetChild(i)->GetRenderData(m_strName);
+        pRender->setChildChangeLevel(nLevel);
+    }
+}
+
 void RDRenderData::SetChangeLevel(RDRenderChangeLevel nLevel)
 {
-    Lock();
     m_nChangeLevel = nLevel > m_nChangeLevel ? nLevel : m_nChangeLevel;
-    UnLock();
 }
 
 void RDRenderData::SetRenderChangeLevel(RDRenderChangeLevel nLevel)
@@ -59,10 +70,6 @@ void RDRenderData::SetRenderChangeLevel(RDRenderChangeLevel nLevel)
     m_nRenderChangeLevel = nLevel > m_nRenderChangeLevel ? nLevel : m_nRenderChangeLevel;
 }
 
-void RDRenderData::SetSceneScale(float )
-{
-    SetChangeLevel(RDRender_GraphicChange);
-}
 const RDObject* RDRenderData::GetObject()const
 { 
     return m_Node.GetObject();

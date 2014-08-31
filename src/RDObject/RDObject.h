@@ -49,7 +49,7 @@ public:
 
     virtual void Serialize(RDFileDataStream& buffer,bool bSave);
 
-    virtual bool HitTest(const float3& vScenePt,const RDNode& pNode,const QString& RDName)const = 0;
+    virtual bool HitTest(const float3& vScenePt,const RDNode& pNode,const std::string& RDName)const = 0;
 
 protected:
     QUuid  m_ObjID;

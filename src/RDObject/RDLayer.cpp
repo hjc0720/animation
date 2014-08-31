@@ -35,8 +35,8 @@ class RDLayerRenderData :public RDRenderData
 {
     friend RDLayer;
 public:
-    RDLayerRenderData(RDNode& node,const RDSceneRenderData& SceneRenderData)
-        :RDRenderData(node,SceneRenderData)
+    RDLayerRenderData(const std::string& name,RDNode& node,const RDSceneRenderData& SceneRenderData)
+        :RDRenderData(name,node,SceneRenderData)
          ,m_pLightParam(nullptr)
          ,m_nCurCameraID(0)
     { 
@@ -51,18 +51,17 @@ protected:
     size_t m_nTypeLightCount[RDLightTypeCount]; 
 };
 
-RDLayer::RDLayer(RDLayerType nType,const QString& strName)
+RDLayer::RDLayer(RDLayerType nType,const std::string& strName)
     :RDNode(strName)
      ,m_nType(nType)
 {
-     m_strName = strName;
-     RDCamera* pCamera = new RDCamera("camera",1080,PerspectiveProject);
-     pCamera->SetParent(this);
-     m_vecCameraObj.push_back(pCamera);
+    RDCamera* pCamera = new RDCamera("camera",1080,PerspectiveProject);
+    pCamera->SetParent(this);
+    m_vecCameraObj.push_back(pCamera);
 
-     RDLight* pLight = new RDLight("light",RDPointLight,float3(0,100,-100));
-     pLight->SetParent(this);
-     m_vecLight.push_back(pLight);
+    RDLight* pLight = new RDLight("light",RDPointLight,float3(0,100,-100));
+    pLight->SetParent(this);
+    m_vecLight.push_back(pLight);
 }
 
 RDNode* RDLayer::GetChild(size_t i)
@@ -99,7 +98,7 @@ RDCamera* RDLayer::RemoveCamera(size_t i)
     return pRemove;
 }
 
-float2      RDLayer::CalObjMinMax(const QString& pRDName)
+float2      RDLayer::CalObjMinMax(const std::string& pRDName)
 {
     std::stack<RDNode*> nodeSt;
 
@@ -142,16 +141,15 @@ float2      RDLayer::CalObjMinMax(const QString& pRDName)
     return vNearFar;
 }
 
-RDRenderData *RDLayer::CreateRenderData(const QString &pName)
+RDRenderData *RDLayer::CreateRenderData(const std::string &pName)
 {
-    QMutexLocker locker(&m_lock);
     const RDScene* pScene = GetSceneNode();
-    RDRenderData* pRenderData = new RDLayerRenderData(*this,*dynamic_cast<const RDSceneRenderData*>(pScene->GetRenderData(pName)));
+    RDRenderData* pRenderData = new RDLayerRenderData(pName,*this,*dynamic_cast<const RDSceneRenderData*>(pScene->GetRenderData(pName)));
     m_vecRenderData[pName] = pRenderData;
     return pRenderData;
 }
 
-void    RDLayer::CalChildFrame(const RDTime& nTime,const QString& pRDName)
+void    RDLayer::CalChildFrame(const RDTime& nTime,const std::string& pRDName)
 {
     RDLayerRenderData* pLayerRD = dynamic_cast<RDLayerRenderData*>(GetRenderData(pRDName));
     std::for_each(m_vecCameraObj.begin(),m_vecCameraObj.end(),
@@ -206,13 +204,13 @@ RDCamera* RDLayer::GetCurCamera(const RDLayerRenderData& pLayerRD)const
     return m_vecCameraObj[pLayerRD.GetCurCameraID()];
 }
 
-RDCamera* RDLayer::GetCurCamera(const QString& pRDName)const
+RDCamera* RDLayer::GetCurCamera(const std::string& pRDName)const
 {
     const RDLayerRenderData* pLayerRD = dynamic_cast<const RDLayerRenderData*>(GetRenderData(pRDName));
     return GetCurCamera(*pLayerRD);
 }
 
-void        RDLayer::SetCurCamera(const QString& pRDName,size_t nIndex)
+void        RDLayer::SetCurCamera(const std::string& pRDName,size_t nIndex)
 {
     RDLayerRenderData* pLayerRD = dynamic_cast<RDLayerRenderData*>(GetRenderData(pRDName));
     pLayerRD->SetCurCameraID(nIndex);
@@ -277,7 +275,7 @@ RDLight* RDLayer::RemoveLight(size_t nIndex)
     return pLight ;
 }
 
-RDUBO*      RDLayer::GetLightParam(const QString& name)const
+RDUBO*      RDLayer::GetLightParam(const std::string& name)const
 {
     const RDLayerRenderData* pLayerRD = dynamic_cast<const RDLayerRenderData*>(GetRenderData(name));
     return pLayerRD->m_pLightParam;

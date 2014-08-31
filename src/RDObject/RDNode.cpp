@@ -35,33 +35,15 @@ const int g_nNowVersion = g_nFirstVersion;
 
 RDObjectCreator<RDNode,false> nodeCreator;
 
-RDNode::RDNode()
-      :m_vScale(1,1,1)
-     ,m_NodeID(QUuid::createUuid())
-	 ,m_pParent(nullptr)
-     ,m_pObj(nullptr)
-     ,m_lock(QMutex::Recursive)
+RDNode::RDNode(const std::string& strName)
+    :m_strName(strName)
 {
 }
 
-RDNode::RDNode(const QString& strName)
-      :m_vScale(1,1,1)
+RDNode::RDNode(const std::string& strName,const float3& pos,RDObject* pObj)
+     :m_vPos(pos)
      ,m_strName(strName)
-     ,m_NodeID(QUuid::createUuid())
-	 ,m_pParent(nullptr)
-     ,m_pObj(nullptr)
-     ,m_lock(QMutex::Recursive)
-{
-}
-
-RDNode::RDNode(const QString& strName,const float3& pos,RDObject* pObj)
-    :m_vPos(pos)
-      ,m_vScale(1,1,1)
-     ,m_strName(strName)
-     ,m_NodeID(QUuid::createUuid())
-	 ,m_pParent(nullptr)
      ,m_pObj(pObj)
-     ,m_lock(QMutex::Recursive)
 {
 }
 
@@ -95,9 +77,9 @@ RDNode* RDNode::RemoveChild(size_t i)
     m_vecChildObj.erase(m_vecChildObj.begin() + i);
     return pRemove;
 }
-void RDNode::Render(const RDTime& nTime,const QString& pRDName) 
+void RDNode::Render(const RDTime& nTime,const std::string& pRDName) 
 {
-    QMutexLocker locker(&m_lock);
+    RDSingleLock locker(m_lock);
     RDRenderData& RenderData = *GetRenderData(pRDName);
     if(!RenderData.GetCurSection())
     {
@@ -127,7 +109,7 @@ void RDNode::CalNodeMatrix(RDRenderData& RenderData)
     RenderData.SetGlobalMatrix(RenderData.GetItemMatrix());
 }
 
-void RDNode::CalChildFrame(const RDTime& nTime,const QString& pRDName)
+void RDNode::CalChildFrame(const RDTime& nTime,const std::string& pRDName)
 {
     RDRenderData* RenderData = GetRenderData(pRDName);
 
@@ -138,9 +120,9 @@ void RDNode::CalChildFrame(const RDTime& nTime,const QString& pRDName)
             });
 }
 
-void RDNode::CalFrame(const RDTime& nTime,const QString& pRDName) 
+void RDNode::CalFrame(const RDTime& nTime,const std::string& pRDName) 
 {
-    QMutexLocker locker(&m_lock);
+    RDSingleLock locker(m_lock);
     RDRenderData& RenderData = *GetRenderData(pRDName);
     RenderData.ResetDirty();
     UpdateSection(nTime,RenderData);
@@ -316,11 +298,10 @@ void RDNode::MoveSection(const RDTime& nSteps, RDSectionList pStart,RDSectionLis
     }
 }
 
-RDRenderData*   RDNode::CreateRenderData(const QString& pName)
+RDRenderData*   RDNode::CreateRenderData(const std::string& pName)
 {
-    QMutexLocker locker(&m_lock);
     const RDScene* pScene = GetSceneNode();
-    RDRenderData* pRenderData = new RDRenderData(*this,*dynamic_cast<const RDSceneRenderData*>(pScene->GetRenderData(pName)));
+    RDRenderData* pRenderData = new RDRenderData(pName,*this,*dynamic_cast<const RDSceneRenderData*>(pScene->GetRenderData(pName)));
     m_vecRenderData[pName] = pRenderData;
     return pRenderData;
 }
@@ -333,7 +314,7 @@ const RDScene*        RDNode::GetSceneNode() const
     return pScene;
 }
 
-RDRenderData*   RDNode::GetRenderData(const QString& pName)
+RDRenderData*   RDNode::GetRenderData(const std::string& pName)
 {
     RDRenderData* pRD = m_vecRenderData[pName];
     if(!pRD)
@@ -341,7 +322,7 @@ RDRenderData*   RDNode::GetRenderData(const QString& pName)
     return pRD;
 }
 
-const RDRenderData*   RDNode::GetRenderData(const QString& pName)const
+const RDRenderData*   RDNode::GetRenderData(const std::string& pName)const
 {
     auto it = m_vecRenderData.find(pName);
     if(it == m_vecRenderData.end())
@@ -349,17 +330,8 @@ const RDRenderData*   RDNode::GetRenderData(const QString& pName)const
     RDRenderData* pRD = it->second;
     return pRD;
 }
-void  RDNode::SetRenderScale(float fScale,const QString& pName)
-{
-    RDRenderData* pRD = GetRenderData(pName);
-    pRD->SetSceneScale(fScale);
-    for(size_t i = 0; i < GetChildCount(); i++)
-    {
-        GetChild(i)->SetRenderScale(fScale,pName);
-    }   
-}
 
-RDRenderChangeLevel RDNode::GetChangeLevel(const QString& pName)const
+RDRenderChangeLevel RDNode::GetChangeLevel(const std::string& pName)const
 {
     const RDRenderData* pRD = GetRenderData(pName);
     if(pRD)
@@ -368,7 +340,7 @@ RDRenderChangeLevel RDNode::GetChangeLevel(const QString& pName)const
         return RDRender_NoChange;
 }
 
-RDRenderChangeLevel RDNode::GetRenderChangeLevel(const QString& pName)const
+RDRenderChangeLevel RDNode::GetRenderChangeLevel(const std::string& pName)const
 {
     const RDRenderData* pRD = GetRenderData(pName);
     if(pRD)
@@ -377,7 +349,7 @@ RDRenderChangeLevel RDNode::GetRenderChangeLevel(const QString& pName)const
         return RDRender_NoChange;
 }
 
-RDRenderChangeLevel RDNode::GetMaxRenderChangeLevel(const QString& pName)const
+RDRenderChangeLevel RDNode::GetMaxRenderChangeLevel(const std::string& pName)const
 {
     RDRenderChangeLevel maxC = GetRenderChangeLevel(pName);
     for(size_t i = 0 ;i < GetChildCount();i++)
@@ -388,7 +360,7 @@ RDRenderChangeLevel RDNode::GetMaxRenderChangeLevel(const QString& pName)const
     return maxC;
 }
 
-RDRenderChangeLevel RDNode::GetMaxChangeLevel(const QString& pName)const
+RDRenderChangeLevel RDNode::GetMaxChangeLevel(const std::string& pName)const
 {
     RDRenderChangeLevel maxC = GetChangeLevel(pName);
     for(size_t i = 0 ;i < GetChildCount();i++)
@@ -532,31 +504,31 @@ RDSection* RDNode::GetSection(const QUuid& idStory,size_t nIndex)
     return m_vecSetctionListMap[idStory].at(nIndex);
 }
 
-const matrix4x4&     RDNode::GetViewProjMat(const QString& RDName)
+const matrix4x4&     RDNode::GetViewProjMat(const std::string& RDName)
 {
     RDCamera* pCamera = GetCamera(RDName);
     return pCamera->GetViewProjMat(RDName);
 }
 
-RDCamera *RDNode::GetCamera(const QString& strName)const
+RDCamera *RDNode::GetCamera(const std::string& strName)const
 {
     const RDLayer* pLayer = GetLayerNode();
     return pLayer->GetCurCamera(strName);
 }
 
-RDSpaceParam RDNode::GetEditSpaceParam(const QString &strName, const matrix4x4 *pWorldMat) const
+RDSpaceParam RDNode::GetEditSpaceParam(const std::string &strName, const matrix4x4 *pWorldMat) const
 {
     RDCamera* pCamera = GetCamera(strName);
     return RDSpaceParam(pWorldMat,&pCamera->GetViewMatrix(strName),&pCamera->GetEditProjMatrix(strName),GetSceneRt(strName));
 }
 
-QRectF RDNode::GetSceneRt(const QString& strName)const
+QRectF RDNode::GetSceneRt(const std::string& strName)const
 {
     const RDScene* pScene= GetSceneNode();
     return pScene->GetSceneRt(strName);
 }
 
-const matrix4x4 &RDNode::GetNodeMatrix(const QString &strName) const
+const matrix4x4 &RDNode::GetNodeMatrix(const std::string &strName) const
 {
     const RDRenderData* pData = GetRenderData(strName);
     return pData->GetGlobalMatrix();
@@ -572,13 +544,14 @@ const RDLayer*        RDNode::GetLayerNode()const
 
 void RDNode::Serialize(RDFileDataStream& buffer,bool bSave)
 {
-    QMutexLocker locker(&m_lock);
+    RDSingleLock locker(m_lock);
     int nVersion = g_nNowVersion;
     buffer.Serialize(nVersion,bSave);
     buffer.Serialize(m_strName,bSave);
     //qDebug() << "begin to serialize node :" << m_strName;
     buffer.Serialize(m_vPos,bSave);
     buffer.Serialize(m_NodeID,bSave);
+    buffer.Serialize(m_bCollapse,bSave);
 
     bool bHaveObj = m_pObj != nullptr;
     buffer.Serialize(bHaveObj,bSave);
@@ -661,11 +634,22 @@ void RDNode::Serialize(RDFileDataStream& buffer,bool bSave)
     //qDebug() << "end to serialize node :" << m_strName;
 }
 
-const float3& RDNode::GetDynamicPos(const QString& pName)const
+const float3& RDNode::GetDynamicPos(const std::string& pName)const
 {
     const RDRenderData* pData = GetRenderData(pName);
     return pData->GetPos();
 }
+
+bool    RDNode::isParentCollapse()const
+{
+    if(!m_pParent)
+        return false;
+    else if(m_pParent->collapse())
+        return true;
+    else
+        return m_pParent->isParentCollapse();
+}
+
 //================================================================================
 //undo
 RDPosUndo::RDPosUndo(RDNode& pNode)
