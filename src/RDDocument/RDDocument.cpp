@@ -70,7 +70,6 @@ RDDocument::RDDocument(bool bCreateNewProj)
      ,m_fScale(1)
      ,m_nCurFrame(0)
      ,m_DocUUID(QUuid::createUuid())
-     ,m_lock(QMutex::Recursive)
 {
     if(bCreateNewProj)
     {
@@ -78,18 +77,23 @@ RDDocument::RDDocument(bool bCreateNewProj)
         SetCurScene(0);
         RDLayer* pLayer = new RDLayer(RD3DLayer,"layer");
         pLayer->SetParent(GetCurScene());
-        GetCurScene()->AddChild(*pLayer);
 
-        RDRenderData* pRenderData = GetCurScene()->GetRenderData(DEFAULT_RD);
+        RDScene* pScene = GetCurScene();
+        pScene->AddChild(*pLayer);
+
+        RDSceneRenderData* pRenderData = dynamic_cast<RDSceneRenderData* >(pScene->GetRenderData(DEFAULT_RD));
+        pScene->TriggerStory(0,0,*pRenderData);
+
         auto pStory = pRenderData->GetCurStory();
-        pLayer->AddSection(m_nCurFrame - pStory->GetStartTime(false),1000000000,pStory->GetStoryId());
+
+        pLayer->AddSection(m_nCurFrame - pStory.GetStartTime(),1000000000,pStory.GetStoryId());
         for(size_t i = 0; i < pLayer->GetCameraCount(); i++)
         {
-            pLayer->GetCamera(i)->AddSection(m_nCurFrame - pStory->GetStartTime(false),1000000000,pStory->GetStoryId());
+            pLayer->GetCamera(i)->AddSection(m_nCurFrame - pStory.GetStartTime(),1000000000,pStory.GetStoryId());
         }
         for(size_t i = 0; i < pLayer->GetLightCount(); i++)
         {
-            pLayer->GetLight(i)->AddSection(m_nCurFrame - pStory->GetStartTime(false),1000000000,pStory->GetStoryId());
+            pLayer->GetLight(i)->AddSection(m_nCurFrame - pStory.GetStartTime(),1000000000,pStory.GetStoryId());
         }
 
         PushTopNode(pLayer);
@@ -102,10 +106,8 @@ RDDocument::RDDocument(bool bCreateNewProj)
 }
 RDDocument::~RDDocument()
 {
-    Lock();
     CloseProj();
     DeleteTempProjDir();
-    UnLock();
 }
 void RDDocument::SaveProj()
 {
@@ -142,7 +144,6 @@ void RDDocument::SaveProjAs(RDProject& pProj,const QString& filePath)
 }
 void RDDocument::LoadProj(const QString& filePath)
 {
-    QMutexLocker locker(&m_lock);
     CloseProj();
     if(!m_strCachePath.isEmpty())
         DeleteTempProjDir();
@@ -289,7 +290,6 @@ void RDDocument::UntarProjDir(const QString& strProjPath)
 }
 void RDDocument::ClearRDStack()
 {
-    QMutexLocker locker(&m_lock);
     while (!m_EditRDStack.empty())
         m_EditRDStack.pop();
 }
@@ -297,21 +297,18 @@ void RDDocument::AddChildNode(RDNode& parent,RDNode& pChild)
 {
     RDRenderData* pRenderData = parent.GetRenderData(DEFAULT_RD);
     auto pStory = pRenderData->GetCurStory();
-    pChild.AddSection(m_nCurFrame - pStory->GetStartTime(false),1000000000,pStory->GetStoryId());
+    pChild.AddSection(m_nCurFrame - pStory.GetStartTime(),1000000000,pStory.GetStoryId());
 
     parent.Lock();
     parent.AddChild(pChild);
     parent.UnLock();
 
-    QMutexLocker locker(&m_lock);
     ClearSelItem();
     AddSelItem(pChild);
 }
 
 void RDDocument::DelSelItems()
 {
-    Lock();
-
     qDebug() << "del select Items:" <<m_SelItemList.size();
     for(size_t i = 0; i < m_SelItemList.size(); i++)
     {
@@ -323,14 +320,11 @@ void RDDocument::DelSelItems()
         SAFE_DELETE(pNode);
     }
     ClearSelItem();
-    UnLock();
 }
 void RDDocument::SetScale(float fScale)
 {
-    Lock();
     m_fScale = fScale;
     GetCurScene()->setRenderScale(m_fScale,DEFAULT_RD);
-    UnLock();
 }
 void RDDocument::AddUndoCommand(RDUndoCommand* cmd)
 {
@@ -358,4 +352,27 @@ RDNode* RDDocument::GetNode(const QUuid& NodeId)
             return ret;
     }
     return 0;
+}
+
+void RDDocument::AddStoryAndTrigger(const std::string& StoryName)
+{
+	size_t nIndex = GetCurScene()->AddStory(StoryName);
+	TriggerStory(nIndex);
+}
+
+bool RDDocument::RemoveStoryAndTrigger(size_t nIndex)
+{
+	if(!GetCurScene()->RemoveStory(nIndex))
+		return false;
+
+	nIndex = std::min(GetCurScene()->GetStoryCount() - 1,nIndex);
+	TriggerStory(nIndex);
+	return true;
+}
+
+void RDDocument::TriggerStory(size_t nIndex)
+{
+	RDSceneRenderData* pRenderData = dynamic_cast<RDSceneRenderData* >(GetCurScene()->GetRenderData(DEFAULT_RD));
+	RDTime CurStoryStartTime = GetCurScene()->GetCurStory(*pRenderData).GetStartTime();
+	GetCurScene()->TriggerStory(nIndex,CurStoryStartTime + m_nCurFrame,*pRenderData);
 }

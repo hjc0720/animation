@@ -22,21 +22,28 @@
 class RDScene;
 class RDNode;
 class QVBoxLayout;
+class QHBoxLayout;
 class QScrollArea;
-class RDTimeRuler;
 class RDSectionView;
 class RDObjHead;
+class QComboBox;
 
 class RDTimelineView :public QDockWidget
 {
 	Q_OBJECT
 public:
 		RDTimelineView(RDScene& pScene,QWidget* pParent);
+		void updateStory();
+		void trigStory(size_t nIndex);
 signals:
         void    FrameChanged(const RDTime& );
         void    SectionChanged();
+		void 	addStory();
+		void	switchStory(int nIndex);
+		void 	removeCurStory();
 protected:
 		void RDFillHead(RDNode& pNode);
+		QHBoxLayout*  AddToolBar();
 		int GetHeadIndex(const RDNode& pNode);
         void UpdateBackground(int nStartIndex);
         void InsertObj(RDNode& pNewNode,int nIndex);
@@ -47,8 +54,9 @@ protected slots:
 protected:
 		RDScene* m_pScene;
 		QScrollArea* m_pHead;
-        RDSectionView* m_pSectionView;
+        RDSectionView* m_pSectionView = nullptr;
 		QVBoxLayout* m_pHeadLayout;
         std::vector<RDObjHead*> m_objHead;
+		QComboBox* m_pStoryList;
 };
 #endif   // ----- #ifndef rdtimeline_INC  -----

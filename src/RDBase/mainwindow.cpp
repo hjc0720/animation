@@ -20,6 +20,8 @@
 #include "RDTimelineView.h"
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QInputDialog>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),m_bInit(false)
@@ -217,6 +219,10 @@ void MainWindow::OnReloadTimeLine(RDScene& pScene)
     connect(m_pCenterWidget,SIGNAL(DelNoded(RDNode&)),m_pTimeLineView,SLOT(DelObj(RDNode&)));
     connect(m_pTimeLineView,SIGNAL(FrameChanged(const RDTime& )),this,SLOT(OnFrameChanged(const RDTime&)));
     connect(m_pTimeLineView,SIGNAL(SectionChanged()),m_pCenterWidget,SLOT(updateGL()));
+
+    connect(m_pTimeLineView,SIGNAL(addStory()),this,SLOT(OnAddStory()));
+    connect(m_pTimeLineView,SIGNAL(removeCurStory()),this,SLOT(OnDeleteCurStory()));
+    connect(m_pTimeLineView,SIGNAL(switchStory(int)),this,SLOT(OnSwitchStory(int)));
     addDockWidget(Qt::BottomDockWidgetArea,m_pTimeLineView);
 }
 
@@ -224,4 +230,35 @@ void MainWindow::OnFrameChanged(const RDTime& nTime)
 {
     GetCurDocument()->SetCurTime(nTime);
     m_pCenterWidget->updateGL();
+}
+
+void MainWindow::OnAddStory()
+{
+	int nIndex = GetCurDocument()->GetCurScene()->GetStoryCreatIndex();
+	QString defaultName(tr("story "));
+	defaultName += QString::number(nIndex);
+	bool ok;
+	defaultName = QInputDialog::getText(this, tr("Add New Story"),
+			tr("Story Name:"), QLineEdit::Normal,
+			defaultName, &ok);
+	if (ok && !defaultName.isEmpty())
+	{
+		GetCurDocument()->AddStoryAndTrigger(defaultName.toStdString());
+		m_pTimeLineView->updateStory();
+	}
+}
+
+void MainWindow::OnSwitchStory(int nIndex)
+{
+	GetCurDocument()->TriggerStory(nIndex);
+	m_pTimeLineView->trigStory(nIndex);
+}
+
+void MainWindow::OnDeleteCurStory()
+{
+	int nIndex = GetCurDocument()->GetCurScene()->GetCurStoryIndex(DEFAULT_RD);
+	if(!GetCurDocument()->RemoveStoryAndTrigger(nIndex))
+		QMessageBox::warning(this,tr("Delete Story Error"),tr("This is last story, you can't delete it!"));
+	else
+		m_pTimeLineView->updateStory();
 }

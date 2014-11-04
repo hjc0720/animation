@@ -89,7 +89,7 @@ void RDCamera::CalFrame(const RDTime& nTime,const std::string& pRDName)
     UpdateSection(nTime,*pRenderData);
     if(!pRenderData->GetCurSection())
         return;
-    RDTime nSectionTime = nTime - pRenderData->GetCurStory()->GetStartTime(pRenderData->IsPlay()) - pRenderData->GetCurSection()->GetStartTime();
+    RDTime nSectionTime = nTime - pRenderData->GetCurStory().GetStartTime() - pRenderData->GetCurSection()->GetStartTime();
     if(nSectionTime == pRenderData->GetSectionTime() && GetMaxChangeLevel(pRDName) == RDRender_NoChange)
         return;
 

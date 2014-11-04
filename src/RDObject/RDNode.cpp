@@ -125,10 +125,9 @@ void RDNode::CalFrame(const RDTime& nTime,const std::string& pRDName)
     RDSingleLock locker(m_lock);
     RDRenderData& RenderData = *GetRenderData(pRDName);
     RenderData.ResetDirty();
-    UpdateSection(nTime,RenderData);
+    RDTime nSectionTime = UpdateSection(nTime,RenderData);
     if(!RenderData.GetCurSection())
         return;
-    RDTime nSectionTime = nTime - RenderData.GetCurStory()->GetStartTime(RenderData.IsPlay()) - RenderData.GetCurSection()->GetStartTime();
     if(nSectionTime == RenderData.GetSectionTime() && GetMaxChangeLevel(pRDName) == RDRender_NoChange)
         return;
     if(CalSpaceVector(nSectionTime,RenderData))
@@ -200,63 +199,33 @@ bool RDNode::AddSection(const RDTime& nStoryTime,const RDTime& nLength,const QUu
     return true;
 }
 
-void RDNode::UpdateSection(const RDTime& nFrame,RDRenderData& pRD)
+RDTime RDNode::UpdateSection(const RDTime& nFrame,RDRenderData& pRD)
 {
     const RDSceneRenderData& pSceneRD = pRD.GetSceneRD();
     const RDScene& pScene = dynamic_cast<const RDScene&>(pSceneRD.GetNode());
     auto pCurStory = pScene.GetCurStory(pSceneRD);
 
-    auto pFindRes = m_vecSetctionListMap.find(pCurStory->GetStoryId());
+    auto pFindRes = m_vecSetctionListMap.find(pCurStory.GetStoryId());
     if(pFindRes != m_vecSetctionListMap.end())
     {
         auto pSectionList = pFindRes->second;
-        RDTime nStoryFrame = nFrame - pCurStory->GetStartTime(pSceneRD.IsPlay());
-        auto it = pSectionList.begin();
-        while(it != pSectionList.end())
+        RDTime nStoryFrame = nFrame - pCurStory.GetStartTime();
+        for(auto it = pSectionList.begin(); it != pSectionList.end();it++)
         {
-            auto oldIt = it;
-            it++;
-            if(nStoryFrame < (*oldIt)->GetStartTime())
+            if(nStoryFrame < (*it)->GetStartTime())
+                break;
+            else 
             {
-                //find last action of prev story;
-                RDSection* pLastSection = GetLastSectionBefore(pScene.GetCurStoryIndex(pSceneRD));
-                if(pLastSection && pLastSection->GetType() == RDSectionFinish)
-                    pRD.SetCurSection(0);
-                else
-                    pRD.SetCurSection(pLastSection);
-                return;
-            }
-            else if(nStoryFrame < (*oldIt)->GetStartTime() + (*oldIt)->GetLength())
-            {
-                pRD.SetCurSection(*oldIt);
-                return;
-            }
-            else if(it == pSectionList.end())
-            {
-                if((*oldIt)->GetType() != RDSectionFinish)
-                    pRD.SetCurSection(*oldIt);
-                else
-                    pRD.SetCurSection(0);
-                return;
-            }
-            else
-            {
-                if(nStoryFrame < (*it)->GetStartTime())
-                {
-                    if((*oldIt)->GetType() != RDSectionFinish)
-                        pRD.SetCurSection(*oldIt);
-                    else 
-                        pRD.SetCurSection(0);
-                    return;
-                }
+                pRD.setStoryTime(pCurStory.GetStartTime());
+                pRD.SetCurSection(*it);
             }
         }
     }
-    RDSection* pLastSection = GetLastSectionBefore(pScene.GetCurStoryIndex(pSceneRD));
-    if(pLastSection && pLastSection->GetType() == RDSectionFinish)
-        pRD.SetCurSection(0);
-    else
-        pRD.SetCurSection(pLastSection);
+
+    RDTime nSectionTime = calSectionTime(nFrame,pRD);
+    if(nSectionTime < 0)
+        pRD.SetCurSection(nullptr);
+    return nSectionTime;
 }
 
 RDSection* RDNode::GetLastSectionBefore(size_t nCurStoryIndex)
@@ -411,30 +380,27 @@ RDSection* RDNode::GetSection(const QUuid& nStoryId,const RDTime& nStoryFrame)
     return 0;
 }
 
-void RDNode::AddAngleKey(const RDTime& nTime,const float3& vOffsetAngle )
+void RDNode::AddAngleKey(const RDTime& nTime,const float3& vOffsetAngle ,const std::string& strName)
 {
-    const RDScene* pScene = GetSceneNode();
-    const RDStory* pCurStory = pScene->GetStory(nTime,false);
-    RDTime nStoryTime = nTime - pCurStory->GetStartTime(false);
-    RDSection* pSection = GetSection(pCurStory->GetStoryId(),nStoryTime);
+    const RDStory& pCurStory = GetRenderData(strName)->GetCurStory();
+    RDTime nStoryTime = nTime - pCurStory.GetStartTime();
+    RDSection* pSection = GetSection(pCurStory.GetStoryId(),nStoryTime);
     pSection->AddAngleKey(nStoryTime,vOffsetAngle);
 }
 
-void RDNode::AddScaleKey(const RDTime& nTime,const float3& vOffsetScale )
+void RDNode::AddScaleKey(const RDTime& nTime,const float3& vOffsetScale ,const std::string& strName)
 {
-    const RDScene* pScene = GetSceneNode();
-    const RDStory* pCurStory = pScene->GetStory(nTime,false);
-    RDTime nStoryTime = nTime - pCurStory->GetStartTime(false);
-    RDSection* pSection = GetSection(pCurStory->GetStoryId(),nStoryTime);
+    const RDStory& pCurStory = GetRenderData(strName)->GetCurStory();
+    RDTime nStoryTime = nTime - pCurStory.GetStartTime();
+    RDSection* pSection = GetSection(pCurStory.GetStoryId(),nStoryTime);
     pSection->AddScaleKey(nStoryTime,vOffsetScale);
 }
 
-void RDNode::AddPosKey(const RDTime& nTime,const float3& vOffsetPos )
+void RDNode::AddPosKey(const RDTime& nTime,const float3& vOffsetPos ,const std::string& strName)
 {
-    const RDScene* pScene = GetSceneNode();
-    const RDStory* pCurStory = pScene->GetStory(nTime,false);
-    RDTime nStoryTime = nTime - pCurStory->GetStartTime(false);
-    RDSection* pSection = GetSection(pCurStory->GetStoryId(),nStoryTime);
+    const RDStory& pCurStory = GetRenderData(strName)->GetCurStory();
+    RDTime nStoryTime = nTime - pCurStory.GetStartTime();
+    RDSection* pSection = GetSection(pCurStory.GetStoryId(),nStoryTime);
     //qDebug() << "add key Story Time" << nStoryTime << nTime;
     pSection->AddPosKey(nStoryTime,vOffsetPos);
 }
@@ -648,6 +614,33 @@ bool    RDNode::isParentCollapse()const
         return true;
     else
         return m_pParent->isParentCollapse();
+}
+
+RDRenderPrivateData* RDNode::GetPrivateData(const std::string& name)const
+{
+    return GetRenderData(name)->GetPrivateData();
+}
+
+RDTime            RDNode::calSectionTime(RDTime time,RDRenderData& pRD)
+{
+    RDSection* pCurSection = pRD.GetCurSection();
+    if(!pCurSection)
+        return -1;
+    RDTime nSectionTime = time - pRD.getStoryTime() - pCurSection->GetStartTime();
+    switch(pCurSection->GetType())
+    {
+    case RDSectionFinish:
+        if(nSectionTime > pCurSection->GetLength())
+            nSectionTime = -1;
+        break;
+    case RDSectionKeep:
+        nSectionTime = min(nSectionTime,pCurSection->GetLength());
+        break;
+    case RDSecionCycle:
+        nSectionTime = nSectionTime % pCurSection->GetLength();
+        break;
+    }
+    return nSectionTime;
 }
 
 //================================================================================

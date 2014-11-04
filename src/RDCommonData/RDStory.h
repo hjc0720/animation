@@ -18,28 +18,30 @@
 #define  RDSTORY_INC
 #include <QUuid>
 #include "mac_define.h"
+#include <string>
+
 class RDFileDataStream;
 
 class RDStory
 {
 public:
-    RDStory();
-    void SetStartTime(const RDTime& nTime,bool bPlay);
-    const RDTime& GetStartTime(bool bPlay)const{return bPlay ? m_nPlayStartFrame : m_nEditStartFrame;};
+    RDStory(const std::string& name);
+
+    void SetStartTime(const RDTime& nTime){m_nPlayStartFrame = nTime;};
+    const RDTime& GetStartTime()const{return m_nPlayStartFrame;};
+
     const RDTime& GetStoryLength()const{return m_nStoryLength;}
 	void SetStoryLength(RDTime& nLength){m_nStoryLength = nLength;}
+
     const QUuid& GetStoryId()const{return m_Id;}
+	const std::string& GetStroyName()const{return m_strName;}
+
+    void Serialize(RDFileDataStream& buffer,bool bSave);
 protected:
     bool    m_bPass;
-    RDTime m_nEditStartFrame;
     RDTime m_nPlayStartFrame;
     RDTime m_nStoryLength;
     QUuid   m_Id;
-   //friend class
-    friend RDFileDataStream& operator << (RDFileDataStream& buffer,const RDStory& proj);
-    friend RDFileDataStream& operator >> (RDFileDataStream& buffer,RDStory& proj);
+    std::string m_strName;
 };
-//save Load operator
-RDFileDataStream& operator << (RDFileDataStream& buffer,const RDStory& proj);
-RDFileDataStream& operator >> (RDFileDataStream& buffer,RDStory& proj);
 #endif   // ----- #ifndef rdstory_INC  -----

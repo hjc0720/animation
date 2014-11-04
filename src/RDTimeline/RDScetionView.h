@@ -25,6 +25,7 @@ class RDScene;
 class QResizeEvent;
 class RDNode;
 class QUuid;
+class RDStory;
 
 class RDSectionScene : public QGraphicsScene
 {
@@ -56,7 +57,7 @@ class RDSectionView :public QGraphicsView
 {
     Q_OBJECT
 public:
-    RDSectionView(RDScene* pScene,QWidget* pWidget );
+    RDSectionView(RDScene* pScene,const RDStory* pStory,QWidget* pWidget );
 	void SetSceneNode(RDScene* pScene);
     void SetScale(const RDTime& nScale); 
 signals:
@@ -68,6 +69,7 @@ protected:
     virtual void wheelEvent(QWheelEvent *event);
 protected:
 	RDScene* m_pScene;
+    const RDStory* m_pStory;
 	int	 m_nScale;
 };
 

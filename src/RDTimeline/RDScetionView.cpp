@@ -27,12 +27,13 @@
 #include "RDStoryItem.h"
 #include "RDTimeMarker.h"
 
-RDSectionView::RDSectionView(RDScene* pScene,QWidget* pWidget )
+RDSectionView::RDSectionView(RDScene* pScene,const RDStory* pStory,QWidget* pWidget )
     :QGraphicsView(pWidget)
+     ,m_pStory(pStory)
     ,m_nScale(1)
 {
     SetSceneNode(pScene);
-    SetScale(m_pScene->GetSceneLength() / 1920);
+    SetScale(m_pStory->GetStoryLength() / 1920);
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 }
@@ -61,7 +62,7 @@ void RDSectionView::wheelEvent(QWheelEvent *event)
 void RDSectionView::SetSceneNode(RDScene* pScene)
 {
     m_pScene = pScene;
-    qreal fWidth = m_pScene->GetSceneLength() ;/// m_nScale;
+    qreal fWidth = m_pStory->GetStoryLength() ;/// m_nScale;
     qreal fHeight = (m_pScene->GetTotalChildCount() + 1) * RDTRACK_HEIGTH;
     QGraphicsScene* pOldScene = scene();
     SAFE_DELETE(pOldScene);
@@ -71,16 +72,12 @@ void RDSectionView::SetSceneNode(RDScene* pScene)
     connect(pGraphicScene,SIGNAL(SectionChanged()),this,SIGNAL(SectionChanged()));
     setScene(pGraphicScene);
 
-    size_t nStoryCount = pScene->GetStoryCount();
-    for(size_t i = 0; i < nStoryCount; i++)
-    {
-        int nIndex = 1;
-        const RDStory* pStory = pScene->GetStory(i);
-        AddChildNodeSection(nIndex,pScene,pStory->GetStoryId());
+	int nIndex = 1;
+	const RDStory* pStory = &pScene->GetCurStory(DEFAULT_RD);
+	AddChildNodeSection(nIndex,pScene,pStory->GetStoryId());
 
-        RDStoryItem* pItem = new RDStoryItem(pStory,RDTRACK_HEIGTH);
-        scene()->addItem(pItem);
-    }
+	RDStoryItem* pItem = new RDStoryItem(pStory,RDTRACK_HEIGTH);
+	scene()->addItem(pItem);
 
     RDTimeMarker* pTimeMarker = new RDTimeMarker(RDTRACK_HEIGTH,height(),1.0 / m_nScale);
     pGraphicScene->SetTimeMarker(pTimeMarker);
@@ -99,7 +96,7 @@ void RDSectionView::AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& i
         {
             RDSection* pSection = pChildNode->GetSection(idStory,j);
             RDSectionItem* pItem = new RDSectionItem(pChildNode,pSection,RDTRACK_HEIGTH,0,nIndex * RDTRACK_HEIGTH);
-            qDebug() << "cur section" << (size_t)pItem <<":"<< nIndex << pNode->GetName();
+            //qDebug() << "cur section" << (size_t)pItem <<":"<< nIndex << pNode->GetName();
             scene()->addItem(pItem);
         }
         nIndex++;

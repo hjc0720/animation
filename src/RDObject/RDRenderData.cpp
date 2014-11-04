@@ -31,6 +31,7 @@ RDRenderData::RDRenderData(const std::string& name,RDNode& node,const RDSceneRen
      ,m_pPrivateData(0)
       ,m_pCurSection(0)
       ,m_SceneRenderData(SceneRenderData)
+         ,m_nStoryTime(0)
       ,m_vScale(1,1,1)
 {
     if(m_Node.GetObject())
@@ -94,7 +95,7 @@ const RDTime& RDRenderData::GetTime()const
 {
     return m_SceneRenderData.GetTime() ;
 }
-const RDStory* RDRenderData::GetCurStory()const
+const RDStory& RDRenderData::GetCurStory()const
 {
     const RDScene& pScene = dynamic_cast<const RDScene&>(m_SceneRenderData.GetNode());
     return pScene.GetCurStory(m_SceneRenderData);

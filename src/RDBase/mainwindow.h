@@ -45,6 +45,9 @@ public slots:
     void OnSetScene();
 	void OnReloadTimeLine(RDScene& pScene);
     void OnFrameChanged(const RDTime& nFrame);
+	void OnAddStory();
+	void OnDeleteCurStory();
+	void OnSwitchStory(int nIndex);
 protected:
     bool        m_bInit;
     RDRenderWidget* m_pCenterWidget;

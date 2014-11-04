@@ -25,6 +25,11 @@
 #include <QRect>
 #include <QPaintEvent>
 #include <QPainter>
+#include "mac_define.h"
+#include <QLabel>
+#include <QComboBox>
+#include "RDStory.h"
+#include <QPushButton>
 
 RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
 	:QDockWidget(pParent)
@@ -33,40 +38,35 @@ RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
     setFeatures(0/*QDockWidget::DockWidgetFloatable*/);
     QWidget* pTimeLineWidget = new QWidget(this);
 
+	QVBoxLayout* pTimeLineVLayout =  new QVBoxLayout;
+    pTimeLineWidget->setLayout(pTimeLineVLayout);
+
+	pTimeLineVLayout->addLayout(AddToolBar());
+
     QHBoxLayout* pTimeLineHLayout = new QHBoxLayout(pTimeLineWidget);
     pTimeLineHLayout->setContentsMargins(0,0,0,0);
     pTimeLineHLayout->setSpacing(0);
-    pTimeLineWidget->setLayout(pTimeLineHLayout);
+	pTimeLineVLayout->addLayout(pTimeLineHLayout);
 
     m_pHead = new QScrollArea(pTimeLineWidget);
-    pTimeLineHLayout->addWidget(m_pHead);
+    m_pHead->setWidgetResizable(true);
+    m_pHead->setMaximumWidth(250);
+
     QWidget* pHeadWidget = new QWidget(m_pHead);
+    m_pHead->setWidget(pHeadWidget);
+
     m_pHeadLayout = new QVBoxLayout(pHeadWidget);
     m_pHeadLayout->setContentsMargins(0,0,0,0);
     m_pHeadLayout->setSpacing(0);
     pHeadWidget->setLayout(m_pHeadLayout);
+
     RDFillHead(pScene);
     m_pHeadLayout->addStretch();
-    m_pHead->setWidgetResizable(true);
-    m_pHead->setWidget(pHeadWidget);
-    m_pHead->setMaximumWidth(250);
 
-    QVBoxLayout* pLeft = new QVBoxLayout();
-    pLeft->setContentsMargins(0,0,0,0);
-    pLeft->setSpacing(0);
-    //    pLeft->addSpacing(20);
-    pLeft->addWidget(m_pHead);
+    m_pSectionView = new RDSectionView(&pScene,&pScene.GetCurStory(DEFAULT_RD), this);
 
-
-    m_pSectionView = new RDSectionView(&pScene,this);
-    QVBoxLayout* pRight = new QVBoxLayout();
-    pRight->setContentsMargins(0,0,0,0);
-    pRight->setSpacing(0);
-    //pRight->addSpacing(20);
-    pRight->addWidget(m_pSectionView);
-
-    pTimeLineHLayout->addLayout(pLeft);
-    pTimeLineHLayout->addLayout(pRight);
+    pTimeLineHLayout->addWidget(m_pHead);
+    pTimeLineHLayout->addWidget(m_pSectionView);
 
     setWidget(pTimeLineWidget);
     connect(m_pSectionView,SIGNAL(FrameChanged(const RDTime&)),this,SIGNAL(FrameChanged(const RDTime&)));
@@ -164,4 +164,48 @@ void RDTimelineView::InsertObj(RDNode& pNewNode,int nIndex)
         m_pHeadLayout->addWidget(pHead);
         m_objHead.push_back(pHead);
     }
+}
+
+QHBoxLayout*  RDTimelineView::AddToolBar()
+{
+    QHBoxLayout* pToolBar = new QHBoxLayout();
+	pToolBar->addWidget(new QLabel(tr("Story List")));
+
+//add story button
+	QPushButton* pAddButton = new QPushButton("+");
+	connect(pAddButton,SIGNAL(clicked()),this,SIGNAL(addStory()));
+	pToolBar->addWidget(pAddButton);
+
+	//story list
+	m_pStoryList = new QComboBox;
+	updateStory();
+	connect(m_pStoryList,SIGNAL(activated(int)),this,SIGNAL(switchStory(int)));
+	pToolBar->addWidget(m_pStoryList);
+
+//delete story button
+	QPushButton* pRemoveButton = new QPushButton("-");
+	connect(pRemoveButton,SIGNAL(clicked()),this,SIGNAL(removeCurStory()));
+	pToolBar->addWidget(pRemoveButton);
+
+	pToolBar->addStretch();
+	return pToolBar;
+}
+
+void RDTimelineView::updateStory()
+{
+	m_pStoryList->clear();
+
+	for(size_t i = 0; i < m_pScene->GetStoryCount(); i++)
+	{
+		auto pStory = m_pScene->GetStory(i);
+		m_pStoryList->addItem(QString(pStory->GetStroyName().c_str()));
+	}
+	trigStory(m_pScene->GetCurStoryIndex(DEFAULT_RD));
+}
+
+void RDTimelineView::trigStory(size_t nIndex)
+{
+	m_pStoryList->setCurrentIndex(nIndex);
+	if(m_pSectionView)
+		m_pSectionView->SetSceneNode(m_pScene);
 }

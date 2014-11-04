@@ -27,6 +27,7 @@
 #include "RDStory.h"
 #include <QDebug>
 #include "RDLayer.h"
+#include <list>
 
 using namespace std;
 const int g_nSceneVersion = 0;
@@ -40,9 +41,23 @@ public:
     RDResource* GetResource(){return m_pResource;}
     size_t GetCurStoryIndex()const{return m_nCurStoryIndex;}
     void SetCurStoryIndex(size_t nIndex){m_nCurStoryIndex = nIndex;} 
+    void trigStory(const RDStory& story,RDTime nFrame){m_trigStory.push_front(story);m_trigStory.front().SetStartTime(nFrame);}
+    const RDStory& GetCurStory()const{return m_trigStory.front();}
+    const RDStory& GetStory(RDTime nTime)const{
+        for(auto it = m_trigStory.begin(); it != m_trigStory.end(); it++)
+        {
+            if(it->GetStartTime() < nTime)
+                return *it;
+        }
+        return m_trigStory.back();
+    }
+	void removeTrigStory(const QUuid& storyID){
+		m_trigStory.remove_if([&](const RDStory& pStory)->bool{ return storyID == pStory.GetStoryId();});
+	}
 protected:
     RDResource* m_pResource;
     size_t m_nCurStoryIndex;
+    std::list<RDStory> m_trigStory;
 };
 
 RDScenePrivateData::RDScenePrivateData()
@@ -59,11 +74,13 @@ RDScenePrivateData::~RDScenePrivateData()
         m_pResource = NULL;
     }
 }
+
 RDScene::RDScene()
     :RDNode()
 {
     memset(&m_BackData,0,sizeof(RDSceneData));
 }
+
 RDScene::RDScene(const std::string& strName)
     :RDNode(strName,float3(0,0,0),nullptr)
      //,m_nSceneVersion(g_nSceneVersion)
@@ -72,19 +89,18 @@ RDScene::RDScene(const std::string& strName)
     m_BackData.pImage = new RDMd5;
     SetBackType(RDScene_Back_Color,&newColor);
 
-    RDStory* pFirstStory = new RDStory;
+    RDStory* pFirstStory = new RDStory(QObject::tr("story").toStdString() + to_string(m_nStoryCreateIndex));
     m_StoryList.push_back(pFirstStory);
+	m_nStoryCreateIndex++;
 }
+
 RDScene::~RDScene()
 {
 	SAFE_DELETE(m_BackData.pImage);
-    std::list<RDStory*>::iterator it = m_StoryList.begin();
-    for(;it != m_StoryList.end();it++)
-    {
-        RDStory* pStory = *it;
-        SAFE_DELETE(pStory);
-    }
+    auto pReleaseFun = [](RDStory* pStory){SAFE_DELETE(pStory);};
+    std::for_each(m_StoryList.begin(),m_StoryList.end(), pReleaseFun);
 }
+
 void RDScene::CreateRenderData(RDRenderData& RenderData)
 {
     RDSingleLock locker(m_lock);
@@ -215,62 +231,30 @@ void RDScene::RemoveSceneNodeMap(const RDNode& pRemoveNode)
     m_NodeMap.erase(pRemoveNode.GetNodeID());
 }
 
-bool RDScene::TriggerStory(const RDTime& nFrame,RDSceneRenderData& pSceneData)
+bool RDScene::TriggerStory(int nStoryIndex,RDTime nFrame,RDSceneRenderData& pSceneData)
 {
-    RDStory* pStory = 0;
     RDScenePrivateData* pData = (RDScenePrivateData*)pSceneData.GetPrivateData();
-    if(pSceneData.IsPlay()){
-        int nIndex = pData->GetCurStoryIndex();
-        RDStory* pStory = GetStory(nIndex + 1);
-        if(pStory)
-        {
-            pStory->SetStartTime(nFrame,true);
-            pData->SetCurStoryIndex(nIndex + 1);
-        }
+    if(nStoryIndex < 0)
+        nStoryIndex = pData->GetCurStoryIndex() + 1;
+    const RDStory* pStory = GetStory(nStoryIndex);
+    if(pStory)
+    {
+        //pStory->SetStartTime(nFrame,true);
+        pData->trigStory(*pStory,nFrame);
+        pData->SetCurStoryIndex(nStoryIndex);
     }
-    else{
-        RDTime nStartFrame = 0;
-        int i = 0;
-        std::list<RDStory*>::iterator it = m_StoryList.begin();
-        for(;it != m_StoryList.end();it++)
-        {
-            i++;
-            nStartFrame += (*it)->GetStoryLength();
-            if(nStartFrame > nFrame)
-            {
-                pData->SetCurStoryIndex(i);
-                return true;
-            }
-        }
-    }
-    return pStory != 0;
+    return !pStory;
 }
-RDStory* RDScene::GetStory(size_t nIndex)
+
+const RDStory& RDScene::GetCurStory(const RDSceneRenderData& pSceneData)const
 {
-    if(nIndex >= m_StoryList.size())
-        return nullptr;
-    std::list<RDStory*>::iterator it = m_StoryList.begin();
-    for(size_t i = 0; i < nIndex; i++)
-        it++;
-    return *it;
-}
-const RDStory* RDScene::GetStory(size_t nIndex)const
-{
-    if(nIndex >= m_StoryList.size())
-        return NULL;
-    auto it = m_StoryList.cbegin();
-    for(size_t i = 0; i < nIndex; i++)
-        it++;
-    return *it;
-}
-const RDStory* RDScene::GetCurStory(const RDSceneRenderData& pSceneData)const
-{
-    return GetStory(GetCurStoryIndex(pSceneData));
+    const RDScenePrivateData* pData = dynamic_cast<const RDScenePrivateData*>(pSceneData.GetPrivateData());
+    return pData->GetCurStory();
 }
 size_t RDScene::GetCurStoryIndex(const RDSceneRenderData& pSceneData)const
 {
     const RDScenePrivateData* pData = (const RDScenePrivateData*)pSceneData.GetPrivateData();
-    return pData->GetCurStoryIndex();
+    return pData ? pData->GetCurStoryIndex() : 0;
 }
 
 RDRenderData*  RDScene::CreateRenderData(const std::string& pName)
@@ -290,37 +274,20 @@ void RDScene::SetWidthHeight(int nWidth,int nHeight)
     }
 }
 
-const RDStory* RDScene::GetStory(const RDTime& nFrame,bool bPlay)const
+const RDStory* RDScene::GetStory(RDTime nFrame,const std::string& pRDName)const
 {
-	RDStory* pCurStory = NULL;
-	for(auto it = m_StoryList.cbegin(); it != m_StoryList.cend(); it++)
-	{
-		if(pCurStory && pCurStory->GetStartTime(bPlay) > nFrame)
-			break;
-		pCurStory = *it;
-	}
-    return pCurStory;
-}
-
-RDTime RDScene::GetSceneLength()const
-{
-	auto it = m_StoryList.rbegin();
-	RDStory* pStory = *it;
-	return pStory->GetStoryLength() + pStory->GetStartTime(false);
+    RDScenePrivateData* pData = dynamic_cast<RDScenePrivateData*>(GetPrivateData(pRDName));
+    return &pData->GetStory(nFrame);
 }
 
 void RDScene::RefreshStoryLength()
 {
-	RDTime nNowTime = 0;
-	for(auto it = m_StoryList.begin();it != m_StoryList.end(); it++)
-	{
-		RDStory* pStory = *it;
+    auto updateLength = [this](RDStory* pStory){
 		RDTime nOldLen = pStory->GetStoryLength();
 		RDTime nNewLen = max(nOldLen,GetSectionMaxLength(pStory->GetStoryId()));
 		pStory->SetStoryLength(nNewLen);
-		pStory->SetStartTime(nNowTime,false);
-		nNowTime += nNewLen;
-	}
+    };
+    for_each(m_StoryList.begin(),m_StoryList.end(),updateLength);
 }
 
 void RDScene::AddChild(RDNode& pChild)
@@ -350,23 +317,19 @@ void RDScene::Serialize(RDFileDataStream& buffer,bool bSave)
     //story list
     int nCount = (int)m_StoryList.size();
     buffer.Serialize(nCount,bSave);
-    if(bSave)
+    for(int i = 0 ; i < nCount; i++)
     {
-        for(auto it = m_StoryList.begin(); it != m_StoryList.end(); it++)
+        RDStory* pStory = NULL;
+        if(bSave)
+            pStory = m_StoryList[i];
+        else
         {
-            RDStory* pStory = *it;
-            buffer << *pStory;
-        }
-    }
-    else
-    {
-        for(int i = 0 ; i < nCount; i++)
-        {
-            RDStory* pStory = new RDStory;
-            buffer >> *pStory;
+            pStory = new RDStory("");
             m_StoryList.push_back(pStory);
         }
+        pStory->Serialize(buffer,bSave);
     }
+	buffer.Serialize(m_nStoryCreateIndex,bSave);
 	qDebug() <<"end to save scene" ;
 }
 
@@ -374,4 +337,49 @@ void            RDScene::setRenderScale(float fScale,const std::string& pName)
 {
     RDSceneRenderData* pSceneData = dynamic_cast<RDSceneRenderData*>(GetRenderData(pName));
     pSceneData->SetSceneScale(fScale);
+}
+
+size_t RDScene::GetCurStoryIndex(const std::string& name)const
+{
+    const RDScenePrivateData* pData = (const RDScenePrivateData*)GetPrivateData(name);
+    return pData->GetCurStoryIndex();
+}
+
+const RDStory& RDScene::GetCurStory(const std::string& name)const
+{
+    const RDScenePrivateData* pData = (const RDScenePrivateData*)GetPrivateData(name);
+    return pData->GetCurStory();
+}
+
+size_t RDScene::AddStory(const std::string& strName)
+{
+    RDStory* pNewStory = new RDStory(strName);
+	return AddStory(pNewStory);
+}
+
+size_t RDScene::AddStory(RDStory* pStory)
+{
+    m_StoryList.push_back(pStory);
+	m_nStoryCreateIndex++;
+	return m_StoryList.size() - 1;
+}
+
+bool RDScene::RemoveStory(size_t nIndex)
+{
+	if(nIndex > m_StoryList.size() || m_StoryList.size() == 1)
+		return false;
+
+	RDStory* pStory = m_StoryList[nIndex];
+	if(!pStory)
+		return false;
+
+	for(auto it = m_vecRenderData.begin(); it != m_vecRenderData.end(); it++)
+	{
+        RDRenderData* pRenderData = it->second;
+		RDScenePrivateData* pData = dynamic_cast<RDScenePrivateData*>(pRenderData->GetPrivateData());
+		pData->removeTrigStory(pStory->GetStoryId());
+	}
+	m_StoryList.erase(m_StoryList.begin() + nIndex);
+	SAFE_DELETE(pStory);
+	return true;
 }

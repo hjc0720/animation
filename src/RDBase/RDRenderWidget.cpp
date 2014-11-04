@@ -44,7 +44,6 @@ void RDRenderWidget::setVisible(bool visible)
 
 void RDRenderWidget::resizeGL(int w, int h)
 {
-    m_document.Lock();
     g_bForceUpdate = true;
     m_fScale = min(w / (float)m_nProjWidth,h / (float)m_nProjHeight);
     m_nXOffset = (w - GetRealPorjWidth()) / 2;
@@ -56,7 +55,6 @@ void RDRenderWidget::resizeGL(int w, int h)
     m_validRt.setRight(GetRealPorjWidth());
 
     m_swapChain.Resize(w,h);
-    m_document.UnLock();
     m_document.SetScale(m_fScale);
 
     //glViewport(m_nXOffset, m_nYOffset, GetRealPorjWidth(),GetRealPorjHeight());
@@ -140,13 +138,10 @@ void RDRenderWidget::paintGL()
         pRDManager = new RenderManager;
 
     RDDocument* pDoc = &m_document;
-    pDoc->Lock();
     RDScene* pScene = pDoc->GetCurScene();
     if(pScene->GetMaxChangeLevel(DEFAULT_RD) == RDRender_NoChange && pDoc->GetCurTime() == pScene->GetRenderData(DEFAULT_RD)->GetTime())
-    {
-        pDoc->UnLock();
         return;
-    }
+
     glScissor(0, 0,size().width() ,size().height());
     RDRenderDevice::GetRenderManager()->ClearScreen(float4(0.5,0.5,0.5,1),1,RDClearColor);
     glViewport(m_nXOffset, m_nYOffset, GetRealPorjWidth(),GetRealPorjHeight());
@@ -156,12 +151,8 @@ void RDRenderWidget::paintGL()
     pRDManager->SetScene(pScene);
     QPointF pt(m_nXOffset,m_nYOffset);
     if(!pRDManager->RenderScene(pt,m_validRt,pDoc->GetCurTime()))
-    {
-        pDoc->UnLock();
         return;
-    }
     //qDebug() << "On Time :" << pDoc->GetCurTime();
-    pDoc->UnLock();
 }
 
 void RDRenderWidget::keyPressEvent( QKeyEvent * event ) 

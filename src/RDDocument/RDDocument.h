@@ -17,14 +17,13 @@
 #define  RDDOCUMENT_INC
 #include <vector>
 #include <QString>
-#include <QMutex>
 #include <QUuid>
 #include <stack>
 #include <QUndoStack>
 #include "RDProject.h"
 #include "mac_define.h"
+#include <mutex>
 
-#define DEFAULT_RD "edit" 
 
 class RDSceneRenderData;
 class RDRenderData;
@@ -40,6 +39,7 @@ enum RDEditItemType
     RDEdit_NonAutoKey,
 };
 
+//RDDocument多线程不安全，不能在多线程中使用，除了部分函数
 class RDDocument
 {
 public:
@@ -88,8 +88,11 @@ public:
 	void UndoEnd();
     void AddUndoCommand(RDUndoCommand* cmd);
 
-    void Lock(){m_lock.lock();}
-    void UnLock(){m_lock.unlock();}
+	//story
+	void AddStoryAndTrigger(const std::string& StoryName);
+	void TriggerStory(size_t nIndex);
+	bool RemoveStoryAndTrigger(size_t nIndex);
+
 protected:
     void SaveProj(RDProject& pProj);
     void SaveProjAs(RDProject& pProj,const QString& filePath);
@@ -111,7 +114,6 @@ protected:
     QUuid           m_DocUUID;
     QUndoStack      m_UndoStack;
 
-    mutable QMutex  m_lock;
     //std::vector<RDProject*> m_ProjList;
 };
 

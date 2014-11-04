@@ -80,7 +80,7 @@ void   RDBaseToolEdit::MoveItemPos(const float3& vNewPos,RDNode& pNode,bool bUpd
         pNode.MovePos(vNewPos - pRenderData->GetPos());
         break;
     case RDEdit_AutoKey:
-        pNode.AddPosKey(pDoc->GetCurTime(),vNewPos - pNode.GetPos());
+        pNode.AddPosKey(pDoc->GetCurTime(),vNewPos - pNode.GetPos(),DEFAULT_RD);
         break;
     default:
         pNode.UnLock();
@@ -105,7 +105,7 @@ void   RDBaseToolEdit::MoveItemAngle(const float3& vAngle,RDNode& pNode,bool bUp
         pNode.MoveAngle(vAngle - pRenderData->GetAngle());
         break;
     case RDEdit_AutoKey:
-        pNode.AddAngleKey(pDoc->GetCurTime(),vAngle - pNode.GetAngle());
+        pNode.AddAngleKey(pDoc->GetCurTime(),vAngle - pNode.GetAngle(),DEFAULT_RD);
         break;
     default:
         pNode.UnLock();
@@ -130,7 +130,7 @@ void   RDBaseToolEdit::MoveItemScale(const float3& vScale,RDNode& pNode,bool bUp
         pNode.MoveScale(vScale / pRenderData->GetScale());
         break;
     case RDEdit_AutoKey:
-        pNode.AddScaleKey(pDoc->GetCurTime(),vScale / pNode.GetScale());
+        pNode.AddScaleKey(pDoc->GetCurTime(),vScale / pNode.GetScale(),DEFAULT_RD);
         break;
     default:
         pNode.UnLock();

@@ -29,13 +29,13 @@ RDStoryItem::RDStoryItem(const RDStory* pStory,int nHeight)
      ,m_nHeight(nHeight)
 {
     SetStoryType();
-    setPos(m_pStory->GetStartTime(false),0);
+    setPos(m_pStory->GetStartTime(),0);
     setAcceptedMouseButtons(Qt::LeftButton);
 }
 
 QRectF RDStoryItem::boundingRect()const
 {
-    float fLeft = m_pStory->GetStartTime(false);
+    float fLeft = m_pStory->GetStartTime();
     return QRectF(fLeft,0,m_pStory->GetStoryLength(),m_nHeight);
 }
 

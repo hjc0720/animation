@@ -63,8 +63,7 @@ public:
     void            ResetRenderChangeLevel(){m_nRenderChangeLevel = RDRender_NoChange;}
 
     void            SetPrivateData(RDRenderPrivateData* pPrivateData){SAFE_DELETE(m_pPrivateData);m_pPrivateData = pPrivateData;}
-    RDRenderPrivateData*        GetPrivateData(){return m_pPrivateData ;}
-    const RDRenderPrivateData*  GetPrivateData()const{return m_pPrivateData ;}
+    RDRenderPrivateData*        GetPrivateData()const{return m_pPrivateData ;}
 
     const RDObject* GetObject()const;
     RDObject*       GetObject();
@@ -72,14 +71,19 @@ public:
     RDNode&         GetNode(){return m_Node;}
     RDRenderData*   GetParent(){return m_pParent;}
     const RDTime&   GetTime()const;
-    const RDTime&   GetSectionTime()const{return m_nSectionTime;}
-    void            SetSectionTime(const RDTime& nSectionTime){m_nSectionTime = nSectionTime;}
+
+    RDTime          GetSectionTime()const{return m_nSectionTime;}
+    void            SetSectionTime(RDTime nSectionTime){m_nSectionTime = nSectionTime;}
+
+    RDTime          getStoryTime()const{return m_nStoryTime;}
+    void            setStoryTime(RDTime nStoryTime){m_nStoryTime = nStoryTime;}
+
     virtual float   GetSceneScale()const;
 
     const RDSceneRenderData& GetSceneRD()const{return  m_SceneRenderData;}
 
     RDSection*      GetCurSection()const{return m_pCurSection;}
-    const RDStory*  GetCurStory()const;
+    const RDStory&  GetCurStory()const;
     void            SetCurSection(RDSection* pSection){m_pCurSection = pSection;}
     bool            IsPlay()const;
     uint            GetSceneWidth();
@@ -126,7 +130,8 @@ protected:
     RDSection*          m_pCurSection;
     RDRenderData*       m_pParent;
     const RDSceneRenderData&  m_SceneRenderData;
-    RDTime             m_nSectionTime;
+    RDTime              m_nSectionTime;
+    RDTime              m_nStoryTime;
     QRectF              m_rtDirty;
     QRectF              m_rtBound;
     float3              m_vMin;

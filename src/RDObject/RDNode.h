@@ -75,9 +75,9 @@ public:
 
     bool AddSection(const RDTime& nStoryTime,const RDTime& nLength,const QUuid& storyId);
 	RDTime GetSectionMaxLength(const QUuid& idStory)const;
-	void AddPosKey(const RDTime& nTime,const float3& vOffsetPos );
-	void AddAngleKey(const RDTime& nTime,const float3& vOffsetAngle );
-	void AddScaleKey(const RDTime& nTime,const float3& vOffsetScale );
+	void AddPosKey(const RDTime& nTime,const float3& vOffsetPos ,const std::string& strName);
+	void AddAngleKey(const RDTime& nTime,const float3& vOffsetAngle ,const std::string& strName);
+	void AddScaleKey(const RDTime& nTime,const float3& vOffsetScale ,const std::string& strName);
 
     RDObject* GetObject(){return m_pObj;}
     const RDObject* GetObject()const{return m_pObj;}
@@ -104,6 +104,7 @@ public:
     RDRenderData*   GetRenderData(const std::string& pName);
     const RDRenderData*   GetRenderData(const std::string& pName)const;
     void            RemoveRenderData();
+    RDRenderPrivateData* GetPrivateData(const std::string& pName)const;
 
     RDRenderChangeLevel GetMaxChangeLevel(const std::string& pName)const;
     RDRenderChangeLevel GetMaxRenderChangeLevel(const std::string& pName)const;
@@ -122,8 +123,9 @@ public:
     const matrix4x4& GetNodeMatrix(const std::string &strName)const;
 protected:
     virtual void    CalChildFrame(const RDTime& nTime,const std::string& pRDName);
+    RDTime          calSectionTime(RDTime time,RDRenderData& pRD);
     void            MoveSection(const RDTime& nSteps, RDSectionList pStart,RDSectionList pEnd );
-    void            UpdateSection(const RDTime& nFrame /*global frame*/,RDRenderData& pRD);
+    RDTime          UpdateSection(const RDTime& nFrame /*global frame*/,RDRenderData& pRD);
     RDSection*      GetLastSectionBefore(size_t nCurStoryIndex);
     RDSection*      GetSection(const QUuid& nStoryId,const RDTime& nStoryFrame);
     virtual RDRenderData*  CreateRenderData(const std::string& pName);
