@@ -201,26 +201,9 @@ bool RDNode::AddSection(const RDTime& nStoryTime,const RDTime& nLength,const QUu
 
 RDTime RDNode::UpdateSection(const RDTime& nFrame,RDRenderData& pRD)
 {
-    const RDSceneRenderData& pSceneRD = pRD.GetSceneRD();
-    const RDScene& pScene = dynamic_cast<const RDScene&>(pSceneRD.GetNode());
-    auto pCurStory = pScene.GetCurStory(pSceneRD);
-
-    auto pFindRes = m_vecSetctionListMap.find(pCurStory.GetStoryId());
-    if(pFindRes != m_vecSetctionListMap.end())
-    {
-        auto pSectionList = pFindRes->second;
-        RDTime nStoryFrame = nFrame - pCurStory.GetStartTime();
-        for(auto it = pSectionList.begin(); it != pSectionList.end();it++)
-        {
-            if(nStoryFrame < (*it)->GetStartTime())
-                break;
-            else 
-            {
-                pRD.setStoryTime(pCurStory.GetStartTime());
-                pRD.SetCurSection(*it);
-            }
-        }
-    }
+	RDTime storyTime = 0;
+	pRD.SetCurSection(FindNearestSection(storyTime,pRD,nFrame));
+	pRD.setStoryTime(storyTime);
 
     RDTime nSectionTime = calSectionTime(nFrame,pRD);
     if(nSectionTime < 0)
@@ -228,23 +211,6 @@ RDTime RDNode::UpdateSection(const RDTime& nFrame,RDRenderData& pRD)
     return nSectionTime;
 }
 
-RDSection* RDNode::GetLastSectionBefore(size_t nCurStoryIndex)
-{
-    const RDScene* pScene = GetSceneNode();
-    auto pCurStory = pScene->GetStory(--nCurStoryIndex);
-    while(pCurStory)
-    {
-        auto pFindRes = m_vecSetctionListMap.find(pCurStory->GetStoryId());
-        if(pFindRes != m_vecSetctionListMap.end())
-        {
-            auto& pSectionList = pFindRes->second;
-            auto it = pSectionList.rbegin();
-            return *it;
-        }
-        pCurStory = pScene->GetStory(--nCurStoryIndex);
-    }
-    return 0;
-}
 void RDNode::RemoveChild(const RDNode& pChild)
 {
     size_t nCount = GetChildCount();
@@ -345,7 +311,7 @@ void RDNode::SetChangeLevel(RDRenderChangeLevel nLevel)
     for(auto it = m_vecRenderData.begin();it != m_vecRenderData.end();it++)
     {
         RDRenderData* pRenderData = it->second;
-        pRenderData->SetChangeLevel(nLevel);
+        pRenderData->setChangeLevel(nLevel);
     }   
 }
 void RDNode::RemoveRenderData()
@@ -643,6 +609,30 @@ RDTime            RDNode::calSectionTime(RDTime time,RDRenderData& pRD)
     return nSectionTime;
 }
 
+RDSection*		RDNode::FindNearestSection(RDTime& storyTime,const RDRenderData& renderData,RDTime time)
+{
+    const RDSceneRenderData& pSceneRD = renderData.GetSceneRD();
+    auto listTrigStory = pSceneRD.getTrigStoryList();
+	for(auto storyIt = listTrigStory.rbegin(); storyIt != listTrigStory.rend(); storyIt++)
+	{
+		RDStory& story = *storyIt;
+		auto pFindRes = m_vecSetctionListMap.find(story.GetStoryId());
+		if(pFindRes != m_vecSetctionListMap.end())
+		{ 
+			auto pSectionList = pFindRes->second;
+			RDTime nStoryTime = time - story.GetStartTime();
+			for(auto sectionIt = pSectionList.rbegin(); sectionIt != pSectionList.rend();sectionIt++)
+			{
+				if(nStoryTime >= (*sectionIt)->GetStartTime())
+				{
+					storyTime = story.GetStartTime();
+					return *sectionIt;
+				}
+			}
+		}
+	}
+	return nullptr;
+}
 //================================================================================
 //undo
 RDPosUndo::RDPosUndo(RDNode& pNode)
@@ -668,3 +658,4 @@ void RDPosUndo::redo()
     m_pNode->SetPos(vOldPos);
     m_pNode->SetChangeLevel(RDRender_TransChange);
 }
+

@@ -126,7 +126,7 @@ protected:
     RDTime          calSectionTime(RDTime time,RDRenderData& pRD);
     void            MoveSection(const RDTime& nSteps, RDSectionList pStart,RDSectionList pEnd );
     RDTime          UpdateSection(const RDTime& nFrame /*global frame*/,RDRenderData& pRD);
-    RDSection*      GetLastSectionBefore(size_t nCurStoryIndex);
+	RDSection*		FindNearestSection(RDTime& storyTime,const RDRenderData& renderData,RDTime time);
     RDSection*      GetSection(const QUuid& nStoryId,const RDTime& nStoryFrame);
     virtual RDRenderData*  CreateRenderData(const std::string& pName);
     const RDScene *GetSceneNode()const;

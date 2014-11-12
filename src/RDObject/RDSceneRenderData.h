@@ -20,6 +20,8 @@
 #include "RDRenderData.h"
 #include "HMath.h"
 #include "mac_define.h"
+#include <list>
+#include "RDStory.h"
 
 class RDSceneRenderData : public RDRenderData
 {
@@ -38,12 +40,23 @@ public:
 
     const RDTime& GetTime()const{return m_nCurFrame ;}
     void SetTime(const RDTime& nTime){m_nCurFrame = nTime ;}
+
+    size_t GetCurStoryIndex()const{return m_nCurStoryIndex;}
+    void SetCurStoryIndex(size_t nIndex){m_nCurStoryIndex = nIndex;} 
+    void trigStory(const RDStory& story,RDTime nFrame);
+    const RDStory& GetCurStory()const{return m_trigStory.front();}
+    const RDStory& GetStory(RDTime nTime)const;
+	void removeTrigStory(const QUuid& storyID);
+	const std::list<RDStory>& getTrigStoryList()const{return m_trigStory;}
 protected:
     bool    m_bPlay;
     uint    m_nWidth;
     uint    m_nHeight;
     float   m_fScale;
     RDTime m_nCurFrame;
+
+    size_t m_nCurStoryIndex;
+    std::list<RDStory> m_trigStory;
 };
 
 #endif   // ----- #ifndef rdscenerenderdata_INC  -----

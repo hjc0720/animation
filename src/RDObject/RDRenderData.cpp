@@ -61,7 +61,7 @@ void            RDRenderData::setChildChangeLevel(RDRenderChangeLevel nLevel)
     }
 }
 
-void RDRenderData::SetChangeLevel(RDRenderChangeLevel nLevel)
+void RDRenderData::setChangeLevel(RDRenderChangeLevel nLevel)
 {
     m_nChangeLevel = nLevel > m_nChangeLevel ? nLevel : m_nChangeLevel;
 }

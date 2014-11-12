@@ -28,6 +28,7 @@ RDSceneRenderData::RDSceneRenderData(const std::string& name,RDNode& obj)
     RDScene& scene = dynamic_cast<RDScene&>(obj);
     scene.CreateRenderData(*this);
     m_bPlay = false;
+    m_nCurStoryIndex = 0;
 }
 
 RDSceneRenderData::RDSceneRenderData(const std::string& name,int nWidth,int nHeight,RDNode& obj)
@@ -47,6 +48,27 @@ void RDSceneRenderData::SetSceneScale(float fScale)
         return;
     Lock();
     m_fScale = fScale;
-    SetChangeLevel(RDRender_GraphicChange);
+    setChangeLevel(RDRender_GraphicChange);
     UnLock();
+}
+
+void RDSceneRenderData::trigStory(const RDStory& story,RDTime nFrame)
+{
+	m_trigStory.push_front(story);
+	m_trigStory.front().SetStartTime(nFrame);
+}
+
+const RDStory& RDSceneRenderData::GetStory(RDTime nTime)const
+{
+	for(auto it = m_trigStory.begin(); it != m_trigStory.end(); it++)
+	{
+		if(it->GetStartTime() < nTime)
+			return *it;
+	}
+	return m_trigStory.back();
+}
+
+void RDSceneRenderData::removeTrigStory(const QUuid& storyID)
+{
+	m_trigStory.remove_if([&](const RDStory& pStory)->bool{ return storyID == pStory.GetStoryId();});
 }

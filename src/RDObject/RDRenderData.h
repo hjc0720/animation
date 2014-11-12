@@ -55,7 +55,7 @@ public:
     RDRenderData(const std::string& name,RDNode& node,const RDSceneRenderData& SceneRenderData);
     virtual         ~RDRenderData();
     RDRenderChangeLevel GetChangeLevel()const{return m_nChangeLevel;}
-    void            SetChangeLevel(RDRenderChangeLevel nLevel);
+    void            setChangeLevel(RDRenderChangeLevel nLevel);
     void            setChildChangeLevel(RDRenderChangeLevel nLevel);
     void            ResetChangeLevel(){m_nChangeLevel = RDRender_NoChange;}
     RDRenderChangeLevel  GetRenderChangeLevel()const{return m_nRenderChangeLevel;}

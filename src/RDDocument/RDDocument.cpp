@@ -205,7 +205,7 @@ void RDDocument::SetCurScene(int nSceneIndex)
     {
         pScene = GetCurScene();
         RDRenderData* pData = pScene->GetRenderData(DEFAULT_RD);
-        pData->SetChangeLevel(RDRender_GraphicChange);
+        pData->setChangeLevel(RDRender_GraphicChange);
         pScene->SetWidthHeight(m_pProject->GetWidth(),m_pProject->GetHeight());
         PushTopNode(pScene);
         pScene->setRenderScale(m_fScale,DEFAULT_RD);

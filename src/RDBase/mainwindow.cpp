@@ -245,6 +245,7 @@ void MainWindow::OnAddStory()
 	{
 		GetCurDocument()->AddStoryAndTrigger(defaultName.toStdString());
 		m_pTimeLineView->updateStory();
+		m_pCenterWidget->updateGL();
 	}
 }
 
@@ -252,6 +253,7 @@ void MainWindow::OnSwitchStory(int nIndex)
 {
 	GetCurDocument()->TriggerStory(nIndex);
 	m_pTimeLineView->trigStory(nIndex);
+	m_pCenterWidget->updateGL();
 }
 
 void MainWindow::OnDeleteCurStory()
@@ -260,5 +262,8 @@ void MainWindow::OnDeleteCurStory()
 	if(!GetCurDocument()->RemoveStoryAndTrigger(nIndex))
 		QMessageBox::warning(this,tr("Delete Story Error"),tr("This is last story, you can't delete it!"));
 	else
+	{
 		m_pTimeLineView->updateStory();
+		m_pCenterWidget->updateGL();
+	}
 }

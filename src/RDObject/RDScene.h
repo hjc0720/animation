@@ -76,6 +76,7 @@ public:
 	size_t GetStoryCount()const{return m_StoryList.size();}
     const RDStory* GetStory(size_t nIndex)const{return m_StoryList[nIndex];}
     const RDStory* GetStory(RDTime nFrame,const std::string& pRDName)const;
+
 	void RefreshStoryLength();
 
     void            setRenderScale(float fScale,const std::string& pName);
