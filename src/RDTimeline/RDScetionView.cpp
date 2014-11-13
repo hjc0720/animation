@@ -95,7 +95,7 @@ void RDSectionView::AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& i
         for(size_t j = 0; j < pChildNode->GetSectionCount(idStory); j++)
         {
             RDSection* pSection = pChildNode->GetSection(idStory,j);
-            RDSectionItem* pItem = new RDSectionItem(pChildNode,pSection,RDTRACK_HEIGTH,0,nIndex * RDTRACK_HEIGTH);
+            RDSectionItem* pItem = new RDSectionItem(pChildNode,pSection,RDTRACK_HEIGTH,nIndex * RDTRACK_HEIGTH);
             //qDebug() << "cur section" << (size_t)pItem <<":"<< nIndex << pNode->GetName();
             scene()->addItem(pItem);
         }

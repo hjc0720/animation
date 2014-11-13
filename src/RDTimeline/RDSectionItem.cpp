@@ -26,16 +26,15 @@
 #include "RDScetionView.h"
 #include "RDNode.h"
 
-RDSectionItem::RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int nXOffset,int nYOffset)
+RDSectionItem::RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int nYOffset)
     :m_bHitTest(false)
      ,m_nHeight(nHeight)
-     ,m_nXOffset(nXOffset)
      ,m_nYOffset(nYOffset)
      ,m_pNode(pNode)
       ,m_pSection(pSection)
 {
     SetSectionType();
-    setPos(m_nXOffset + m_pSection->GetStartTime(),m_nYOffset);
+    setPos(m_pSection->GetStartTime(),m_nYOffset);
     setFlag(ItemIsMovable);
 //    setAcceptedMouseButtons(Qt::LeftButton);
 }
@@ -64,15 +63,14 @@ void RDSectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * , 
     line.setColorAt(0,QColor(0,0,255));
     line.setColorAt(1,QColor(255,255,255));
     QBrush brush(line);
-    painter->fillRect(m_pSection->GetStartTime() ,0,
-            m_pSection->GetLength(),m_nHeight,line);
+    painter->fillRect(0,0,m_pSection->GetLength(),m_nHeight,line);
     qreal fScale = painter->worldTransform().m11();
     qreal fRealSize = 16 / fScale;
     //qDebug() << fRealSize << m_pSection->GetLength() / 2;
     //qDebug() << "image width" << m_imgSectionType.size();
     if(fRealSize < m_pSection->GetLength() / 2)
     {
-        QRectF target(m_pSection->GetStartTime() + m_pSection->GetLength() - fRealSize,0,fRealSize,m_nHeight);
+        QRectF target(m_pSection->GetLength() - fRealSize,0,fRealSize,m_nHeight);
         //        QRectF target(0,0,m_pSection->GetLength(),m_nHeight);
         painter->drawImage(target,m_imgSectionType);
     }
@@ -90,6 +88,7 @@ void RDSectionItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     update();
     m_pSection->MovSection(offsetPos);
     m_pNode->SetChangeLevel(RDRender_TransChange);
+	setPos(m_pSection->GetStartTime(),m_nYOffset);
     RDSectionScene* pScene = dynamic_cast<RDSectionScene*>(scene());
     if(pScene)
         pScene->SectionChange();

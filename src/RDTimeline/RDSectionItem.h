@@ -23,7 +23,7 @@ class RDNode;
 class RDSectionItem : public QGraphicsItem
 {
 public:
-    RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int nXOffset,int nYOffset);
+    RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int nYOffset);
     QRectF boundingRect()const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 protected:
@@ -34,7 +34,6 @@ protected:
 protected:
     bool        m_bHitTest;
     int         m_nHeight;
-    int         m_nXOffset;
     int         m_nYOffset;
     RDNode*     m_pNode;
     RDSection*  m_pSection;
