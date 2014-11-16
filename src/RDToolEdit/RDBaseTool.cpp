@@ -15,6 +15,8 @@
 // =====================================================================================
 
 #include "RDBaseTool.h"
+#include "RDToolManager.h"
+
 RDBaseTool::RDBaseTool(const QString& name)
     :RDBaseToolEdit(name)
 {
@@ -41,6 +43,12 @@ bool RDBaseTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const float
 }
 bool RDBaseTool::OnKeyPress(int nKeyState)
 {
+    if(nKeyState == Qt::Key_Delete)
+    {
+		RDToolManager::GetToolManager()->sendDelSelItems();
+        return true;
+    }
+
     if(m_pActiveEdit)
         return m_pActiveEdit->OnKeyPress(nKeyState);
     return false;

@@ -35,6 +35,11 @@ RDObjHead::RDObjHead(RDNode& pNode,QWidget* parent)
     updateVisible();
 }
 
+RDObjHead::~RDObjHead()
+{
+	qDebug() << "~RDObjHead";
+}
+
 int RDObjHead::CalSpaceCount(const RDNode& pNode)
 {
 	if(pNode.GetParent())

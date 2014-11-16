@@ -20,7 +20,7 @@
 #include <QPainter>
 #include <QWidget>
 #include <QGraphicsSceneMouseEvent>
-#include "RDScetionView.h"
+#include "RDSectionScene.h"
 #include <cmath>
 /*
  *--------------------------------------------------------------------------------------

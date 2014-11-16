@@ -17,7 +17,6 @@
 #ifndef  RDSCETIONVIEW_INC
 #define  RDSCETIONVIEW_INC
 #include <QGraphicsView>
-#include <QGraphicsScene>
 #include "mac_define.h"
 #include "RDTimeMarker.h"
 
@@ -27,32 +26,6 @@ class RDNode;
 class QUuid;
 class RDStory;
 
-class RDSectionScene : public QGraphicsScene
-{
-    Q_OBJECT
-public:
-        RDSectionScene( qreal x, qreal y, qreal width, qreal height, QObject * parent = 0 )
-            :QGraphicsScene(x,y,width,height,parent)
-             ,m_pTimeMarker(nullptr)
-    { }
-        void ChangeFrame(const RDTime& nFrame)
-        {
-            if(m_pTimeMarker)
-            {
-                m_pTimeMarker->SetTime(nFrame);
-            }
-            emit FrameChanged(nFrame);
-        }
-        void SetTimeMarker(RDTimeMarker* pMarker ){m_pTimeMarker = pMarker;}
-        RDTimeMarker* GetTimeMarker(){return m_pTimeMarker;}
-        void    SectionChange(){emit SectionChanged();};
-signals:
-        void    FrameChanged(const RDTime& nFrame);
-        void    SectionChanged();
-protected:
-        RDTimeMarker* m_pTimeMarker;
-};
-
 class RDSectionView :public QGraphicsView
 {
     Q_OBJECT
@@ -60,6 +33,7 @@ public:
     RDSectionView(RDScene* pScene,const RDStory* pStory,QWidget* pWidget );
 	void SetSceneNode(RDScene* pScene);
     void SetScale(const RDTime& nScale); 
+	void DelNode(RDNode* pNode);
 signals:
     void    FrameChanged(const RDTime& nFrame);
     void    SectionChanged();

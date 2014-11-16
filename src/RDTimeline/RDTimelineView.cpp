@@ -123,15 +123,31 @@ int RDTimelineView::GetHeadIndex(const RDNode& pNode)
 
 void RDTimelineView::DelObj(RDNode& pNewNode)
 {
-	int nIndex = GetHeadIndex(pNewNode);
+	qDebug() << "RDTimelineView::DelObj";
     int nTotalChildCount = pNewNode.GetTotalChildCount();
 
-    auto pDelObj = [](RDObjHead* pHead){delete pHead;};
+	auto it = std::find_if(m_objHead.begin(),m_objHead.end(),[&pNewNode](RDObjHead* pHead)->bool{return pHead->isEqual(&pNewNode);});
+	if(it == m_objHead.end())
+		return;
+	int nIndex = std::distance(m_objHead.begin(),it);
 
-    for_each(m_objHead.begin() + nIndex ,m_objHead.begin() + nIndex + nTotalChildCount,pDelObj);
+	for(int i = nIndex + nTotalChildCount; i >= nIndex; i--)
+	{
+		qDebug() << "RDTimelineView::DelObj:" << i;
+		QLayoutItem* item = m_pHeadLayout->takeAt(i);
+		if(item)
+		{
+			QWidget* pWidget = item->widget();
+			if(pWidget)
+				pWidget->deleteLater();
+			delete item;
+		}
+	}
+
     m_objHead.erase(m_objHead.begin() + nIndex ,m_objHead.begin() + nIndex + nTotalChildCount + 1);
-
-    m_pSectionView->SetSceneNode(m_pScene);
+	m_pSectionView->DelNode(&pNewNode);
+	//TODO: m_pSectionView support delete one Node
+    //m_pSectionView->SetSceneNode(m_pScene);
     UpdateBackground(nIndex );
 }
 

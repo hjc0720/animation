@@ -39,7 +39,7 @@ bool g_bForceUpdate = false;
 
 void RDRenderWidget::setVisible(bool visible)
 {
-    QWidget::setVisible(visible);
+    QGLWidget::setVisible(visible);
 }
 
 void RDRenderWidget::resizeGL(int w, int h)
@@ -71,6 +71,8 @@ RDRenderWidget::RDRenderWidget(int nWidth, int nHeight,const QGLFormat& format,Q
      ,m_swapChain(nWidth,nHeight)
 {
     RDEditerManager::GetEditerManager().SetDocument(&m_document);
+	setFocusPolicy(Qt::ClickFocus);
+	connect(RDToolManager::GetToolManager(),SIGNAL(deleteSelItems()),this,SLOT(deleteSelItems()));
 }
 
 RDRenderWidget::~RDRenderWidget()
@@ -113,9 +115,11 @@ bool RDRenderWidget::event(QEvent* e)
         }
         break;
     default:
-        return QWidget::event(e);
+        bProcess = false;
+		break;
     }
     //updateGL();
+	//setFocus();
     return bProcess || QWidget::event(e);
 }
 
@@ -155,16 +159,13 @@ void RDRenderWidget::paintGL()
     //qDebug() << "On Time :" << pDoc->GetCurTime();
 }
 
-void RDRenderWidget::keyPressEvent( QKeyEvent * event ) 
+void RDRenderWidget::deleteSelItems() 
 {
-    qDebug() << "RenderWidget key down";
-    if(event->key() == Qt::Key_Delete)
-    {
-		for(size_t i = 0; i < m_document.GetSelItemCount(); i++)
-			emit DelNoded(*m_document.GetSelItem(i));
-        m_document.DelSelItems();
-        RDEditerManager::GetEditerManager().UpdateProperty(0);
-        return;
-    }
-    QWidget::keyPressEvent(event);
+	qDebug() << "delete all select Items";
+	for(size_t i = 0; i < m_document.GetSelItemCount(); i++)
+		emit DelNoded(*m_document.GetSelItem(i));
+	m_document.DelSelItems();
+	RDEditerManager::GetEditerManager().UpdateProperty(0);
+	update();
 }
+

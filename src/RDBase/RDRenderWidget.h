@@ -40,13 +40,13 @@ signals:
 	void DelNoded(RDNode&);
 public slots:
     virtual void setVisible(bool visible);
+	void deleteSelItems();
 protected:
     //void paintEvent(QPaintEvent* event);
     //void resizeEvent(QResizeEvent* event);
     void resizeGL(int w,int h);
     int GetRealPorjWidth(){return floatToInt(m_nProjWidth * m_fScale);}
     int GetRealPorjHeight(){return floatToInt(m_nProjHeight * m_fScale);}
-    virtual void keyPressEvent( QKeyEvent * event ) ;
     float3 ClientToScene(const QPoint& pos);
     void initializeGL () ;
     void paintGL();

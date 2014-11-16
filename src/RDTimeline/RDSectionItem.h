@@ -26,6 +26,7 @@ public:
     RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int nYOffset);
     QRectF boundingRect()const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+	bool	isEqual(const RDNode* pNode)const{return m_pNode == pNode;}
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 //    void mousePressEvent(QGraphicsSceneMouseEvent *event);

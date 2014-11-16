@@ -7,8 +7,11 @@ VERSION = 1.0.1
 
 SOURCES += RDTimelineView.cpp RDObjHead.cpp RDScetionView.cpp RDSectionItem.cpp
 SOURCES += RDStoryItem.cpp RDTimeMarker.cpp
+SOURCES += RDSectionScene.cpp 
+
 HEADERS += RDTimelineView.h RDObjHead.h RDScetionView.h RDSectionItem.h
 HEADERS += RDStoryItem.h RDTimeMarker.h
+HEADERS += RDSectionScene.h 
 
 #RESOURCES = resource.qrc
 

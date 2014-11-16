@@ -25,6 +25,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include "RDScetionView.h"
 #include "RDNode.h"
+#include "RDSectionScene.h"
 
 RDSectionItem::RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int nYOffset)
     :m_bHitTest(false)

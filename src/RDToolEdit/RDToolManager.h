@@ -41,9 +41,11 @@ public:
 
     RDDocument* GetDocument(){return m_pCurDoc;}
     void SendSceneChange(){emit SceneChange();}
+	void sendDelSelItems(){emit deleteSelItems();}
 signals:
     void ChangeTool(const QString& toolName);
     void SceneChange();
+	void deleteSelItems();
 protected:
     RDToolManager();
     void RegisterTool();

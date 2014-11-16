@@ -28,9 +28,11 @@ class RDObjHead :public QWidget
     Q_OBJECT
 public:
 		RDObjHead(RDNode& pNode,QWidget* parent);
+		~RDObjHead();
         void SetBackGround(bool bDark){setBackgroundRole(bDark?QPalette::AlternateBase : QPalette::Base);};
         virtual void paintEvent(QPaintEvent * /*e*/);
         void updateVisible();
+		bool isEqual(RDNode* pNode)const {return pNode == m_pNode;}
 signals:
         void    collapseNode(RDNode& pNode);
 protected:

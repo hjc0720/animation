@@ -26,6 +26,7 @@
 #include "RDSectionItem.h"
 #include "RDStoryItem.h"
 #include "RDTimeMarker.h"
+#include "RDSectionScene.h"
 
 RDSectionView::RDSectionView(RDScene* pScene,const RDStory* pStory,QWidget* pWidget )
     :QGraphicsView(pWidget)
@@ -111,4 +112,13 @@ void RDSectionView::SetScale(const RDTime& nScale)
     RDSectionScene* pScene = dynamic_cast<RDSectionScene*>(scene());
     if(pScene && pScene->GetTimeMarker())
         pScene->GetTimeMarker()->SetScale(1.0 / m_nScale);
+}
+
+void RDSectionView::DelNode(RDNode* pNode)
+{
+	if(pNode == nullptr)
+		return;
+
+    RDSectionScene* pScene = dynamic_cast<RDSectionScene*>(scene());
+	pScene->delNode(pNode);
 }

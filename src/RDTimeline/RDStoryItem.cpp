@@ -23,6 +23,7 @@
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
 #include "RDScetionView.h"
+#include "RDSectionScene.h"
 
 RDStoryItem::RDStoryItem(const RDStory* pStory,int nHeight)
     :m_pStory(pStory)
