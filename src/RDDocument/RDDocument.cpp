@@ -75,18 +75,18 @@ RDDocument::RDDocument(bool bCreateNewProj)
     {
         m_pProject = new RDProject(1920,1080,50);
         SetCurScene(0);
-        RDLayer* pLayer = new RDLayer(RD3DLayer,"layer");
-        pLayer->SetParent(GetCurScene());
 
         RDScene* pScene = GetCurScene();
-        pScene->AddChild(*pLayer);
-
         RDSceneRenderData* pRenderData = dynamic_cast<RDSceneRenderData* >(pScene->GetRenderData(DEFAULT_RD));
         pScene->TriggerStory(0,0,*pRenderData);
+        auto pStory = pRenderData->GetCurTrigStory();
+		pScene->AddSection(m_nCurFrame - pStory.GetStartTime(),1000000000,pStory.GetStoryId());
 
-        auto pStory = pRenderData->GetCurStory();
-
+        RDLayer* pLayer = new RDLayer(RD3DLayer,"layer");
+        pLayer->SetParent(pScene);
+        pScene->AddChild(*pLayer);
         pLayer->AddSection(m_nCurFrame - pStory.GetStartTime(),1000000000,pStory.GetStoryId());
+
         for(size_t i = 0; i < pLayer->GetCameraCount(); i++)
         {
             pLayer->GetCamera(i)->AddSection(m_nCurFrame - pStory.GetStartTime(),1000000000,pStory.GetStoryId());
@@ -296,7 +296,7 @@ void RDDocument::ClearRDStack()
 void RDDocument::AddChildNode(RDNode& parent,RDNode& pChild)
 {
     RDRenderData* pRenderData = parent.GetRenderData(DEFAULT_RD);
-    auto pStory = pRenderData->GetCurStory();
+    auto pStory = pRenderData->GetCurTrigStory();
     pChild.AddSection(m_nCurFrame - pStory.GetStartTime(),1000000000,pStory.GetStoryId());
 
     parent.Lock();
@@ -373,6 +373,6 @@ bool RDDocument::RemoveStoryAndTrigger(size_t nIndex)
 void RDDocument::TriggerStory(size_t nIndex)
 {
 	RDSceneRenderData* pRenderData = dynamic_cast<RDSceneRenderData* >(GetCurScene()->GetRenderData(DEFAULT_RD));
-	RDTime CurStoryStartTime = GetCurScene()->GetCurStory(*pRenderData).GetStartTime();
+	RDTime CurStoryStartTime = pRenderData->GetCurTrigStory().GetStartTime();
 	GetCurScene()->TriggerStory(nIndex,CurStoryStartTime + m_nCurFrame,*pRenderData);
 }

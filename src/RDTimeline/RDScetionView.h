@@ -25,6 +25,7 @@ class QResizeEvent;
 class RDNode;
 class QUuid;
 class RDStory;
+class RDStoryItem;
 
 class RDSectionView :public QGraphicsView
 {
@@ -34,6 +35,7 @@ public:
 	void SetSceneNode(RDScene* pScene);
     void SetScale(const RDTime& nScale); 
 	void DelNode(RDNode* pNode);
+	void UpdateStoryLength();
 signals:
     void    FrameChanged(const RDTime& nFrame);
     void    SectionChanged();
@@ -45,6 +47,7 @@ protected:
 	RDScene* m_pScene;
     const RDStory* m_pStory;
 	int	 m_nScale;
+	RDStoryItem* m_pStoryItem = nullptr;
 };
 
 #endif   // ----- #ifndef rdscetionview_INC  -----

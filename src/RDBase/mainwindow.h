@@ -48,6 +48,7 @@ public slots:
 	void OnAddStory();
 	void OnDeleteCurStory();
 	void OnSwitchStory(int nIndex);
+	void OnSectionChange();
 protected:
     bool        m_bInit;
     RDRenderWidget* m_pCenterWidget;

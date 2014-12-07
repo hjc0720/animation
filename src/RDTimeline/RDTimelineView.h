@@ -34,6 +34,7 @@ class RDTimelineView :public QDockWidget
 public:
 		RDTimelineView(RDScene& pScene,QWidget* pParent);
 		void updateStory();
+		void updateStoryLength();
 		void trigStory(size_t nIndex);
 signals:
         void    FrameChanged(const RDTime& );

@@ -228,10 +228,12 @@ bool RDScene::TriggerStory(int nStoryIndex,RDTime nFrame,RDSceneRenderData& pSce
     return !pStory;
 }
 
-const RDStory& RDScene::GetCurStory(const RDSceneRenderData& pSceneData)const
+const RDStory& RDScene::GetCurTrigStory(const std::string& name)const
 {
-    return pSceneData.GetCurStory();
+    const RDSceneRenderData* pRenderData = dynamic_cast<const RDSceneRenderData*>(GetRenderData(name));
+    return pRenderData->GetCurTrigStory();
 }
+
 size_t RDScene::GetCurStoryIndex(const RDSceneRenderData& pSceneData)const
 {
     return pSceneData.GetCurStoryIndex();
@@ -254,7 +256,7 @@ void RDScene::SetWidthHeight(int nWidth,int nHeight)
     }
 }
 
-const RDStory* RDScene::GetStory(RDTime nFrame,const std::string& pRDName)const
+const RDStory* RDScene::GetTrigStory(RDTime nFrame,const std::string& pRDName)const
 {
     const RDSceneRenderData* pRenderData = dynamic_cast<const RDSceneRenderData*>(GetRenderData(pRDName));
     return (pRenderData ? &pRenderData->GetStory(nFrame) : nullptr);
@@ -327,8 +329,8 @@ size_t RDScene::GetCurStoryIndex(const std::string& name)const
 
 const RDStory& RDScene::GetCurStory(const std::string& name)const
 {
-    const RDSceneRenderData* pSceneData = dynamic_cast<const RDSceneRenderData*>(GetRenderData(name));
-    return pSceneData->GetCurStory();
+	size_t nIndex = GetCurStoryIndex(name);
+    return *GetStory(nIndex);
 }
 
 size_t RDScene::AddStory(const std::string& strName)

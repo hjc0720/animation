@@ -69,13 +69,13 @@ public:
 	bool RemoveStory(size_t nIndex);
 	int GetStoryCreatIndex()const{return m_nStoryCreateIndex;}
     bool  TriggerStory(int nStoryIndex,RDTime nFrame,RDSceneRenderData& pSceneData);
+    const RDStory& GetCurTrigStory(const std::string& name)const;
     const RDStory& GetCurStory(const std::string& name)const;
-    const RDStory& GetCurStory(const RDSceneRenderData& pSceneData)const;
     size_t GetCurStoryIndex(const std::string& name)const;
     size_t GetCurStoryIndex(const RDSceneRenderData& pSceneData)const;
 	size_t GetStoryCount()const{return m_StoryList.size();}
     const RDStory* GetStory(size_t nIndex)const{return m_StoryList[nIndex];}
-    const RDStory* GetStory(RDTime nFrame,const std::string& pRDName)const;
+    const RDStory* GetTrigStory(RDTime nFrame,const std::string& pRDName)const;
 
 	void RefreshStoryLength();
 

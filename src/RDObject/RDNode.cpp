@@ -156,20 +156,22 @@ void RDNode::CalFrame(const RDTime& nTime,const std::string& pRDName)
 RDTime RDNode::GetSectionMaxLength(const QUuid& idStory)const
 {
 	auto pSectionList = m_vecSetctionListMap.find(idStory);
-	RDTime nTime = 0;
-	if(pSectionList != m_vecSetctionListMap.end())
-	{
-		auto it = pSectionList->second.rbegin();
-		RDSection* pSection = *it;
-		nTime = pSection->GetEndTime();
-	}
+	if(pSectionList == m_vecSetctionListMap.end())
+		return 0;
+
+	auto it = pSectionList->second.rbegin();
+	RDSection* pSection = *it;
+	RDTime nTime = pSection->GetEndTime();
+
 	for(size_t i = 0;i < GetChildCount(); i++)
 	{
 		const RDNode* pChildNode = GetChild(i);
 		nTime = max(nTime,pChildNode->GetSectionMaxLength(idStory));
 	}
+	qDebug()<<m_strName << "section length" << nTime;
 	return nTime;
 }
+
 bool RDNode::AddSection(const RDTime& nStoryTime,const RDTime& nLength,const QUuid& storyId)
 {
     RDSection* pNewSection = new RDSection(nStoryTime,nLength);
@@ -348,7 +350,7 @@ RDSection* RDNode::GetSection(const QUuid& nStoryId,const RDTime& nStoryFrame)
 
 void RDNode::AddAngleKey(const RDTime& nTime,const float3& vOffsetAngle ,const std::string& strName)
 {
-    const RDStory& pCurStory = GetRenderData(strName)->GetCurStory();
+    const RDStory& pCurStory = GetRenderData(strName)->GetCurTrigStory();
     RDTime nStoryTime = nTime - pCurStory.GetStartTime();
     RDSection* pSection = GetSection(pCurStory.GetStoryId(),nStoryTime);
     pSection->AddAngleKey(nStoryTime,vOffsetAngle);
@@ -356,7 +358,7 @@ void RDNode::AddAngleKey(const RDTime& nTime,const float3& vOffsetAngle ,const s
 
 void RDNode::AddScaleKey(const RDTime& nTime,const float3& vOffsetScale ,const std::string& strName)
 {
-    const RDStory& pCurStory = GetRenderData(strName)->GetCurStory();
+    const RDStory& pCurStory = GetRenderData(strName)->GetCurTrigStory();
     RDTime nStoryTime = nTime - pCurStory.GetStartTime();
     RDSection* pSection = GetSection(pCurStory.GetStoryId(),nStoryTime);
     pSection->AddScaleKey(nStoryTime,vOffsetScale);
@@ -364,7 +366,7 @@ void RDNode::AddScaleKey(const RDTime& nTime,const float3& vOffsetScale ,const s
 
 void RDNode::AddPosKey(const RDTime& nTime,const float3& vOffsetPos ,const std::string& strName)
 {
-    const RDStory& pCurStory = GetRenderData(strName)->GetCurStory();
+    const RDStory& pCurStory = GetRenderData(strName)->GetCurTrigStory();
     RDTime nStoryTime = nTime - pCurStory.GetStartTime();
     RDSection* pSection = GetSection(pCurStory.GetStoryId(),nStoryTime);
     //qDebug() << "add key Story Time" << nStoryTime << nTime;
@@ -613,7 +615,7 @@ RDSection*		RDNode::FindNearestSection(RDTime& storyTime,const RDRenderData& ren
 {
     const RDSceneRenderData& pSceneRD = renderData.GetSceneRD();
     auto listTrigStory = pSceneRD.getTrigStoryList();
-	for(auto storyIt = listTrigStory.rbegin(); storyIt != listTrigStory.rend(); storyIt++)
+	for(auto storyIt = listTrigStory.begin(); storyIt != listTrigStory.end(); storyIt++)
 	{
 		RDStory& story = *storyIt;
 		auto pFindRes = m_vecSetctionListMap.find(story.GetStoryId());

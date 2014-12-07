@@ -30,6 +30,7 @@ public:
     RDStoryItem(const RDStory* pStory,int nHeight);
     QRectF boundingRect()const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+	void updateLength();
 protected:
     virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
     void SetStoryType();

@@ -93,29 +93,5 @@ void RDSectionItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     RDSectionScene* pScene = dynamic_cast<RDSectionScene*>(scene());
     if(pScene)
         pScene->SectionChange();
-    //qDebug() << "cur start Time:" << m_pSection->GetStartTime();
-}
-
-//void RDSectionItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
-//{
-//    if(event->buttons().testFlag(Qt::LeftButton))
-//    {
-//        float fHeight = event->scenePos().y();
-//        qDebug() << "hit test section " << (size_t)this <<":" << event->scenePos() << "cur height" << m_nYOffset;
-//        if(fHeight  > m_nYOffset && fHeight < m_nYOffset + m_nHeight)
-//        {
-//            RDTime oldPos = event->scenePos().x();
-//            if(HitTest(oldPos))
-//            {
-//                m_bHitTest = true;
-//                event->accept();
-//            }
-//        }
-//    }
-//
-//}
-
-bool    RDSectionItem::HitTest(RDTime pos)
-{
-    return (pos >= m_pSection->GetStartTime() && pos <= m_pSection->GetEndTime());
+    qDebug() << "cur start Time:" << m_pSection->GetStartTime();
 }

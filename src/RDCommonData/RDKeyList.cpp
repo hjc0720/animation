@@ -68,16 +68,12 @@ inline bool RDKeyList<KeyType>::IsKeyTime(const RDTime& nSectionTime)
     auto it = m_KeyList.find(nSectionTime);
     return it != m_KeyList.end() && it->second != 0;
 } 
+
 template <typename KeyType>
-KeyType RDKeyList<KeyType>::Interpolation(const RDTime& nTime, const RDKey<KeyType>& FirstKey,const RDTime& nFirstTime, const RDKey<KeyType>& SecondKey,const RDTime& nSecondTime)
+KeyType RDKeyList<KeyType>::Interpolation(const RDTime& nTime, const RDBaseKey<KeyType>& FirstKey,const RDTime& nFirstTime, const RDBaseKey<KeyType>& SecondKey,const RDTime& nSecondTime)
 {
-    RDKeyType nType = FirstKey.GetKeyType();
-    if(nType == RDLineKey)
-    {
-        float weight = (nTime - nFirstTime) / (float)(nSecondTime - nFirstTime);
-        return (1 - weight) * FirstKey.GetValue() + weight * SecondKey.GetValue();
-    }
-    return KeyType();
+	double dWeight = (nTime - nFirstTime) / (double)(nSecondTime - nFirstTime);
+	return FirstKey.Interpolation(dWeight,SecondKey);
 }
 // =====================================================================================
 template class RDKeyList<float3>;

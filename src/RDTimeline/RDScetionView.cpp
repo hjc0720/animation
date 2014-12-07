@@ -55,6 +55,7 @@ void RDSectionView::wheelEvent(QWheelEvent *event)
     else
         nScale /= -(event->delta() / 8);
     nScale = std::max(nScale,MSECOND_TO_TIME / 100);
+	nScale = std::min((int)(m_pStory->GetStoryLength() / 100),nScale);
     qDebug() << "scale" << nScale;
     SetScale(nScale);
     event->accept();
@@ -77,8 +78,8 @@ void RDSectionView::SetSceneNode(RDScene* pScene)
 	const RDStory* pStory = &pScene->GetCurStory(DEFAULT_RD);
 	AddChildNodeSection(nIndex,pScene,pStory->GetStoryId());
 
-	RDStoryItem* pItem = new RDStoryItem(pStory,RDTRACK_HEIGTH);
-	scene()->addItem(pItem);
+	m_pStoryItem = new RDStoryItem(pStory,RDTRACK_HEIGTH);
+	scene()->addItem(m_pStoryItem);
 
     RDTimeMarker* pTimeMarker = new RDTimeMarker(RDTRACK_HEIGTH,height(),1.0 / m_nScale);
     pGraphicScene->SetTimeMarker(pTimeMarker);
@@ -121,4 +122,9 @@ void RDSectionView::DelNode(RDNode* pNode)
 
     RDSectionScene* pScene = dynamic_cast<RDSectionScene*>(scene());
 	pScene->delNode(pNode);
+}
+
+void RDSectionView::UpdateStoryLength()
+{
+	m_pStoryItem->updateLength();
 }

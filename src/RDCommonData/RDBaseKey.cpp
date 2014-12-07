@@ -20,27 +20,38 @@
 #include "RDFileDataStream.h"
 
 template <typename Value>
-void RDKey<Value>::Save(RDFileDataStream& buffer)
+void RDBaseKey<Value>::Serialize(RDFileDataStream& buffer,bool bSave)
 {
-    buffer << (int)m_nKeyType;
-    buffer << m_KeyValue;
+	buffer.Serialize(m_KeyValue,bSave);
 }
-template <typename Value>
-void RDKey<Value>::Load(RDFileDataStream& buffer)
-{
-    int nType;
-    buffer >> nType;
-    buffer >> m_KeyValue;
-    switch(nType)
-    {
-    case RDLineKey:
-        m_nKeyType = RDLineKey;
-        break;
-    default:
-        m_nKeyType = RDLineKey;
-    }
-}
-
 // =====================================================================================
-template class RDKey<float3>;
+template <typename Value>
+Value RDLinearKey<Value>::Interpolation(double& dWeight, const RDBaseKey<Value>& SecondKey)const
+{
+	return (1 - dWeight) * this->GetValue() + dWeight * SecondKey.GetValue();
+}
+// =====================================================================================
+template <typename Value>
+RDBaseKey<Value>* RDBaseKey<Value>::CreateKey(const Value& value, RDKeyType type /* = RDLineKey  */) 
+{
+	switch(type)
+	{
+	case RDLineKey:
+		return new RDLinearKey<Value>(value);
+	}
+	return nullptr;
+}
 
+template <typename Value>
+RDBaseKey<Value>* RDBaseKey<Value>::CreateKey(RDKeyType type /* = RDLineKey  */)
+{
+	switch(type)
+	{
+	case RDLineKey:
+		return new RDLinearKey<Value>();
+	}
+	return nullptr;
+}
+// =====================================================================================
+template class RDBaseKey<float3>;
+template class RDBaseKey<float>;

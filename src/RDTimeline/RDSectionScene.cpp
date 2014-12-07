@@ -28,9 +28,8 @@ RDSectionScene::RDSectionScene( qreal x, qreal y, qreal width, qreal height, QOb
 void RDSectionScene::ChangeFrame(const RDTime& nFrame)
 {
 	if(m_pTimeMarker)
-	{
 		m_pTimeMarker->SetTime(nFrame);
-	}
+	
 	emit FrameChanged(nFrame);
 }
 

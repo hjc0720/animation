@@ -33,7 +33,7 @@ public:
 	
 		void SetTimeMarker(RDTimeMarker* pMarker ){m_pTimeMarker = pMarker;}
 		RDTimeMarker* GetTimeMarker(){return m_pTimeMarker;}
-		void    SectionChange(){emit SectionChanged();};
+		void    SectionChange(){ emit SectionChanged(); };
 		void 	delNode(const RDNode* pNode);
 signals:
 		void    FrameChanged(const RDTime& nFrame);

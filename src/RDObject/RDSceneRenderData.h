@@ -44,7 +44,7 @@ public:
     size_t GetCurStoryIndex()const{return m_nCurStoryIndex;}
     void SetCurStoryIndex(size_t nIndex){m_nCurStoryIndex = nIndex;} 
     void trigStory(const RDStory& story,RDTime nFrame);
-    const RDStory& GetCurStory()const{return m_trigStory.front();}
+    const RDStory& GetCurTrigStory()const{return m_trigStory.front();}
     const RDStory& GetStory(RDTime nTime)const;
 	void removeTrigStory(const QUuid& storyID);
 	const std::list<RDStory>& getTrigStoryList()const{return m_trigStory;}

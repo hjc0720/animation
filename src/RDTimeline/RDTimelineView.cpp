@@ -19,7 +19,6 @@
 #include "RDScene.h"
 #include "RDNode.h"
 #include <QScrollArea>
-#include "RDTimeRuler.h"
 #include <QDebug>
 #include "RDScetionView.h"
 #include <QRect>
@@ -224,4 +223,9 @@ void RDTimelineView::trigStory(size_t nIndex)
 	m_pStoryList->setCurrentIndex(nIndex);
 	if(m_pSectionView)
 		m_pSectionView->SetSceneNode(m_pScene);
+}
+
+void RDTimelineView::updateStoryLength()
+{
+	m_pSectionView->UpdateStoryLength();
 }

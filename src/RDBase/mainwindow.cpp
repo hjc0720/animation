@@ -218,7 +218,7 @@ void MainWindow::OnReloadTimeLine(RDScene& pScene)
     connect(&RDEditerManager::GetEditerManager(),SIGNAL(AddNoded(RDNode&)),m_pTimeLineView,SLOT(InsertObj(RDNode&)));
     connect(m_pCenterWidget,SIGNAL(DelNoded(RDNode&)),m_pTimeLineView,SLOT(DelObj(RDNode&)));
     connect(m_pTimeLineView,SIGNAL(FrameChanged(const RDTime& )),this,SLOT(OnFrameChanged(const RDTime&)));
-    connect(m_pTimeLineView,SIGNAL(SectionChanged()),m_pCenterWidget,SLOT(updateGL()));
+    connect(m_pTimeLineView,SIGNAL(SectionChanged()),this,SLOT(OnSectionChange()));
 
     connect(m_pTimeLineView,SIGNAL(addStory()),this,SLOT(OnAddStory()));
     connect(m_pTimeLineView,SIGNAL(removeCurStory()),this,SLOT(OnDeleteCurStory()));
@@ -228,7 +228,8 @@ void MainWindow::OnReloadTimeLine(RDScene& pScene)
 
 void MainWindow::OnFrameChanged(const RDTime& nTime)
 {
-    GetCurDocument()->SetCurTime(nTime);
+	RDTime storyTime = GetCurDocument()->GetCurScene()->GetCurTrigStory(DEFAULT_RD).GetStartTime();
+    GetCurDocument()->SetCurTime(storyTime + nTime);
     m_pCenterWidget->updateGL();
 }
 
@@ -266,4 +267,11 @@ void MainWindow::OnDeleteCurStory()
 		m_pTimeLineView->updateStory();
 		m_pCenterWidget->updateGL();
 	}
+}
+
+void MainWindow::OnSectionChange()
+{
+	GetCurDocument()->GetCurScene()->RefreshStoryLength();
+	m_pTimeLineView->updateStoryLength();
+	m_pCenterWidget->updateGL();
 }

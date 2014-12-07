@@ -95,11 +95,11 @@ const RDTime& RDRenderData::GetTime()const
 {
     return m_SceneRenderData.GetTime() ;
 }
-const RDStory& RDRenderData::GetCurStory()const
+const RDStory& RDRenderData::GetCurTrigStory()const
 {
-    const RDScene& pScene = dynamic_cast<const RDScene&>(m_SceneRenderData.GetNode());
-    return pScene.GetCurStory(m_SceneRenderData);
+    return m_SceneRenderData.GetCurTrigStory();
 }
+
 uint RDRenderData::GetSceneWidth()
 {
     return m_SceneRenderData.GetWidth();

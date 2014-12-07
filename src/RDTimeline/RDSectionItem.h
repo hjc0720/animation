@@ -29,9 +29,7 @@ public:
 	bool	isEqual(const RDNode* pNode)const{return m_pNode == pNode;}
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-//    void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void SetSectionType();
-    bool    HitTest(RDTime pos);
 protected:
     bool        m_bHitTest;
     int         m_nHeight;

@@ -36,8 +36,7 @@ RDStoryItem::RDStoryItem(const RDStory* pStory,int nHeight)
 
 QRectF RDStoryItem::boundingRect()const
 {
-    float fLeft = m_pStory->GetStartTime();
-    return QRectF(fLeft,0,m_pStory->GetStoryLength(),m_nHeight);
+    return QRectF(0,0,m_pStory->GetStoryLength(),m_nHeight);
 }
 
 void RDStoryItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *widget)
@@ -113,4 +112,9 @@ void	RDStoryItem::mousePressEvent ( QGraphicsSceneMouseEvent * event )
         pScene->ChangeFrame(pos);
         event->accept();
     }
+}
+
+void RDStoryItem::updateLength()
+{
+	prepareGeometryChange();
 }

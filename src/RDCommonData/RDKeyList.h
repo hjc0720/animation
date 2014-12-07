@@ -47,9 +47,9 @@ public:
     KeyType GetKeyValue(const RDTime& nSectionTime,const KeyType& vDefaultValue=KeyType());
 protected:
     bool IsKeyTime(const RDTime& nSectionTime); 
-    KeyType Interpolation(const RDTime& nTime, const RDKey<KeyType>& FirstKey,const RDTime& nFirstTime, const RDKey<KeyType>& SecondKey,const RDTime& nSecondTime);
+    KeyType Interpolation(const RDTime& nTime, const RDBaseKey<KeyType>& FirstKey,const RDTime& nFirstTime, const RDBaseKey<KeyType>& SecondKey,const RDTime& nSecondTime);
 protected:
-    std::map<RDTime,RDKey<KeyType>*> m_KeyList;
+    std::map<RDTime,RDBaseKey<KeyType>*> m_KeyList;
 friend RDFileDataStream& operator << <KeyType>(RDFileDataStream& buffer,const RDKeyList<KeyType>& proj);
 friend RDFileDataStream& operator >> <KeyType>(RDFileDataStream& buffer,RDKeyList<KeyType>& proj);
 };
@@ -62,7 +62,7 @@ inline void RDKeyList<KeyType>::AddKey(const RDTime& nSectionTime,const KeyType&
     if(m_KeyList[nSectionTime] == 0)
     {
         qDebug() << "add new Key";
-        RDKey<KeyType>* pNewKey = new RDKey<KeyType>(keyValue);
+        RDBaseKey<KeyType>* pNewKey = RDBaseKey<KeyType>::CreateKey(keyValue);
         m_KeyList[nSectionTime] = pNewKey;
     }
     else
@@ -82,7 +82,8 @@ RDFileDataStream& operator << (RDFileDataStream& buffer,const RDKeyList<KeyType>
     {
         auto pKey = it->second;
         buffer << it->first;
-        pKey->Save(buffer);
+		buffer << (int)(pKey->GetKeyType());
+        pKey->Serialize(buffer,true);
     }
     return buffer;
 }
@@ -94,10 +95,12 @@ RDFileDataStream& operator >> (RDFileDataStream& buffer,RDKeyList<KeyType>& KeyL
     buffer >> nCount;
     for(quint64 i = 0 ; i < nCount; i++)
     {
-        RDKey<KeyType>* pKey = new RDKey<KeyType>;
         RDTime nFrame;
         buffer >> nFrame;
-        pKey->Load(buffer);
+		int nType;
+		buffer >> nType;
+        RDBaseKey<KeyType>* pKey = RDBaseKey<KeyType>::CreateKey((RDKeyType)nType);
+		pKey->Serialize(buffer,false);
         KeyList.m_KeyList[nFrame] = pKey;
     }
     return buffer;

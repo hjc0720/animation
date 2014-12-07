@@ -22,21 +22,34 @@ enum RDKeyType
 {
     RDLineKey,
 };
+
 template <typename Value>
-class RDKey
+class RDBaseKey
 {
 public:
-    RDKey(RDKeyType nType = RDLineKey):m_nKeyType(nType){};
-    RDKey(const Value& value,RDKeyType nType = RDLineKey):m_KeyValue(value),m_nKeyType(nType){};
+	static RDBaseKey<Value>* CreateKey(const Value& value, RDKeyType type = RDLineKey);
+	static RDBaseKey<Value>* CreateKey(RDKeyType type = RDLineKey);
+public:
+    RDBaseKey(const Value& value):m_KeyValue(value){};
+    RDBaseKey() = default;
+	virtual ~RDBaseKey(){};
+	virtual RDKeyType GetKeyType()const{return RDLineKey;}
     const Value& GetValue()const{return m_KeyValue;}
     void SetValue(const Value& value){m_KeyValue = value;}
-    RDKeyType GetKeyType()const{return m_nKeyType;}
-    void SetKeyType(RDKeyType nType){m_nKeyType = nType;}
-	void Save(RDFileDataStream& buffer);
-	void Load(RDFileDataStream& buffer);
+
+	virtual void Serialize(RDFileDataStream& buffer,bool bSave);
+
+    virtual Value Interpolation(double& dWeight, const RDBaseKey<Value>& SecondKey)const = 0;
 protected:
     Value m_KeyValue;
-    RDKeyType m_nKeyType;
 };
 
+template <typename Value>
+class RDLinearKey :public RDBaseKey<Value>
+{
+public:
+    RDLinearKey(const Value& value):RDBaseKey<Value>(value){};
+    RDLinearKey() = default;
+    virtual Value Interpolation(double& dWeight, const RDBaseKey<Value>& SecondKey)const override;
+};
 #endif   // ----- #ifndef rdbasekey_INC  -----

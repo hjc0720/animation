@@ -83,7 +83,7 @@ public:
     const RDSceneRenderData& GetSceneRD()const{return  m_SceneRenderData;}
 
     RDSection*      GetCurSection()const{return m_pCurSection;}
-    const RDStory&  GetCurStory()const;
+    const RDStory&  GetCurTrigStory()const;
     void            SetCurSection(RDSection* pSection){m_pCurSection = pSection;}
     bool            IsPlay()const;
     uint            GetSceneWidth();

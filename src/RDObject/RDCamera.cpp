@@ -86,13 +86,14 @@ void RDCamera::CalFrame(const RDTime& nTime,const std::string& pRDName)
 {
     RDSingleLock locker(m_lock);
     RDCameraRenderData* pRenderData = dynamic_cast<RDCameraRenderData*>( GetRenderData(pRDName));
-    UpdateSection(nTime,*pRenderData);
+	if(!pRenderData)
+		return;
+    //UpdateSection(nTime,*pRenderData);
+    RDTime nSectionTime = UpdateSection(nTime,*pRenderData);
     if(!pRenderData->GetCurSection())
         return;
-    RDTime nSectionTime = nTime - pRenderData->GetCurStory().GetStartTime() - pRenderData->GetCurSection()->GetStartTime();
     if(nSectionTime == pRenderData->GetSectionTime() && GetMaxChangeLevel(pRDName) == RDRender_NoChange)
         return;
-
     //qDebug() << "cal Camera frame: section time:"<<nSectionTime;
     if(CalSpaceVector(nSectionTime,*pRenderData))
     {

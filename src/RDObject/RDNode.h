@@ -74,7 +74,6 @@ public:
     const float3& GetDynamicPos(const std::string& pName)const;
 
     bool AddSection(const RDTime& nStoryTime,const RDTime& nLength,const QUuid& storyId);
-	RDTime GetSectionMaxLength(const QUuid& idStory)const;
 	void AddPosKey(const RDTime& nTime,const float3& vOffsetPos ,const std::string& strName);
 	void AddAngleKey(const RDTime& nTime,const float3& vOffsetAngle ,const std::string& strName);
 	void AddScaleKey(const RDTime& nTime,const float3& vOffsetScale ,const std::string& strName);
@@ -133,6 +132,7 @@ protected:
     const RDLayer*        GetLayerNode()const;
     bool            CalSpaceVector(const RDTime& nFrame,RDRenderData& RenderData);
     void            CalNodeMatrix(RDRenderData& RenderData);
+	RDTime GetSectionMaxLength(const QUuid& idStory)const;
 protected:
     bool        m_bCollapse = false;
     float3      m_vPos;
