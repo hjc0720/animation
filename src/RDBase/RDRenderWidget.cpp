@@ -37,10 +37,10 @@
 
 bool g_bForceUpdate = false;
 
-void RDRenderWidget::setVisible(bool visible)
-{
-    QGLWidget::setVisible(visible);
-}
+//void RDRenderWidget::setVisible(bool visible)
+//{
+//    QGLWidget::setVisible(visible);
+//}
 
 void RDRenderWidget::resizeGL(int w, int h)
 {

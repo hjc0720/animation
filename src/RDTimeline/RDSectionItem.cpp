@@ -26,6 +26,7 @@
 #include "RDScetionView.h"
 #include "RDNode.h"
 #include "RDSectionScene.h"
+#include <QKeyEvent>
 
 RDSectionItem::RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int nYOffset)
     :m_bHitTest(false)
@@ -36,7 +37,7 @@ RDSectionItem::RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int n
 {
     SetSectionType();
     setPos(m_pSection->GetStartTime(),m_nYOffset);
-    setFlag(ItemIsMovable);
+    setFlags(ItemIsMovable | ItemIsSelectable);
 //    setAcceptedMouseButtons(Qt::LeftButton);
 }
 
@@ -94,4 +95,9 @@ void RDSectionItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     if(pScene)
         pScene->SectionChange();
     qDebug() << "cur start Time:" << m_pSection->GetStartTime();
+}
+
+void	RDSectionItem::removeSection()
+{
+	m_pNode->RemoveSection(m_pSection);
 }

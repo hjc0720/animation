@@ -114,6 +114,7 @@ public:
     size_t GetSectionCount(const QUuid& idStory)const;
     RDSection* GetSection(const QUuid& idStory,size_t nIndex);
     RDSection* GetCurSection(const std::string& pName)const{return GetRenderData(pName)->GetCurSection();}
+	void RemoveSection(RDSection* pSection);
 
     virtual const matrix4x4&     GetViewProjMat(const std::string& RDName);
     RDCamera* GetCamera(const std::string& strName) const;

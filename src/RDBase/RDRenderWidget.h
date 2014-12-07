@@ -39,7 +39,7 @@ public:
 signals:
 	void DelNoded(RDNode&);
 public slots:
-    virtual void setVisible(bool visible);
+    //virtual void setVisible(bool visible);
 	void deleteSelItems();
 protected:
     //void paintEvent(QPaintEvent* event);

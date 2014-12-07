@@ -27,6 +27,7 @@ public:
     QRectF boundingRect()const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 	bool	isEqual(const RDNode* pNode)const{return m_pNode == pNode;}
+	void	removeSection();
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void SetSectionType();

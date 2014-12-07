@@ -27,12 +27,14 @@
 #include "RDStoryItem.h"
 #include "RDTimeMarker.h"
 #include "RDSectionScene.h"
+#include <memory>
 
 RDSectionView::RDSectionView(RDScene* pScene,const RDStory* pStory,QWidget* pWidget )
     :QGraphicsView(pWidget)
      ,m_pStory(pStory)
     ,m_nScale(1)
 {
+	setFocusPolicy(Qt::ClickFocus);
     SetSceneNode(pScene);
     SetScale(m_pStory->GetStoryLength() / 1920);
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -127,4 +129,22 @@ void RDSectionView::DelNode(RDNode* pNode)
 void RDSectionView::UpdateStoryLength()
 {
 	m_pStoryItem->updateLength();
+}
+
+void RDSectionView::keyReleaseEvent(QKeyEvent * event)
+{
+	auto selectList = scene()->selectedItems();
+	qDebug() << "selectList size" << selectList.size();
+	if(event->key() == Qt::Key_Delete && selectList.size() > 0)
+	{
+		std::for_each(selectList.begin(),selectList.end(),[this](QGraphicsItem* pSelection){
+				scene()->removeItem(pSelection);
+				RDSectionItem* pSection = dynamic_cast<RDSectionItem*>(pSelection);
+				pSection->removeSection();
+				delete pSelection;
+				});
+		emit SectionChanged();
+	}
+	else
+		QGraphicsView::keyReleaseEvent(event);
 }

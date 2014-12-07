@@ -635,6 +635,29 @@ RDSection*		RDNode::FindNearestSection(RDTime& storyTime,const RDRenderData& ren
 	}
 	return nullptr;
 }
+
+void RDNode::RemoveSection(RDSection* pSection)
+{
+	std::for_each(m_vecRenderData.begin(),m_vecRenderData.end(),[=](std::pair<const std::string,RDRenderData*>& it){
+			if(it.second->GetCurSection() == pSection) it.second->SetCurSection(nullptr);
+			});
+
+	for(auto it = m_vecSetctionListMap.begin();it != m_vecSetctionListMap.end(); it++)
+	{
+		auto vecSection = it->second;
+		auto findret = std::find(vecSection.begin(),vecSection.end(),pSection);
+		if(findret != vecSection.end())
+		{
+			if(vecSection.size() == 1)
+			   m_vecSetctionListMap.erase(it);
+			else
+				vecSection.erase(findret);
+			SetChangeLevel(RDRender_TransChange);
+			return;
+		}
+	}
+}
+
 //================================================================================
 //undo
 RDPosUndo::RDPosUndo(RDNode& pNode)

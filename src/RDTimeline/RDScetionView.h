@@ -43,6 +43,7 @@ protected:
     void AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& idStory);
     virtual void resizeEvent(QResizeEvent* event);
     virtual void wheelEvent(QWheelEvent *event);
+	void keyReleaseEvent(QKeyEvent * event);
 protected:
 	RDScene* m_pScene;
     const RDStory* m_pStory;
