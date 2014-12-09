@@ -65,7 +65,14 @@ void RDSectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * , 
     line.setColorAt(0,QColor(0,0,255));
     line.setColorAt(1,QColor(255,255,255));
     QBrush brush(line);
-    painter->fillRect(0,0,m_pSection->GetLength(),m_nHeight,line);
+    painter->fillRect(0,1,m_pSection->GetLength(),m_nHeight - 1,line);
+
+	if(isSelected())
+	{
+		painter->setPen(QPalette::Highlight);
+		painter->drawRect(0,0,m_pSection->GetLength(),m_nHeight);
+	}
+
     qreal fScale = painter->worldTransform().m11();
     qreal fRealSize = 16 / fScale;
     //qDebug() << fRealSize << m_pSection->GetLength() / 2;
