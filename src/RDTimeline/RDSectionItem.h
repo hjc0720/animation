@@ -31,6 +31,7 @@ public:
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void SetSectionType();
+    void DrawKey(RDTime time,float fScale,QPainter *painter);
 protected:
     bool        m_bHitTest;
     int         m_nHeight;

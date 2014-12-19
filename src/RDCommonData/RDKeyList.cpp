@@ -75,6 +75,12 @@ KeyType RDKeyList<KeyType>::Interpolation(const RDTime& nTime, const RDBaseKey<K
 	double dWeight = (nTime - nFirstTime) / (double)(nSecondTime - nFirstTime);
 	return FirstKey.Interpolation(dWeight,SecondKey);
 }
+
+template <typename KeyType>
+void RDKeyList<KeyType>::GetTime(std::set<RDTime>& times)const
+{
+	std::for_each(m_KeyList.begin(),m_KeyList.end(),[&](std::pair<const RDTime,RDBaseKey<KeyType>*> it){times.insert(it.first);});
+}
 // =====================================================================================
 template class RDKeyList<float3>;
 template class RDKeyList<float>;

@@ -23,6 +23,7 @@
 #include <cstdint>
 #include "RDFileDataStream.h"
 #include <QDebug>
+#include <set>
 
 // =====================================================================================
 template <typename KeyType> class RDKeyList ;
@@ -45,6 +46,7 @@ class RDKeyList : public RDBaseKeyList
 public:
     void AddKey(const RDTime& nFrame,const KeyType& keyValue);
     KeyType GetKeyValue(const RDTime& nSectionTime,const KeyType& vDefaultValue=KeyType());
+	void GetTime(std::set<RDTime>& set)const;
 protected:
     bool IsKeyTime(const RDTime& nSectionTime); 
     KeyType Interpolation(const RDTime& nTime, const RDBaseKey<KeyType>& FirstKey,const RDTime& nFirstTime, const RDBaseKey<KeyType>& SecondKey,const RDTime& nSecondTime);

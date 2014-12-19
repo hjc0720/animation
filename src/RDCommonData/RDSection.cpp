@@ -68,6 +68,21 @@ float3 RDSection::GetScaleVector(const RDTime& nSectionTime)
 {
     return m_ScaleKey.GetKeyValue(nSectionTime,float3::GetOne());
 }
+
+const RDKeyList<float3>& RDSection::getKeyList(RDSectionKeyType eType)const
+{
+	switch(eType)
+	{
+	case RDSectionPos:
+		return m_PosKey;
+	case RDSectionAngle:
+		return m_RotateKey;
+	case RDSectionScale:
+		return m_ScaleKey;
+	default:
+		throw; 
+	}
+}
 // =====================================================================================
 RDFileDataStream& operator << (RDFileDataStream& buffer,const RDSection& Section)
 {

@@ -28,6 +28,14 @@ enum RDSectionOutType
     RDSecionCycle,
 };
 
+enum RDSectionKeyType
+{
+	RDSectionPos,
+	RDSectionAngle,
+	RDSectionScale,
+	RDSectionCount,
+};
+
 class RDFileDataStream; 
 class RDSection
 {
@@ -48,6 +56,8 @@ public:
     float3 GetPosVector(const RDTime& nSectionTime);
     float3 GetAngleVector(const RDTime& nSectionTime);
     float3 GetScaleVector(const RDTime& nSectionTime);
+
+	const RDKeyList<float3>& getKeyList(RDSectionKeyType eType)const;
 protected:
     RDKeyList<float3> m_PosKey;
     RDKeyList<float3> m_RotateKey;
