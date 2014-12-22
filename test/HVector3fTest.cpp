@@ -20,6 +20,7 @@
 #include "gtest/gtest.h"
 #include "HVector3fTest.h"
 #include "HVector3f.h"
+#include "HVector4f.h"
 
 #define TEST_COUNT 10000000
 
@@ -89,3 +90,11 @@ TEST_F(HVector3fTest,add)
     EXPECT_FLOAT_EQ(fZ + fZ1,vec1.z());
 }
 
+TEST_F(HVector3fTest,float2to)
+{
+	float2 v={(float)rand(),(float)rand()};
+	float3 vTest(v);
+    EXPECT_FLOAT_EQ(v.x,vTest.x());
+    EXPECT_FLOAT_EQ(v.y,vTest.y());
+    EXPECT_FLOAT_EQ(0,vTest.z());
+}
