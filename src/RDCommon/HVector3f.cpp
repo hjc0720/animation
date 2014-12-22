@@ -44,7 +44,7 @@ float3::float3(const float2& src)
     __m128 zero = _mm_setzero_ps();
     __m128 vec = _mm_loadl_pi(zero,(__m64*)&src);
     _mm_storel_pi((__m64*)m_data,vec);
-    _mm_store_ss(m_data + 3,vec);
+    _mm_store_ss(m_data + 2,zero);
 }
 
 float3::float3(const float3& src)
