@@ -29,6 +29,7 @@
 #include <QComboBox>
 #include "RDStory.h"
 #include <QPushButton>
+#include <QScrollBar>
 
 RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
 	:QDockWidget(pParent)
@@ -50,6 +51,7 @@ RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
     m_pHead = new QScrollArea(pTimeLineWidget);
     m_pHead->setWidgetResizable(true);
     m_pHead->setMaximumWidth(250);
+	m_pHead->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     QWidget* pHeadWidget = new QWidget(m_pHead);
     m_pHead->setWidget(pHeadWidget);
@@ -63,6 +65,7 @@ RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
     m_pHeadLayout->addStretch();
 
     m_pSectionView = new RDSectionView(&pScene,&pScene.GetCurStory(DEFAULT_RD), this);
+	m_pSectionView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     pTimeLineHLayout->addWidget(m_pHead);
     pTimeLineHLayout->addWidget(m_pSectionView);
@@ -70,6 +73,11 @@ RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
     setWidget(pTimeLineWidget);
     connect(m_pSectionView,SIGNAL(FrameChanged(const RDTime&)),this,SIGNAL(FrameChanged(const RDTime&)));
     connect(m_pSectionView,SIGNAL(SectionChanged()),this,SIGNAL(SectionChanged()));
+
+	QScrollBar* pLeftScroll = m_pHead->verticalScrollBar();
+	QScrollBar* pRightScroll = m_pSectionView->verticalScrollBar();
+    connect(pLeftScroll,SIGNAL(sliderMoved(int)),pRightScroll,SLOT(setValue(int)));
+    connect(pRightScroll,SIGNAL(sliderMoved(int)),pLeftScroll,SLOT(setValue(int)));
 }
 
 void RDTimelineView::RDFillHead(RDNode& pNode)
