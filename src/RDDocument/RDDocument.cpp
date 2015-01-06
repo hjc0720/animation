@@ -373,6 +373,5 @@ bool RDDocument::RemoveStoryAndTrigger(size_t nIndex)
 void RDDocument::TriggerStory(size_t nIndex)
 {
 	RDSceneRenderData* pRenderData = dynamic_cast<RDSceneRenderData* >(GetCurScene()->GetRenderData(DEFAULT_RD));
-	RDTime CurStoryStartTime = pRenderData->GetCurTrigStory().GetStartTime();
-	GetCurScene()->TriggerStory(nIndex,CurStoryStartTime + m_nCurFrame,*pRenderData);
+	GetCurScene()->TriggerStory(nIndex,m_nCurFrame,*pRenderData);
 }

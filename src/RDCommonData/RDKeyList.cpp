@@ -33,31 +33,15 @@ KeyType RDKeyList<KeyType>::GetKeyValue(const RDTime& nSectionTime,const KeyType
     }
     else 
     {
-        if(IsKeyTime(nSectionTime) )
-            return m_KeyList[nSectionTime]->GetValue();
-        auto first = m_KeyList.rbegin();
-        for(; first != m_KeyList.rend(); first++)
-        {
-            if(first->first < nSectionTime)
-                break;
-        }
-        if(first == m_KeyList.rend())
-        {
-            auto it = m_KeyList.begin();
-            return it->second->GetValue();
-        }
-        auto second = m_KeyList.begin();
-        for(; second != m_KeyList.end(); second++)
-        {
-            if(second->first > nSectionTime)
-                break;
-        }
-        if(second == m_KeyList.end())
-        {
-            auto it = m_KeyList.rbegin();
-            return it->second->GetValue();
-        }
-        return Interpolation(nSectionTime,*(first->second),first->first,*(second->second),second->first);
+		auto low = m_KeyList.lower_bound(nSectionTime);
+		if(low == m_KeyList.end())
+			return m_KeyList.rbegin()->second->GetValue();
+
+		if(low == m_KeyList.begin() || low->first == nSectionTime)
+			return low->second->GetValue();
+
+		auto before = low--;
+		return Interpolation(nSectionTime,*(before->second),before->first,*(low->second),low->first);
     }
     return vDefaultValue;
 }

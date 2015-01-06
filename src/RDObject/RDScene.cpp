@@ -216,6 +216,7 @@ bool RDScene::TriggerStory(int nStoryIndex,RDTime nFrame,RDSceneRenderData& pSce
 {
     if(nStoryIndex < 0)
         nStoryIndex = pSceneData.GetCurStoryIndex() + 1;
+
     const RDStory* pStory = GetStory(nStoryIndex);
     if(pStory)
     {
