@@ -84,6 +84,8 @@ public:
 
     virtual void Render(const RDTime& nTime,const std::string& pRDName) ;
     virtual void CalFrame(const RDTime& nTime,const std::string& pRDName) ;
+	//击中测试，返回到近平面的距离，如果小于等于０，没有击中
+    float HitTest(const float3& vScenePt,const std::string& RDName)const;
 
     //child operation function
     size_t GetTotalChildCount()const;

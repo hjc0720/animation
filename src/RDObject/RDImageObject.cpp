@@ -152,16 +152,15 @@ void RDImageObject::CalFrame(const RDTime& time,RDRenderData& RenderData)
     pPrivateData->m_pMaterial->UpdateFrame(time,0,0,0);
 }
 
-bool RDImageObject::HitTest(const float3& vScenePt,const RDNode& pNode,const std::string& RDName) const
+float RDImageObject::HitTest(const float3& vScenePt,const RDNode& pNode,const std::string& RDName) const
 {
     const RDRenderData* pRenderData = pNode.GetRenderData(RDName);
     const RDImagePrivateData* pPrivateData = dynamic_cast<const RDImagePrivateData*>( pRenderData->GetPrivateData());
     matrix4x4 worldMat = pPrivateData->m_vRenderMatrix * pRenderData->GetGlobalMatrix();
     RDSpaceParam param(pNode.GetEditSpaceParam(RDName,&worldMat));
     const RDModel* pModel = pPrivateData->m_pSegModel->GetModel();
-    float3 vHitPt;
 
-    return pModel->HitTest(vHitPt,vScenePt,param);
+    return pModel->HitTest(vScenePt,param);
 }
 
 const RDMd5& RDImageObject::GetObjMd5()const 

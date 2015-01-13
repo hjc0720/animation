@@ -4,9 +4,7 @@
 #include "HVector4f.h"
 #include "mac_define.h"
 #include "RDSpaceConvert.h"
-
-const int n2013_02_18 = 0;
-const int g_nVersion = n2013_02_18;
+#include <cfloat>
 
 RDModel::RDModel()
     :m_nCount(0)
@@ -16,7 +14,7 @@ RDModel::RDModel()
 {
 }
 
-RDModel::RDModel(int nCount)
+RDModel::RDModel(size_t nCount)
     :m_nCount(nCount)
      ,m_pVertexShader(nullptr)
      ,m_hVertex(InvalidHandle)
@@ -67,15 +65,21 @@ void RDModel::AddSubModel(int nStart,int nCount)
     m_arSubModel.push_back(subModel);
 }
 
-bool RDModel::HitTest(float3& vHitPt, const float3& vMouse, const RDSpaceParam& param) const
+float RDModel::HitTest(const float3& vMouse, const RDSpaceParam& param) const
 {
-    for(int i = 0; i < m_nCount / 3; i++)
+	float3 vHitPt;
+	float fDistance = FLT_MAX;
+	bool bHit = false;
+    for(size_t i = 0; i < m_nCount / 3; i++)
     {
         int nIndex = i * 3;
         if(param.HitTriangle(vHitPt,vMouse,m_vPos[nIndex],m_vPos[nIndex + 1],m_vPos[nIndex + 2]))
-            return true;
+		{
+			fDistance = std::min(fDistance,param.ConvertWorldToView(vHitPt).z());
+			bHit = true;
+		}
     }
-    return false;
+		return bHit ? fDistance : -1;
 }
 
 void RDModel::AddSubModel(int nCount)
@@ -131,7 +135,7 @@ RDModel* RDModel::CreateSegmentModel()
     pModel->m_vUV[5].u = 0;
     pModel->m_vUV[5].v = 0;
     float4 vNormal(0,0,-1,0);
-    for(int i = 0; i < pModel->m_nCount; i++)
+    for(size_t i = 0; i < pModel->m_nCount; i++)
     {
         pModel->m_vNormal[i] = vNormal;
     }

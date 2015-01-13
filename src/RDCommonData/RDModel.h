@@ -36,7 +36,7 @@ class RDModel
 {
 public:
     RDModel();
-    RDModel(int nCount);
+    RDModel(size_t nCount);
     ~RDModel();
     
     void UpdateRenderData();
@@ -44,10 +44,10 @@ public:
     void AddSubModel(int nCount);
     void AddSubModel(int nStart,int nCount);
     size_t GetSubsetCount()const{return m_arSubModel.size();}
-    bool HitTest(float3 &vHitPt, const float3& vMouse, const RDSpaceParam& param) const;
+    float HitTest(const float3& vMouse, const RDSpaceParam& param) const;
     RDShader* GetVertexShader()const{return m_pVertexShader;}          
 protected:
-    int m_nCount;
+    size_t m_nCount;
     float4* m_vPos;
     float4* m_vNormal;
     RDTexcoord* m_vUV;

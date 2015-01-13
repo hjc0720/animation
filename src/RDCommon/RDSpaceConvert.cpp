@@ -170,3 +170,10 @@ RDSpaceParam::RDSpaceParam(const matrix4x4 *pWorld, const matrix4x4 *pViewMat, c
     m_vEyePos = float3::GetZero() * viewInv;
     m_fZValue = -m_rtViewPort.width() * m_pProjMat->Get(0,0) * 0.5;
 }
+
+float3 RDSpaceParam::ConvertWorldToView(const float3& vPos)const
+{
+    matrix4x4 matWorldViewInv(*m_pWorldMat * *m_pViewMat);
+    matWorldViewInv.Inverse();
+	return vPos * matWorldViewInv;
+}

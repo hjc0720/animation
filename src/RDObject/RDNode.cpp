@@ -27,6 +27,7 @@
 #include "RDLayer.h"
 #include "RDCamera.h"
 #include "RDRenderDevice.h"
+#include <cfloat>
 
 using namespace std;
 
@@ -658,6 +659,31 @@ void RDNode::RemoveSection(RDSection* pSection)
 	}
 }
 
+float RDNode::HitTest(const float3& vScenePt,const std::string& RDName)const
+{
+	float fDistance = FLT_MAX;
+	bool bHit = false;
+	if(GetObject() )
+	{
+		float fTemp = GetObject()->HitTest(vScenePt,*this,RDName);
+		if(fTemp > 0)
+		{
+			fDistance = fTemp;
+			bHit = true;
+		}
+	}
+
+    std::for_each(m_vecChildObj.begin(),m_vecChildObj.end(),
+            [&](RDNode* pChild){
+            float fTemp = pChild->HitTest(vScenePt,RDName);
+			if(fTemp > 0)
+			{
+				fDistance = std::min(fDistance,fTemp);
+				bHit = true;
+			}
+            });
+	return bHit ? fDistance : -1;
+}
 //================================================================================
 //undo
 RDPosUndo::RDPosUndo(RDNode& pNode)

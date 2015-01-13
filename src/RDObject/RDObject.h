@@ -49,7 +49,8 @@ public:
 
     virtual void Serialize(RDFileDataStream& buffer,bool bSave);
 
-    virtual bool HitTest(const float3& vScenePt,const RDNode& pNode,const std::string& RDName)const = 0;
+	//击中测试，返回到近平面的距离，如果小于等于０，没有击中
+    virtual float HitTest(const float3& vScenePt,const RDNode& pNode,const std::string& RDName)const = 0;
 
 protected:
     QUuid  m_ObjID;

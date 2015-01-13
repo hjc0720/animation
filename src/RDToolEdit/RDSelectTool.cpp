@@ -23,6 +23,7 @@
 #include "RDEditerManager.h"
 #include "RDSpaceCell.h"
 #include "RDFileDataStream.h"
+#include <cfloat>
 
 
 RDSelectTool::RDSelectTool()
@@ -114,17 +115,18 @@ bool RDSelectTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const flo
 
 const RDNode* RDSelectTool::HitTest(const float3& ptScene,const RDNode& pNode)
 {
-    if(pNode.GetObject() && pNode.GetObject()->HitTest(ptScene,pNode,DEFAULT_RD))
-        return &pNode;
+	float fDistance = FLT_MAX;
+	const RDNode* pHitNode = nullptr;
     for(size_t i = 0; i < pNode.GetChildCount();i++)
     {
-        if(pNode.GetChild(i)->GetObject() && pNode.GetChild(i)->GetObject()->HitTest(ptScene,*pNode.GetChild(i),DEFAULT_RD))
-            return pNode.GetChild(i);
-        const RDNode* pHitNode = HitTest(ptScene,*pNode.GetChild(i));
-        if(pHitNode)
-            return pHitNode;
+		float fTemp = pNode.GetChild(i)->HitTest(ptScene,DEFAULT_RD);
+		if(fTemp > 0 && fTemp <= fDistance)
+		{
+			pHitNode = pNode.GetChild(i);
+			fDistance = fTemp;
+		}
     }
-    return NULL;
+    return pHitNode;
 }
 void RDSelectTool::RefreshNodePos()
 {

@@ -41,6 +41,7 @@ public:
     float3 Convert3DTo2D(const float3& vPos)const;
     float3 Convert2DTo3D(const float3& vPoint) const;
     float3 Convert2DTo3D(const float3& vPoint,float fZValue) const;
+	float3 ConvertWorldToView(const float3& vPos)const;
 
     bool HitSphere(const float3& vPt,float fRadius,float3& vHitPt);
     bool HitTriangle(float3& vHitPt,const float3& vPt,const float3& vP0,const float3& vPt1,const float3& vPt2,bool bCull = true)const;
