@@ -70,9 +70,11 @@ RDRenderWidget::RDRenderWidget(int nWidth, int nHeight,const QGLFormat& format,Q
      ,m_document(true)
      ,m_swapChain(nWidth,nHeight)
 {
-    RDEditerManager::GetEditerManager().SetDocument(&m_document);
 	setFocusPolicy(Qt::ClickFocus);
+	setMouseTracking(true);
+    RDEditerManager::GetEditerManager().SetDocument(&m_document);
 	connect(RDToolManager::GetToolManager(),SIGNAL(deleteSelItems()),this,SLOT(deleteSelItems()));
+	connect(RDToolManager::GetToolManager(),SIGNAL(cursorChange(QCursor&)),this,SLOT(SetCursor(QCursor&)));
 }
 
 RDRenderWidget::~RDRenderWidget()
@@ -168,4 +170,3 @@ void RDRenderWidget::deleteSelItems()
 	RDEditerManager::GetEditerManager().UpdateProperty(0);
 	update();
 }
-

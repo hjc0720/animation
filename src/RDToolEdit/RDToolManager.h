@@ -22,6 +22,7 @@
 
 class RDBaseTool;
 class RDDocument;
+class QCursor;
 typedef std::map<QString,RDBaseTool*>::iterator RDToolIt;
 
 class RDToolManager :public QObject
@@ -42,10 +43,12 @@ public:
     RDDocument* GetDocument(){return m_pCurDoc;}
     void SendSceneChange(){emit SceneChange();}
 	void sendDelSelItems(){emit deleteSelItems();}
+	void 	CursorChange(QCursor& cursor){emit cursorChange(cursor);}
 signals:
     void ChangeTool(const QString& toolName);
     void SceneChange();
 	void deleteSelItems();
+	void 	cursorChange(QCursor&);
 protected:
     RDToolManager();
     void RegisterTool();

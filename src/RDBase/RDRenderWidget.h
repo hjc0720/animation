@@ -41,6 +41,8 @@ signals:
 public slots:
     //virtual void setVisible(bool visible);
 	void deleteSelItems();
+	void SetCursor(QCursor& cursor){setCursor(cursor);}
+		
 protected:
     //void paintEvent(QPaintEvent* event);
     //void resizeEvent(QResizeEvent* event);

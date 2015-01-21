@@ -24,6 +24,7 @@
 #include "RDSpaceCell.h"
 #include "RDFileDataStream.h"
 #include <cfloat>
+#include <QCursor>
 
 
 RDSelectTool::RDSelectTool()
@@ -71,6 +72,8 @@ bool RDSelectTool::OnMouseMove(const float3& vMov,Qt::MouseButtons buttons,const
         pManager->SendSceneChange();
         //m_vStartPos = vMov;
         //m_bDrag = true;
+		QCursor cursor(Qt::ClosedHandCursor);
+        RDToolManager::GetToolManager()->CursorChange(cursor);
     }
     else if(bLButton && pDoc->GetSelItemCount() == 0)
     {
@@ -80,6 +83,17 @@ bool RDSelectTool::OnMouseMove(const float3& vMov,Qt::MouseButtons buttons,const
     else
     {
         //HitTest;
+		RDNode* pHitNode = const_cast<RDNode*>(HitTest(vMov,*m_pFieldNode));
+		if(pHitNode)
+		{
+			QCursor cursor(Qt::OpenHandCursor);
+			RDToolManager::GetToolManager()->CursorChange(cursor);
+		}
+		else
+		{
+			QCursor cursor(Qt::ArrowCursor);
+			RDToolManager::GetToolManager()->CursorChange(cursor);
+		}
     }
     return true;
 }
@@ -110,6 +124,8 @@ bool RDSelectTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const flo
         return false;
     m_bDrag = false;
     m_bBeginMov = false;
+	QCursor cursor(Qt::ArrowCursor);
+	RDToolManager::GetToolManager()->CursorChange(cursor);
     return true;
 }
 

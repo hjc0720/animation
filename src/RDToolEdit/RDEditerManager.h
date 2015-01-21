@@ -26,6 +26,7 @@ class RDNode;
 class RDCell;
 class RDBaseEdit;
 class RDDocument;
+
 class RDEditerManager :public QObject
 {
     Q_OBJECT
