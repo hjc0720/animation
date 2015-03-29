@@ -1,5 +1,6 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 SUBDIRS = src
-SUBDIRS += test
+#SUBDIRS += test
+QT += widgets
 test.depends += RDCommon

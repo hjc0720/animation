@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
 #include <vector>
 #include <QUndoGroup>
 #include "mac_define.h"

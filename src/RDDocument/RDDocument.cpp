@@ -218,23 +218,23 @@ void RDDocument::CreateTempProjDir()
     m_strCachePath += m_DocUUID.toString();
     QString cmdStr("mkdir ");
     cmdStr += m_strCachePath;
-    system(cmdStr.toAscii().data());
+    system(cmdStr.toUtf8().data());
 
     QString cmdStr2("mkdir ");
     cmdStr2 += m_strCachePath;
     cmdStr2 += "/Resource";
-    system(cmdStr2.toAscii().data());
+    system(cmdStr2.toUtf8().data());
 
 //image
     QString imageStr2("mkdir ");
     imageStr2 += m_strCachePath;
     imageStr2 += "/Resource/Image";
-    system(imageStr2.toAscii().data());
+    system(imageStr2.toUtf8().data());
 //movie
     QString movieStr2("mkdir ");
     movieStr2 += m_strCachePath;
     movieStr2 += "/Resource/Movie";
-    system(movieStr2.toAscii().data());
+    system(movieStr2.toUtf8().data());
 
 #ifdef _DEBUG
     qDebug() << m_strCachePath;
@@ -245,7 +245,7 @@ int RDDocument::DeleteTempProjDir()
 {
     QString cmdStr("rm -rf ");
     cmdStr += m_strCachePath;
-    int nRet = system(cmdStr.toAscii().data());
+    int nRet = system(cmdStr.toUtf8().data());
     if(nRet)
         m_strCachePath.clear();
     return nRet;
@@ -262,8 +262,8 @@ int RDDocument::TarProjDir(const QString& strProjPath)
 
     cmdStr1 += cmdStr2;
 
-    int nRet = system(cmdStr1.toAscii().data());
-    //system(cmdStr2.toAscii().data());
+    int nRet = system(cmdStr1.toUtf8().data());
+    //system(cmdStr2.toUtf8().data());
 #ifdef _DEBUG
     qDebug() << cmdStr1;
     qDebug() << cmdStr2;
@@ -279,14 +279,14 @@ void RDDocument::UntarProjDir(const QString& strProjPath)
     cmdStr += m_strCachePath;
 
     qDebug()  << cmdStr;
-    system(cmdStr.toAscii().data());
+    system(cmdStr.toUtf8().data());
 
     QString copyStr("cp -rf ");
     copyStr += m_strCachePath + "/Resource/* ";
     copyStr += RDResourceManager::GetResourceManager()->GetResourcePath();
 
     qDebug()  << copyStr;
-    system(copyStr.toAscii().data());
+    system(copyStr.toUtf8().data());
 }
 void RDDocument::ClearRDStack()
 {

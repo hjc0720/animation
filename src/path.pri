@@ -1,10 +1,10 @@
 #this file must be inculded after set config
-CONFIG += debug
-CONFIG -= release
+#CONFIG += debug
+#CONFIG -= release
 #
 #CONFIG -= debug
 #CONFIG += release
-
+QT += widgets
 QMAKE_CXXFLAGS += -std=c++11 -pipe
 debug{
     DESTDIR  = ../../bin_debug

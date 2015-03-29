@@ -55,7 +55,7 @@ void RDResourceManager::ReleaseResourceManager()
         cmdStr += dstFilePath;
         cmdStr += g_fileDir[i];
         cmdStr += "*";
-        system(cmdStr.toAscii().data());
+        system(cmdStr.toUtf8().data());
     }
 }
 
@@ -186,7 +186,8 @@ bool RDResourceManager::RemoveResource(const RDMd5& pMd5)
 
 RDResource* RDResourceManager::AddModelResource(const QString& modelName)
 {
-    RDMd5* pMd5 = new RDMd5(modelName.toAscii().data(),modelName.toAscii().size());
+    QByteArray utf8_str = modelName.toUtf8();
+    RDMd5* pMd5 = new RDMd5(utf8_str.data(),utf8_str.size());
     QMutexLocker locker(&m_lock);
 
     RDResource* pResource = GetResource(*pMd5);
