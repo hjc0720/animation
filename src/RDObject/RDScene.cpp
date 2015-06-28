@@ -27,6 +27,7 @@
 #include "RDStory.h"
 #include <QDebug>
 #include "RDLayer.h"
+#include "RDRenderManager.h"
 
 using namespace std;
 const int g_nSceneVersion = 0;
@@ -112,7 +113,9 @@ void RDScene::Render(const RDTime& nTime,const std::string& pRDName)
     {
         GetChild(i)->Render(nTime,pRDName);
     }
-//    RDSceneRenderData& pSceneData = *dynamic_cast<RDSceneRenderData*>(GetRenderData(pRDName));
+
+    RDSceneRenderData* pSceneData = dynamic_cast<RDSceneRenderData*>(GetRenderData(pRDName));
+    pSceneData->getRenderManager()->Call(RDRender_SceneRenderEnd,nullptr);
 //    if(pSceneData.GetRenderChangeLevel() >= RDRender_GraphicChange)
 //    {
 //        pSceneData.m_RenderBuffer.ResizeBuffer(pSceneData.GetNowWidth(),pSceneData.GetNowHeight());
@@ -179,6 +182,7 @@ void RDScene::CalFrame(const RDTime& nTime,const std::string& pRDName)
     {
         RenderData.UnionDirty(RenderData.GetScaleBound());
     }
+    RenderData.getRenderManager()->Call(RDRender_SceneCalFrameEnd,this);
     QRectF newBound;
     for(size_t i = 0; i < GetChildCount(); i++)
     {

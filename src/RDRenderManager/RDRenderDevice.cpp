@@ -22,11 +22,62 @@ class RDRenderState
 //    RDTexture* pTexture;
 //};
 
-struct RDVertexBuffer
+enum RDVertexType
 {
-    GLuint hVertexBuffer;
-    RDVertexBufferType nType;
+    RDVB_Pos = 0,
+    RDVB_Color,
+    RDVB_Normal,
+    RDVB_Texcoord,
+    RDVB_Tang,
+    RDVB_Bi
 };
+
+struct RDVectexDecl
+{
+    RDVertexType type;
+    short size;
+    size_t offset;
+};
+
+
+short GetPtSize(RDVertexType nType)
+{
+    switch(nType)
+    {
+    case RDVB_Pos:
+    case RDVB_Normal:
+    case RDVB_Bi:
+    case RDVB_Tang:
+        return 4;
+    case RDVB_Texcoord:
+        return 2;
+    case RDVB_Color:
+        return 4;
+    }
+    return 4;
+}
+
+class RDVertexBufferDecl
+{
+public:
+    void setType(std::vector<RDVertexType> vTypes)
+    {
+        size_t offset = 0;
+        for(RDVertexType eType:vTypes)
+        {
+            m_vDecl.push_back(RDVectexDecl{eType,GetPtSize(eType),offset});
+            offset += GetPtSize(eType)*sizeof(float);
+        }
+    }
+public:
+    std::vector<RDVectexDecl> m_vDecl;
+};
+
+//struct RDVertexBuffer
+//{
+//    GLuint hVertexBuffer;
+//    RDVertexBufferType nType;
+//};
 
 struct RDUBO
 {
@@ -37,7 +88,8 @@ struct RDUBO
 struct RDVertexArray
 {
     GLuint hVertexArray;
-    std::vector<RDVertexBuffer> arVertexBuffer;
+    //std::vector<RDVertexBuffer> arVertexBuffer;
+    GLuint hVertexBuffer;
 };
 ////////////////////////////////////////////////////////////////////////////////
 RDRenderDevice* g_pRenderManager = nullptr;
@@ -139,42 +191,26 @@ RDShader *RDRenderDevice::CreateShader(const QString& code,const QString& shader
     return pShader;
 }
 
-int GetPtSize(RDVertexBufferType nType)
-{
-    switch(nType)
-    {
-    case RDVB_Pos:
-    case RDVB_Normal:
-    case RDVB_Bi:
-    case RDVB_Tang:
-        return 4;
-    case RDVB_Texcoord:
-        return 2;
-    case RDVB_Color:
-        return 4;
-    }
-    return 4;
-}
 
-QString GetAttributeName(RDVertexBufferType nType)
-{
-    switch(nType)
-    {
-    case  RDVB_Pos:
-        return QString("pos");
-    case RDVB_Color:
-        return QString("color");
-    case RDVB_Normal:
-        return QString("normal");
-    case RDVB_Texcoord:
-        return QString("texcoord");
-    case RDVB_Tang:
-        return QString("tang");
-    case RDVB_Bi:
-        return QString("bi");
-    }
-    return QString("");
-}
+//QString GetAttributeName(RDVertexType nType)
+//{
+//    switch(nType)
+//    {
+//    case  RDVB_Pos:
+//        return QString("pos");
+//    case RDVB_Color:
+//        return QString("color");
+//    case RDVB_Normal:
+//        return QString("normal");
+//    case RDVB_Texcoord:
+//        return QString("texcoord");
+//    case RDVB_Tang:
+//        return QString("tang");
+//    case RDVB_Bi:
+//        return QString("bi");
+//    }
+//    return QString("");
+//}
 
 RDShaderProgram *RDRenderDevice::CreateShaderProgram(RDShader *pVertexShader,  RDShader*pGeometryShader,  RDShader* pPixelShader)
 {
@@ -196,30 +232,24 @@ RDShaderProgram *RDRenderDevice::CreateShaderProgram(RDShader *pVertexShader,  R
     return pShaderProgram;
 }
 
-RDVertexBufferHandle RDRenderDevice::CreateVertexBuffer(const std::vector<RDVertexData> &arVertexData)
+RDVertexBufferHandle RDRenderDevice::CreateVertexBuffer(float* pVertexData,int nVertexCount,size_t nVertexSize,RDVertexBufferType eType)
 {
     QMutexLocker locker(&m_lock);
-    size_t nBufferCount = arVertexData.size();
+    //size_t nBufferCount = arVertexData.size();
 
     RDVertexArray* pVertexArray = new RDVertexArray;
     glGenVertexArrays(1,&pVertexArray->hVertexArray);
     glBindVertexArray(pVertexArray->hVertexArray);
 
-    GLuint* pBuffer = new GLuint[nBufferCount];
-    glGenBuffers(nBufferCount,pBuffer);
-    for(size_t i = 0; i < nBufferCount; i++)
-    {
-        RDVertexBuffer vertexBuffer;
-        vertexBuffer.hVertexBuffer = pBuffer[i];
-        vertexBuffer.nType = arVertexData[i].nType;
-        glEnableVertexAttribArray(arVertexData[i].nType);
-        glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer.hVertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER,arVertexData[i].nVertexCount * sizeof(float),arVertexData[i].pVertexData,GL_STATIC_DRAW);
-        glVertexAttribPointer(arVertexData[i].nType,GetPtSize(arVertexData[i].nType),GL_FLOAT,GL_FALSE,0,nullptr);
-        pVertexArray->arVertexBuffer.push_back(vertexBuffer);
+    glGenBuffers(1,&pVertexArray->hVertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER,pVertexArray->hVertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER,nVertexCount * nVertexSize,pVertexData,GL_STATIC_DRAW);
+    std::vector<RDVectexDecl>& vDecl = m_pVertexBufferDecl[eType].m_vDecl;
+    for(size_t i = 0; i < vDecl.size(); i++)
+    {        
+        glEnableVertexAttribArray(vDecl[i].type);
+        glVertexAttribPointer(vDecl[i].type,vDecl[i].size,GL_FLOAT,GL_FALSE,nVertexSize,(GLvoid*)vDecl[i].offset);
     }
-    //m_vecVertexBuffer.push_back(pVertexArray);
-    SAFE_DELETE_ARRAY(pBuffer);
     return pVertexArray;
 }
 
@@ -315,6 +345,12 @@ RDRenderDevice::RDRenderDevice(const QGLContext* renderContex)
     //glBindFramebuffer(GL_FRAMEBUFFER,m_hFrameBuffer);
     glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LINE_SMOOTH);
+
+    m_pVertexBufferDecl = new RDVertexBufferDecl[RDVertexBufferTypeCount];
+    m_pVertexBufferDecl[RDVB_Pos_Color].setType(std::vector<RDVertexType>{RDVB_Pos,RDVB_Color});
+    m_pVertexBufferDecl[RDVB_Pos_Normal_Texcoord].setType(std::vector<RDVertexType>{RDVB_Pos,RDVB_Normal,RDVB_Texcoord});
+
 }
 
 RDShader * RDRenderDevice::GetExistShader(const QString &shaderName)
@@ -333,12 +369,8 @@ void    RDRenderDevice::ReleaseVertexBuffer(RDVertexBufferHandle hVertexBuffer)
 {
     if(hVertexBuffer == nullptr)
         return;
-    QMutexLocker locker(&m_lock);
-    for(size_t i = 0; i < hVertexBuffer->arVertexBuffer.size();i++)
-    {
-        RDVertexBuffer& hBuffer = hVertexBuffer->arVertexBuffer[i];       
-        glDeleteBuffers(1,&hBuffer.hVertexBuffer);
-    }
+    QMutexLocker locker(&m_lock);    
+    glDeleteBuffers(1,&hVertexBuffer->hVertexBuffer);
     glDeleteVertexArrays(1,&hVertexBuffer->hVertexArray);
 }
 

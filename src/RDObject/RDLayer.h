@@ -67,9 +67,14 @@ protected:
     virtual RDRenderData*  CreateRenderData(const std::string &pName)override;
 
     virtual void    CalChildFrame(const RDTime& nTime,const std::string& pRDName)override;
+
 protected:
     RDLayerType m_nType;
     std::vector<RDCamera*> m_vecCameraObj;
     std::vector<RDLight*> m_vecLight;
+
+    // RDNode interface
+public:
+    virtual void Render(const RDTime &nTime, const std::string &pRDName)override;
 };
 #endif

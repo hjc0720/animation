@@ -29,12 +29,9 @@ enum RDTexture_Type
 
 enum RDVertexBufferType
 {
-    RDVB_Pos = 0,
-    RDVB_Color,
-    RDVB_Normal,
-    RDVB_Texcoord,
-    RDVB_Tang,
-    RDVB_Bi
+    RDVB_Pos_Color = 0,
+    RDVB_Pos_Normal_Texcoord,
+    RDVertexBufferTypeCount
 };
 
 enum RDSampleType
@@ -50,15 +47,9 @@ enum RDClearType
     RDClearStencil = 4,
 };
 
- Q_DECLARE_FLAGS(RDClearTypes, RDClearType)
+Q_DECLARE_FLAGS(RDClearTypes, RDClearType)
 Q_DECLARE_OPERATORS_FOR_FLAGS(RDClearTypes)
 
-struct RDVertexData
-{
-    RDVertexBufferType nType;
-    float* pVertexData;
-    int nVertexCount;
-};
 
 struct RDUBO;
 class QRect;
@@ -69,6 +60,7 @@ class QGLFormat;
 class RDVertexArray;
 class RDShader;
 class RDShaderProgram;
+class RDVertexBufferDecl;
 
 //typedef RDTexture* RDTexHandle ;
 typedef RDVertexArray* RDVertexBufferHandle;
@@ -86,7 +78,7 @@ public:
     RDTexture* CreateTexture(int nWidth, int nHeight,const uint* buffer,  RDTexture_Type nType);
     RDShader* CreateShader(const QString &fileName, RDShaderType nType);
     RDShader* CreateShader(const QString& code,const QString& shaderName,RDShaderType nType);
-    RDVertexBufferHandle     CreateVertexBuffer(const std::vector<RDVertexData> &arVertexData);
+    RDVertexBufferHandle     CreateVertexBuffer(float* pVertexData, int nVertexCount, size_t nVertexSize, RDVertexBufferType eType);
     RDUBO*         CreateUniformBufferObject(int nCount,const float* vBuffer);
     //release function
     void    ReleaseVertexBuffer(RDVertexBufferHandle hVertexBuffer);
@@ -104,6 +96,7 @@ public:
 
     void    SetShaderSample(RDTexture* tex,RDSampleType nType);
     void    Render(GLenum mode,GLint nStart,GLsizei count);
+    void    RenderLine();
 
     bool    SetRenderTarget(RDTexture* target,RDTexture* depth);
     void    SetViewPort(QRect& viewPort );
@@ -143,6 +136,7 @@ protected:
     mutable QMutex m_lock;
     //info
     GLint           m_nMaxUseTexture;
+    RDVertexBufferDecl* m_pVertexBufferDecl;
 };
 
 #endif // RDRENDERMANAGER_H

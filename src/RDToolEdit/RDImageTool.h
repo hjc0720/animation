@@ -25,13 +25,19 @@ public:
     RDImageTool();
     virtual QIcon GetToolIcon() ;
 
-    virtual bool OnMouseMove(const float3& ptScene, Qt::MouseButtons buttons, const QString &);
-    virtual bool OnMousePress(const Qt::MouseButtons& nButtonState, const float3& ptScene, const QString &);
+    virtual bool OnMouseMove(const float3& ptScene, Qt::MouseButtons buttons, const QString &)override;
+    virtual bool OnMousePress(const Qt::MouseButtons& nButtonState, const float3& ptScene, const QString &)override;
     virtual bool OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ptScene,const std::string& strName) override;
+
 protected:
     int     m_nImageWidth;
     int     m_nImageHeight;
     bool    m_bDragged;
     float3  m_vImagePos;
+
+    // RDBaseToolEdit interface
+public:
+    virtual QRectF GetDirtyRect()override;
+    virtual void OnDrawNoDepth()override;
 };
 #endif   // ----- #ifndef rdimagetool_INC  -----

@@ -7,21 +7,9 @@
 #include <cfloat>
 
 RDModel::RDModel()
-    :m_nCount(0)
-    ,m_vPos(nullptr)
-    ,m_vNormal(nullptr)
-    , m_vUV(nullptr)
-{
-}
-
-RDModel::RDModel(size_t nCount)
-    :m_nCount(nCount)
-     ,m_pVertexShader(nullptr)
+    :m_pVertexShader(nullptr)
      ,m_hVertex(InvalidHandle)
 {
-    m_vPos = new float4[nCount];
-    m_vNormal = new float4[nCount];
-    m_vUV = new RDTexcoord[nCount];
 }
 
 RDModel::~RDModel()
@@ -29,9 +17,6 @@ RDModel::~RDModel()
     RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
     pDevice->ReleaseShader(m_pVertexShader);
     pDevice->ReleaseVertexBuffer(m_hVertex);
-    SAFE_DELETE_ARRAY(m_vPos);
-    SAFE_DELETE_ARRAY(m_vNormal);
-    SAFE_DELETE_ARRAY(m_vUV);
 }
 
 void RDModel::UpdateRenderData()
@@ -42,20 +27,7 @@ void RDModel::UpdateRenderData()
         pDevice->ReleaseVertexBuffer(m_hVertex);
     } 
 
-    std::vector<RDVertexData> vertex;
-    vertex.resize(3);
-    vertex[0].nType = RDVB_Pos;
-    vertex[0].pVertexData = (float*)m_vPos;
-    vertex[0].nVertexCount = m_nCount * 4; 
-
-    vertex[1].nType = RDVB_Normal;
-    vertex[1].pVertexData = (float*)m_vNormal;
-    vertex[1].nVertexCount = m_nCount * 4; 
-
-    vertex[2].nType = RDVB_Texcoord;
-    vertex[2].pVertexData = (float*)m_vUV;
-    vertex[2].nVertexCount = m_nCount * 2 ;
-    m_hVertex = pDevice->CreateVertexBuffer(vertex);
+    m_hVertex = pDevice->CreateVertexBuffer((float*)&m_vVertex[0],m_vVertex.size(),sizeof(ModelVertexPt),RDVB_Pos_Normal_Texcoord);
     m_pVertexShader = pDevice->CreateShader(":/shader/model_vs",VertexShader);
 }
 
@@ -70,10 +42,10 @@ float RDModel::HitTest(const float3& vMouse, const RDSpaceParam& param) const
 	float3 vHitPt;
 	float fDistance = FLT_MAX;
 	bool bHit = false;
-    for(size_t i = 0; i < m_nCount / 3; i++)
+    for(size_t i = 0; i < m_vVertex.size() / 3; i++)
     {
         int nIndex = i * 3;
-        if(param.HitTriangle(vHitPt,vMouse,m_vPos[nIndex],m_vPos[nIndex + 1],m_vPos[nIndex + 2]))
+        if(param.HitTriangle(vHitPt,vMouse,m_vVertex[nIndex].m_vPos,m_vVertex[nIndex + 1].m_vPos,m_vVertex[nIndex + 2].m_vPos))
 		{
 			fDistance = std::min(fDistance,param.ConvertWorldToView(vHitPt).z());
 			bHit = true;
@@ -115,29 +87,31 @@ RDModel* RDModel::CreateModel(RDModelType nType)
 
 RDModel* RDModel::CreateSegmentModel()
 {
-    RDModel* pModel = new RDModel(6);
-    pModel->m_vPos[0].Set(-1,1,0,1);
-    pModel->m_vUV[0].u = 0;
-    pModel->m_vUV[0].v = 1;
-    pModel->m_vPos[1].Set(1,1,0,1);
-    pModel->m_vUV[1].u = 1;
-    pModel->m_vUV[1].v = 1;
-    pModel->m_vPos[2].Set(1,-1,0,1);
-    pModel->m_vUV[2].u = 1;
-    pModel->m_vUV[2].v = 0;
-    pModel->m_vPos[3].Set(-1,1,0,1);
-    pModel->m_vUV[3].u = 0;
-    pModel->m_vUV[3].v = 1;
-    pModel->m_vPos[4].Set(1,-1,0,1);
-    pModel->m_vUV[4].u = 1;
-    pModel->m_vUV[4].v = 0;
-    pModel->m_vPos[5].Set(-1,-1,0,1);
-    pModel->m_vUV[5].u = 0;
-    pModel->m_vUV[5].v = 0;
+    RDModel* pModel = new RDModel();
+	pModel->m_vVertex.resize(6);
+    
+    pModel->m_vVertex[0].m_vPos.Set(-1,1,0,1);
+    pModel->m_vVertex[0].m_vUV.x = 0;
+    pModel->m_vVertex[0].m_vUV.y = 1;
+    pModel->m_vVertex[1].m_vPos.Set(1,1,0,1);
+    pModel->m_vVertex[1].m_vUV.x = 1;
+    pModel->m_vVertex[1].m_vUV.y = 1;
+    pModel->m_vVertex[2].m_vPos.Set(1,-1,0,1);
+    pModel->m_vVertex[2].m_vUV.x = 1;
+    pModel->m_vVertex[2].m_vUV.y = 0;
+    pModel->m_vVertex[3].m_vPos.Set(-1,1,0,1);
+    pModel->m_vVertex[3].m_vUV.x = 0;
+    pModel->m_vVertex[3].m_vUV.y = 1;
+    pModel->m_vVertex[4].m_vPos.Set(1,-1,0,1);
+    pModel->m_vVertex[4].m_vUV.x = 1;
+    pModel->m_vVertex[4].m_vUV.y = 0;
+    pModel->m_vVertex[5].m_vPos.Set(-1,-1,0,1);
+    pModel->m_vVertex[5].m_vUV.x = 0;
+    pModel->m_vVertex[5].m_vUV.y = 0;
     float4 vNormal(0,0,-1,0);
-    for(size_t i = 0; i < pModel->m_nCount; i++)
+    for(size_t i = 0; i < pModel->m_vVertex.size(); i++)
     {
-        pModel->m_vNormal[i] = vNormal;
+        pModel->m_vVertex[i].m_vNormal = vNormal;
     }
     pModel->AddSubModel(6);
     pModel->UpdateRenderData();

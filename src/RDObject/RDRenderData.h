@@ -40,6 +40,7 @@ class RDSceneRenderData;
 class RDNode;
 class RDSection;
 class RDStory;
+class RenderManager;
 
 class RDRenderPrivateData
 {
@@ -79,6 +80,8 @@ public:
     void            setStoryTime(RDTime nStoryTime){m_nStoryTime = nStoryTime;}
 
     virtual float   GetSceneScale()const;
+    virtual RenderManager* getRenderManager()const;
+    virtual void setRenderManager(RenderManager*){}
 
     const RDSceneRenderData& GetSceneRD()const{return  m_SceneRenderData;}
 
@@ -115,6 +118,7 @@ public:
     void             SetItemMatrix(const matrix4x4& matrix){m_vItemMatrix = matrix;}
     void            SetMVPMatrix(const matrix4x4& matrix){m_vMVPMatrix = matrix;}
     void            SetGlobalMatrix(const matrix4x4& matrix){m_vGlobalMatrix = matrix;}
+
 protected:
     void Lock()const;
     void UnLock()const;

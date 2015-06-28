@@ -87,3 +87,13 @@ bool RDImageTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const floa
     nObjIndex ++;
     return true;
 }
+
+
+QRectF RDImageTool::GetDirtyRect()
+{
+    return QRectF(0,0,m_nImageWidth,m_nImageHeight);
+}
+
+void RDImageTool::OnDrawNoDepth()
+{
+}

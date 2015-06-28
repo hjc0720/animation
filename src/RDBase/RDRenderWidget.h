@@ -26,6 +26,8 @@
 #include "HVector4f.h"
 
 class MainWindow;
+class RDLayer;
+class RenderManager;
 
 class RDRenderWidget :public QGLWidget
 {
@@ -52,6 +54,8 @@ protected:
     float3 ClientToScene(const QPoint& pos);
     void initializeGL () ;
     void paintGL();
+    bool CalControlDirty(RDNode *pScene,RenderManager* man);
+    bool RenderControl(bool bDepth, RDNode *, RenderManager*);
 protected:
     int     m_nProjWidth;
     int     m_nProjHeight;

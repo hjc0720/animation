@@ -9,13 +9,6 @@ enum RDModelType
     RDSegmentModel,
 };
 
-class float3;
-struct RDTexcoord
-{
-    float u;
-    float v;
-};
-
 struct RDSubModel
 {
     int nStart;
@@ -29,14 +22,18 @@ struct ModelVSParam
 	matrix4x4 ModelMat;
 	matrix4x4 NormalMat;
 };
+struct ModelVertexPt
+{
+    float4 m_vPos;
+    float4 m_vNormal;
+    float2 m_vUV;
+};
 
 class RDSpaceParam;
-class float4;
 class RDModel
 {
 public:
     RDModel();
-    RDModel(size_t nCount);
     ~RDModel();
     
     void UpdateRenderData();
@@ -47,10 +44,9 @@ public:
     float HitTest(const float3& vMouse, const RDSpaceParam& param) const;
     RDShader* GetVertexShader()const{return m_pVertexShader;}          
 protected:
-    size_t m_nCount;
-    float4* m_vPos;
-    float4* m_vNormal;
-    RDTexcoord* m_vUV;
+    void pushPt(const ModelVertexPt& pt){m_vVertex.push_back(pt);}
+protected:
+    std::vector<ModelVertexPt>   m_vVertex;
     std::vector<RDSubModel> m_arSubModel;
 
     //render data

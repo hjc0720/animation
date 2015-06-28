@@ -17,6 +17,7 @@
 #ifndef  RDBASETOOLEDIT_INC
 #define  RDBASETOOLEDIT_INC
 #include <QString>
+#include <QRectF>
 
 class RDRenderData;
 class float3;
@@ -35,6 +36,10 @@ public:
     virtual bool OnMousePress(const Qt::MouseButtons& ,const float3& ,const QString&) { return false;}
     virtual bool OnMouseRelease(const Qt::MouseButtons& ,const float3& ,const std::string& ) { return false;}
     virtual bool OnKeyPress(int ) { return false;}
+    virtual QRectF GetDirtyRect(){return QRectF();}
+    virtual void resetDirty(){}
+    virtual void OnDrawInDepth(){}
+    virtual void OnDrawNoDepth(){}
 protected:
     void   AddSelectItem(RDNode& selItem);
     void   CancelSelectItem();

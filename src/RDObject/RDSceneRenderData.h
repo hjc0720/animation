@@ -30,6 +30,9 @@ public:
     RDSceneRenderData(const std::string& name,int nWidth,int nHeight,RDNode& obj);
     void SetSceneScale(float fScale);
     virtual float GetSceneScale()const override{ return m_fScale;}
+    virtual RenderManager* getRenderManager()const override;
+    virtual void setRenderManager(RenderManager*) override;
+
     void    SetWidthHeight(int nWidth,int nHeight){m_nWidth = nWidth;m_nHeight = nHeight;}
 
     uint     GetWidth()const{return m_nWidth;}
@@ -54,9 +57,10 @@ protected:
     uint    m_nHeight;
     float   m_fScale;
     RDTime m_nCurFrame;
+    RenderManager* m_pRenderManager;
 
     size_t m_nCurStoryIndex;
-    std::list<RDStory> m_trigStory;
+    std::list<RDStory> m_trigStory;                                              
 };
 
 #endif   // ----- #ifndef rdscenerenderdata_INC  -----

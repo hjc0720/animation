@@ -28,6 +28,7 @@
 #include <algorithm>
 #include "RDRenderDevice.h"
 #include "RDBox.h"
+#include "RDRenderManager.h"
 
 RDObjectCreator<RDLayer,false> LayerCreator;
 
@@ -197,6 +198,7 @@ void    RDLayer::CalChildFrame(const RDTime& nTime,const std::string& pRDName)
     
     SAFE_DELETE(pBuffer);
 //    qDebug() << GetLight(0)->GetDynamicPos(pRDName);
+    pLayerRD->getRenderManager()->Call(RDRender_LayerCalFrameEnd,this);
 }
 
 RDCamera* RDLayer::GetCurCamera(const RDLayerRenderData& pLayerRD)const
@@ -279,4 +281,11 @@ RDUBO*      RDLayer::GetLightParam(const std::string& name)const
 {
     const RDLayerRenderData* pLayerRD = dynamic_cast<const RDLayerRenderData*>(GetRenderData(name));
     return pLayerRD->m_pLightParam;
+}
+
+
+void RDLayer::Render(const RDTime &nTime, const std::string &pRDName)
+{
+    GetRenderData(pRDName)->getRenderManager()->Call(RDRender_LayerRenderBegin,this);
+    RDNode::Render(nTime,pRDName);
 }

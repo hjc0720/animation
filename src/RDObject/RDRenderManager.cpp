@@ -26,9 +26,23 @@ bool RenderManager::RenderScene(const QPointF& ,const QRectF& ,RDTime nTime)
     if( m_RenderName.empty())
         return false;
     RDRenderData* pSceneRD = m_pScene->GetRenderData(m_RenderName);
+    pSceneRD->setRenderManager(this);
     if(m_pScene->GetMaxChangeLevel(m_RenderName) == RDRender_NoChange && nTime == pSceneRD->GetTime())
         return false;
     m_pScene->CalFrame(nTime,m_RenderName);
     m_pScene->Render(nTime,m_RenderName);
     return true;
+}
+
+void RenderManager::RegistCallback(RDRenderCallbackType eType, RenderManagerCallback &pCallback)
+{
+    m_Callback[eType] = pCallback;
+}
+
+void RenderManager::Call(RDRenderCallbackType eType, RDNode *pLayer)
+{
+    auto it = m_Callback.find(eType) ;
+    if(it == m_Callback.end())
+        return;
+    it->second(pLayer,this);
 }

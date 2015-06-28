@@ -22,7 +22,7 @@ SOURCES += RDSpaceConvert.cpp
 SOURCES += RDMd5.cpp
 SOURCES += RDBox.cpp
 
-HEADERS += HMatrixQ4F.h HVector4f.h 
+HEADERS += HMatrixQ4F.h HVector4f.h  
 HEADERS += HVector3f.h 
 HEADERS += RDSpaceConvert.h
 HEADERS += RDMd5.h

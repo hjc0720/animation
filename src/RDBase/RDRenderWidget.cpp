@@ -34,6 +34,8 @@
 #include "RDEditerManager.h"
 #include "RDScene.h"
 #include "RDRenderDevice.h"
+#include "RDLayer.h"
+#include <functional>
 
 bool g_bForceUpdate = false;
 
@@ -139,9 +141,17 @@ void RDRenderWidget::initializeGL()
 
 void RDRenderWidget::paintGL()
 {
-    static RenderManager* pRDManager = 0;
+    static RenderManager* pRDManager = nullptr;
     if(!pRDManager)
+    {
         pRDManager = new RenderManager;
+        RenderManagerCallback fun1 = std::bind(&RDRenderWidget::CalControlDirty,
+                                                      this,std::placeholders::_1,std::placeholders::_2);
+        RenderManagerCallback fun2 = std::bind(&RDRenderWidget::RenderControl,
+                                                      this,false,std::placeholders::_1,std::placeholders::_2);
+        pRDManager->RegistCallback(RDRender_SceneCalFrameEnd,fun1);
+        pRDManager->RegistCallback(RDRender_SceneRenderEnd,fun2);
+    }
 
     RDDocument* pDoc = &m_document;
     RDScene* pScene = pDoc->GetCurScene();
@@ -159,6 +169,26 @@ void RDRenderWidget::paintGL()
     if(!pRDManager->RenderScene(pt,m_validRt,pDoc->GetCurTime()))
         return;
     //qDebug() << "On Time :" << pDoc->GetCurTime();
+}
+
+bool RDRenderWidget::CalControlDirty(RDNode *pScene,RenderManager* man)
+{
+    qDebug() << "CalControlDirty";
+    RDBaseTool* pCurTool = RDToolManager::GetToolManager()->GetCurTool();
+    pScene->GetRenderData(man->getRenderName())->UnionDirty(pCurTool->GetDirtyRect());
+    pCurTool->resetDirty();
+    return true;
+}
+
+bool RDRenderWidget::RenderControl(bool bDepth,RDNode *,RenderManager *)
+{
+    qDebug() << "CalControlDirty";
+    RDBaseTool* pCurTool = RDToolManager::GetToolManager()->GetCurTool();
+    if(bDepth)
+        pCurTool->OnDrawNoDepth();
+    else
+        pCurTool->OnDrawInDepth();
+    return true;
 }
 
 void RDRenderWidget::deleteSelItems() 

@@ -51,6 +51,11 @@ float RDRenderData::GetSceneScale()const
     return m_SceneRenderData.GetSceneScale();
 }
 
+RenderManager *RDRenderData::getRenderManager() const
+{
+    return m_SceneRenderData.getRenderManager();
+}
+
 void            RDRenderData::setChildChangeLevel(RDRenderChangeLevel nLevel)
 {
     m_nChangeLevel = nLevel > m_nChangeLevel ? nLevel : m_nChangeLevel;

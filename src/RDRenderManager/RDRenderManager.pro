@@ -18,12 +18,14 @@ DEFINES += GL_GLEXT_PROTOTYPES
 HEADERS += \
     RDTexture.h \
     RDRenderDevice.h\
-    RDShaderProgram.h
+    RDShaderProgram.h \
+    rdline.h
 
 SOURCES += \
     RDTexture.cpp \
     RDRenderDevice.cpp \
-    RDShaderProgram.cpp
+    RDShaderProgram.cpp \
+    rdline.cpp
 
 INCLUDEPATH += ../RDCommon
 
