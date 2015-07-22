@@ -30,6 +30,7 @@ struct ModelVertexPt
 };
 
 class RDSpaceParam;
+class RDMaterial;
 class RDModel
 {
 public:
@@ -37,7 +38,8 @@ public:
     ~RDModel();
     
     void UpdateRenderData();
-    void DrawSubset(size_t nSubset)const;
+    void DrawSubset(size_t nSubset, RDMaterial *pMat)const;
+    RDShader* GetVertexShader(){return m_pVertexShader;}
     void AddSubModel(int nCount);
     void AddSubModel(int nStart,int nCount);
     size_t GetSubsetCount()const{return m_arSubModel.size();}

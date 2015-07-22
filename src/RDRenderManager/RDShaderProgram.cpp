@@ -16,7 +16,7 @@
  * =====================================================================================
  */
 #include "RDShaderProgram.h"
-#include <QDebug>
+
 
 
 GLenum GetGLType(RDShaderType nType)

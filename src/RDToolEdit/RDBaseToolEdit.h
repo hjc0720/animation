@@ -22,10 +22,13 @@
 class RDRenderData;
 class float3;
 class RDNode;
+class RDLine;
+
 class RDBaseToolEdit
 {
 public:
     RDBaseToolEdit(const QString& name);
+    virtual ~RDBaseToolEdit();
     virtual bool BeginEdit(RDNode* pFiledNode);
     virtual void EndEdit();
     const QString& GetName(){return m_ToolEditName;}
@@ -36,10 +39,10 @@ public:
     virtual bool OnMousePress(const Qt::MouseButtons& ,const float3& ,const QString&) { return false;}
     virtual bool OnMouseRelease(const Qt::MouseButtons& ,const float3& ,const std::string& ) { return false;}
     virtual bool OnKeyPress(int ) { return false;}
-    virtual QRectF GetDirtyRect(){return QRectF();}
-    virtual void resetDirty(){}
-    virtual void OnDrawInDepth(){}
-    virtual void OnDrawNoDepth(){}
+    virtual QRectF GetDirtyRect(const std::string& ){return QRectF();}
+    virtual void resetDirty(const std::string&){}
+    virtual void OnDrawInDepth(const std::string& ){}
+    virtual void OnDrawNoDepth(const std::string& ){}
 protected:
     void   AddSelectItem(RDNode& selItem);
     void   CancelSelectItem();
@@ -49,6 +52,7 @@ protected:
     void   MoveItemScale(const float3& vScale,RDNode& pNode,bool bUpdateCell = true);
 protected:
     RDNode* m_pFieldNode;
+    RDLine* m_pLine;
 private:
     //only initialize in constructor. no other way to modify
     QString       m_ToolEditName;

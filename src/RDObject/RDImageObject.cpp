@@ -130,9 +130,9 @@ void RDImageObject::Render(unsigned long ,RDRenderData& RenderData)
         pPrivateData->m_pVertexParam = pDevice->CreateUniformBufferObject(sizeof(ModelVSParam) / sizeof(float),reinterpret_cast<float*>(&param));
     pDevice->SetShaderParam(0,pPrivateData->m_pVertexParam);
 
-    pPrivateData->m_pMaterial->SetParamToDevice();
+    //pPrivateData->m_pMaterial->SetParamToDevice();
     for(size_t i = 0; i <  pModel->GetSubsetCount(); i++)
-        pModel->DrawSubset(i);
+        pModel->DrawSubset(i,pPrivateData->m_pMaterial);
     return;
 }
 

@@ -24,7 +24,7 @@ public:
     RDMatTexture(const uint* pBuffer,int nWidth,int nHeight);
     RDMatTexture(const RDTexture*  hTex,const QRectF& texBound);
     ~RDMatTexture();
-    const QString&  GetFileName()const{return m_strFile;}
+    const QString&  GetFileName()const{return m_strFile;}   
     void            SetParamToDevice(int nIndex,RDRenderDevice* pDevice );
     void            UpdateFrame(RDRenderDevice* pDevice ,const RDTime& time);
     const RDTexture*  GetTex()const{return m_hTex;}
@@ -67,9 +67,11 @@ public:
     bool UpdateFrame(const RDTime& time,char m_nPointLightNum,char m_nLineLightNum,char m_nSpotLightNum);
 
     int  SetChange(int nChangeType);
-    void ClearChange(){m_nChange = RD_MAT_NO_CHANGE;};
+    void ClearChange(){m_nChange = RD_MAT_NO_CHANGE;}
+
     bool CheckChange( RDMatChangeType nType);
     void SetParamToDevice();
+    RDShader*   getFragmentShader(){return m_pShader;}
 protected:
     void    GenerateMatParam();
     size_t  GenerateMatParamBuffer(char* pBuffer);

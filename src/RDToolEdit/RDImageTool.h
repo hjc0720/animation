@@ -18,6 +18,8 @@
 #define  RDIMAGETOOL_INC
 #include "RDBaseTool.h"
 #include "HVector3f.h"
+#include "HVector4f.h"
+
 
 class RDImageTool : public RDBaseTool
 {
@@ -28,16 +30,20 @@ public:
     virtual bool OnMouseMove(const float3& ptScene, Qt::MouseButtons buttons, const QString &)override;
     virtual bool OnMousePress(const Qt::MouseButtons& nButtonState, const float3& ptScene, const QString &)override;
     virtual bool OnMouseRelease(const Qt::MouseButtons& nButtonState,const float3& ptScene,const std::string& strName) override;
+protected:
+    void setRect();
 
 protected:
     int     m_nImageWidth;
     int     m_nImageHeight;
     bool    m_bDragged;
     float3  m_vImagePos;
+    float2  m_fLeftTop;
+
 
     // RDBaseToolEdit interface
 public:
-    virtual QRectF GetDirtyRect()override;
-    virtual void OnDrawNoDepth()override;
+    virtual QRectF GetDirtyRect(const std::string& strName)override;
+    virtual void OnDrawNoDepth(const std::string &strName)override;
 };
 #endif   // ----- #ifndef rdimagetool_INC  -----

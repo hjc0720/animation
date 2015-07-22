@@ -1,23 +1,22 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource>
-    <file alias="image_tool">image/tool_edit/image_tool.png</file>
-    <file alias="select_tool">image/tool_edit/select_tool.png</file>
-
-    <file alias="stop">image/timeline/stop.png</file>
-    <file alias="keep">image/timeline/keep.png</file>
-    <file alias="cycle">image/timeline/cycle.png</file>
-     
-    <file alias="img_origin">image/tool_edit/img_origin_size.png</file>
-    <file alias="img_width">image/tool_edit/img_keep_width.png</file>
-    <file alias="img_height">image/tool_edit/img_keep_height.png</file>
-</qresource>
-
-<qresource prefix="/shader">
-    <file alias="model_vs">shader/vs/model.glsl</file>
-    <file alias="main_ps">shader/ps/material/main.glsl</file>
-    <file alias="diffuse_ps">shader/ps/material/DiffuseTex.glsl</file>
-    <file alias="diffusebuffer">shader/ps/material/DiffuseParam.glsl</file>
-    <file alias="light_ps">shader/ps/material/Light.glsl</file>
-    <file alias="lightbuffer">shader/ps/material/LightParam.glsl</file>
-</qresource>
+<RCC>
+    <qresource prefix="/">
+        <file alias="image_tool">image/tool_edit/image_tool.png</file>
+        <file alias="select_tool">image/tool_edit/select_tool.png</file>
+        <file alias="stop">image/timeline/stop.png</file>
+        <file alias="keep">image/timeline/keep.png</file>
+        <file alias="cycle">image/timeline/cycle.png</file>
+        <file alias="img_origin">image/tool_edit/img_origin_size.png</file>
+        <file alias="img_width">image/tool_edit/img_keep_width.png</file>
+        <file alias="img_height">image/tool_edit/img_keep_height.png</file>
+    </qresource>
+    <qresource prefix="/shader">
+        <file alias="model_vs">shader/vs/model.glsl</file>
+        <file alias="main_ps">shader/ps/material/main.glsl</file>
+        <file alias="diffuse_ps">shader/ps/material/DiffuseTex.glsl</file>
+        <file alias="diffusebuffer">shader/ps/material/DiffuseParam.glsl</file>
+        <file alias="light_ps">shader/ps/material/Light.glsl</file>
+        <file alias="lightbuffer">shader/ps/material/LightParam.glsl</file>
+        <file alias="line_ps">shader/ps/line.glsl</file>
+        <file alias="line_vs">shader/vs/line.glsl</file>
+    </qresource>
 </RCC>

@@ -10,6 +10,7 @@
 #include <HVector3f.h>
 #include <HMatrixQ4F.h>
 # include <GL/gl.h>
+#include <QtGlobal>
 
 enum RDShaderType
 {
@@ -73,7 +74,7 @@ public:
     static RDRenderDevice* GetRenderManager();
     static void ReleaseRenderManager();
 public:
-    //create function
+    //create functionpGer
     RDTexture* CreateTexture(const QString& fileName);
     RDTexture* CreateTexture(int nWidth, int nHeight,const uint* buffer,  RDTexture_Type nType);
     RDShader* CreateShader(const QString &fileName, RDShaderType nType);
@@ -83,7 +84,7 @@ public:
     //release function
     void    ReleaseVertexBuffer(RDVertexBufferHandle hVertexBuffer);
     void    ReleaseTexture(RDTexture* hTex);
-    void    ReleaseShader(RDShader* hShader);
+    void    ReleaseShader(RDShader* hSGeometryhader);
     void    ReleaseUniformBufferObject(RDUBO* pBuffer);
     //modify function
     void    ModifyUniformBufferObject(RDUBO* pBuffer, const float* pData);
@@ -91,7 +92,7 @@ public:
     //render function
     void    SetVertexBuffer(RDVertexBufferHandle pVertex);
     void    SetShaderParam(int nIndex,RDUBO* pBuffer);
-    void    SetShader(RDShader* pShader,RDShaderType nType);
+    void    SetShader(RDShader* pVertexShader,RDShader* pGeometryShader,RDShader* pFragmentShader);
     void    SetShaderTexture(int nIndex,const RDTexture* tex);
 
     void    SetShaderSample(RDTexture* tex,RDSampleType nType);
@@ -119,6 +120,7 @@ protected:
     void    SetShaderToDevice();
     RDShaderProgram* CreateShaderProgram(RDShader *pVertexShader,  RDShader*pGeometryShader,  RDShader* pPixelShader);
     void    SetShader(RDShaderProgram* pShader);
+    bool    checkError();
 protected:
     RDRenderState* m_pCurState;
     RDRenderState* m_pTempState;

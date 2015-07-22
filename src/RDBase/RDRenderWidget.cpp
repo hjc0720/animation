@@ -173,21 +173,22 @@ void RDRenderWidget::paintGL()
 
 bool RDRenderWidget::CalControlDirty(RDNode *pScene,RenderManager* man)
 {
-    qDebug() << "CalControlDirty";
+    //qDebug() << "CalControlDirty";
     RDBaseTool* pCurTool = RDToolManager::GetToolManager()->GetCurTool();
-    pScene->GetRenderData(man->getRenderName())->UnionDirty(pCurTool->GetDirtyRect());
-    pCurTool->resetDirty();
+    pScene->GetRenderData(man->getRenderName())->UnionDirty(pCurTool->GetDirtyRect(man->getRenderName()));
+    pCurTool->resetDirty(man->getRenderName());
     return true;
 }
 
-bool RDRenderWidget::RenderControl(bool bDepth,RDNode *,RenderManager *)
+bool RDRenderWidget::RenderControl(bool bDepth,RDNode *,RenderManager *man)
 {
-    qDebug() << "CalControlDirty";
+   // qDebug() << "CalControlDirty";
     RDBaseTool* pCurTool = RDToolManager::GetToolManager()->GetCurTool();
     if(bDepth)
-        pCurTool->OnDrawNoDepth();
+        pCurTool->OnDrawInDepth(man->getRenderName());
     else
-        pCurTool->OnDrawInDepth();
+        pCurTool->OnDrawNoDepth(man->getRenderName());
+
     return true;
 }
 

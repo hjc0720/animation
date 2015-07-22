@@ -23,11 +23,18 @@
 #include <QDebug>
 #include "RDSpaceCell.h"
 #include "RDFileDataStream.h"
+#include "rdline.h"
 
 RDBaseToolEdit::RDBaseToolEdit(const QString& name)
     :m_ToolEditName(name)
 {
     m_pFieldNode = NULL;
+    m_pLine = nullptr;
+}
+
+RDBaseToolEdit::~RDBaseToolEdit()
+{
+    SAFE_DELETE(m_pLine);
 }
 
 bool RDBaseToolEdit::BeginEdit(RDNode* pFieldNode)

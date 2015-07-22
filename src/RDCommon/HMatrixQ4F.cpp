@@ -105,6 +105,21 @@ const matrix4x4& matrix4x4::CreateProjectMat(matrix4x4& mat,float l,float r,floa
     return mat;
 }
 
+const matrix4x4 &matrix4x4::CreateOrthoMat(matrix4x4 &mat, float l, float r, float t, float b, float zn, float zf)
+{
+    float r_l = 1/ (r - l);
+    float t_b = 1 / (t - b);
+    float z = 1 / (zn - zf);
+    mat.m[0][0] = 2 * r_l;
+    mat.m[1][1] = 2 * t_b;
+    mat.m[2][2] = 2 * z;
+
+    mat.m[3][0] = -(r + l) * r_l;
+    mat.m[3][1] = -(t + b) * t_b;
+    mat.m[3][2] = (zf + zn) * z;
+    return mat;
+}
+
 matrix4x4::matrix4x4()
 {
     Identity();

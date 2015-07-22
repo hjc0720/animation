@@ -55,7 +55,7 @@ protected:
     void initializeGL () ;
     void paintGL();
     bool CalControlDirty(RDNode *pScene,RenderManager* man);
-    bool RenderControl(bool bDepth, RDNode *, RenderManager*);
+    bool RenderControl(bool bDepth, RDNode *, RenderManager*man);
 protected:
     int     m_nProjWidth;
     int     m_nProjHeight;

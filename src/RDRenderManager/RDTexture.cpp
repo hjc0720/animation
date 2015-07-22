@@ -90,9 +90,14 @@ void RDTexture::Dump(const QString &fileName)
 void RDTexture::SetTexture(int loc)const
 {
     glActiveTexture(GL_TEXTURE0 + loc);
+    Q_ASSERT(!checkError());
     GLenum target = GetTextureTarget(m_nTextureType);
+    Q_ASSERT(!checkError());
     glBindTexture(target , m_nTexture);
+    Q_ASSERT(!checkError());
+    GLint logLen;
     glUniform1i(loc,loc);
+    Q_ASSERT(!checkError());
 }
 
 void RDTexture::SetTextureSample(RDSampleType nType)
@@ -164,4 +169,12 @@ bool RDTexture::Release()
 RDTexture::~RDTexture()
 {
     glDeleteTextures(1,&m_nTexture);
+}
+
+bool RDTexture::checkError()const
+{
+    GLenum rt = glGetError();
+    if(rt != GL_NO_ERROR)
+        qDebug() << hex << rt;
+    return false;//rt != GL_NO_ERROR;
 }

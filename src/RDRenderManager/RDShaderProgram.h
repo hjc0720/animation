@@ -21,6 +21,7 @@
 #include <QString>
 #include <GL/glext.h>
 #include "RDRenderDevice.h"
+#include <QDebug>
 
 class QString;
 
@@ -61,6 +62,8 @@ public:
     void link();
     void use(){
         glUseProgram(m_hShaderProgram);
+        GLuint location=glGetUniformLocation(m_hShaderProgram,"DiffuseTex");
+        qDebug() << location;
     }
 protected:
     RDShader*   m_pShader[3];

@@ -282,7 +282,7 @@ void RDMaterial::GenerateShader()
 void RDMaterial::SetParamToDevice()
 {
     RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
-    pDevice->SetShader(m_pShader,FragmentShader);
+    //pDevice->SetShader(m_pShader,FragmentShader);
 
     pDevice->SetShaderParam(MAT_PARAM_INDEX ,m_pMatParam);
     for(int i = 0; i < RDMatTextureCount; i++)

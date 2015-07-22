@@ -23,6 +23,8 @@
 #include "RDToolManager.h"
 #include <QDebug>
 #include "RDFileDataStream.h"
+#include "rdline.h"
+#include <QRectF>
 
 RDImageTool::RDImageTool()
     :RDBaseTool("image tool")
@@ -30,16 +32,24 @@ RDImageTool::RDImageTool()
     m_bDragged = false;
     m_nImageWidth = 0;
     m_nImageHeight = 0;
+
 }
 QIcon RDImageTool::GetToolIcon() 
 {
     return QIcon(":/image_tool");
 }
-bool RDImageTool::OnMouseMove(const float3& ,Qt::MouseButtons buttons,const QString&)
+bool RDImageTool::OnMouseMove(const float3& ptScene,Qt::MouseButtons buttons,const QString&)
 {
     if(buttons.testFlag(Qt::LeftButton))
     {
         m_bDragged = true;
+        m_nImageWidth = floatToInt(abs(ptScene.x() - m_vImagePos.x()));
+        m_nImageHeight = floatToInt(abs(ptScene.y() - m_vImagePos.y()));
+        m_fLeftTop.x = std::min(ptScene.x(),m_vImagePos.x());
+        m_fLeftTop.y = std::min(ptScene.y(),m_vImagePos.y());
+        setRect();
+        m_pFieldNode->SetChangeLevel(RDRender_TransChange);
+        RDToolManager::GetToolManager()->SendSceneChange();
         return true;
     }
     return false;
@@ -52,6 +62,8 @@ bool RDImageTool::OnMousePress(const Qt::MouseButtons& nButtonState,const float3
     m_nImageWidth = 0;
     m_nImageHeight = 0;
     m_vImagePos = ptScene;
+
+    setRect();
     return true;
 }
 
@@ -61,11 +73,15 @@ bool RDImageTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const floa
     if(nButtonState.testFlag(Qt::LeftButton) || !m_bDragged)
         return false;
 
+    m_bDragged = false;    
+
     QString fileName = QFileDialog::getOpenFileName(NULL,QObject::tr("Get Picture"));
     if(fileName.isEmpty())
+    {
+        m_pFieldNode->SetChangeLevel(RDRender_TransChange);
+        RDToolManager::GetToolManager()->SendSceneChange();
         return false;
-
-    m_bDragged = false;
+    }
 
     m_nImageWidth = floatToInt(abs(ptScene.x() - m_vImagePos.x()));
     m_nImageHeight = floatToInt(abs(ptScene.y() - m_vImagePos.y()));
@@ -88,12 +104,30 @@ bool RDImageTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const floa
     return true;
 }
 
-
-QRectF RDImageTool::GetDirtyRect()
+void RDImageTool::setRect()
 {
-    return QRectF(0,0,m_nImageWidth,m_nImageHeight);
+    if(!m_pLine)
+        m_pLine = new RDLine(1);
+    m_pLine->clear();
+    m_pLine->setColor(0xffff0000);
+    m_pLine->addRect(QRectF((m_fLeftTop.x), (m_fLeftTop.y),static_cast<float>(m_nImageWidth),static_cast<float>(m_nImageHeight)));
 }
 
-void RDImageTool::OnDrawNoDepth()
+
+QRectF RDImageTool::GetDirtyRect(const std::string& strName)
 {
+    float fScale = m_pFieldNode->GetRenderData(strName)->GetSceneScale();
+    //return QRectF(m_vImagePos.x() * fScale, m_vImagePos.y() * fScale,m_nImageWidth * fScale,m_nImageHeight * fScale);
+    return QRectF(0,0,1920,1080);
+}
+
+void RDImageTool::OnDrawNoDepth(const std::string& strName)
+{
+    if(!m_pLine || !m_bDragged)
+        return;
+    matrix4x4 mat;
+    float fWidth = m_pFieldNode->GetRenderData(strName)->GetSceneWidth();
+    float fHeight = m_pFieldNode->GetRenderData(strName)->GetSceneHeight();
+    matrix4x4::CreateOrthoMat(mat,0,fWidth,0,fHeight,-1,1);
+    m_pLine->drawLine(mat);
 }

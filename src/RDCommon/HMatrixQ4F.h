@@ -37,6 +37,7 @@ class matrix4x4
 {
 public:
     static const matrix4x4& CreateProjectMat(matrix4x4& mat,float l,float r,float t,float b,float zn,float zf);
+    static const matrix4x4& CreateOrthoMat(matrix4x4& mat,float l,float r,float t,float b,float zn,float zf);
     static const matrix4x4& CreateViewMat(matrix4x4& mat,const float3& vEyePos,const float3& vUp,const float3& vLookAt);
     static const matrix4x4& CreateWorldMat(matrix4x4& mat,const float3& vCenter,const float3& vScale, const float3& vRot,const float3& vPos);
 public:

@@ -132,6 +132,7 @@ RDTexture*  RDRenderDevice::CreateTexture(const QString &fileName)
 
     RDTexture* pFileTex = new RDTexture(fileName);
     m_vecFileTex[fileName] = pFileTex;
+    Q_ASSERT(!checkError());
     return pFileTex;
 }
 
@@ -173,6 +174,7 @@ RDShader *RDRenderDevice::CreateShader(const QString &fileName, RDShaderType nTy
         QTextStream shader(&file);
         pShader = new RDShader(shader.readAll(),strShaderName,nType);
         m_vecShader[strShaderName] = pShader;
+        Q_ASSERT(!checkError());
     }
     return pShader;
 }
@@ -187,7 +189,8 @@ RDShader *RDRenderDevice::CreateShader(const QString& code,const QString& shader
     {
         pShader = new RDShader(code,strShaderName,nType);
         m_vecShader[strShaderName] = pShader;
-    }
+        Q_ASSERT(!checkError());
+    }    
     return pShader;
 }
 
@@ -229,6 +232,7 @@ RDShaderProgram *RDRenderDevice::CreateShaderProgram(RDShader *pVertexShader,  R
     
     RDShaderProgram* pShaderProgram = new RDShaderProgram(programName,pVertexShader,pGeometryShader,pPixelShader);
     m_vecShaderProgram[programName] = pShaderProgram;
+    Q_ASSERT(!checkError());
     return pShaderProgram;
 }
 
@@ -250,6 +254,7 @@ RDVertexBufferHandle RDRenderDevice::CreateVertexBuffer(float* pVertexData,int n
         glEnableVertexAttribArray(vDecl[i].type);
         glVertexAttribPointer(vDecl[i].type,vDecl[i].size,GL_FLOAT,GL_FALSE,nVertexSize,(GLvoid*)vDecl[i].offset);
     }
+    Q_ASSERT(!checkError());
     return pVertexArray;
 }
 
@@ -257,12 +262,22 @@ void RDRenderDevice::SetVertexBuffer(RDVertexBufferHandle pVertex)
 {
     QMutexLocker locker(&m_lock);
     glBindVertexArray(pVertex->hVertexArray);
+    Q_ASSERT(!checkError());
 }
 
 void RDRenderDevice::SetShader(RDShaderProgram *pShader)
 {
     QMutexLocker locker(&m_lock);
     pShader->use();
+    Q_ASSERT(!checkError());
+}
+
+bool RDRenderDevice::checkError()
+{
+    GLenum rt = glGetError();
+    if(rt != GL_NO_ERROR)
+        qDebug() << hex << rt;
+    return rt != GL_NO_ERROR;
 }
 
 void RDRenderDevice::SetShaderSample(RDTexture*  tex, RDSampleType nType)
@@ -274,8 +289,9 @@ void RDRenderDevice::SetShaderSample(RDTexture*  tex, RDSampleType nType)
 void RDRenderDevice::Render(GLenum mode, GLint nStart, GLsizei count)
 {
     QMutexLocker locker(&m_lock);
-    SetShaderToDevice();
+    //SetShaderToDevice();
     glDrawArrays(mode,nStart,count);
+    Q_ASSERT(!checkError());
 }
 
 bool RDRenderDevice::SetRenderTarget(RDTexture*  target, RDTexture*  depth)
@@ -345,7 +361,8 @@ RDRenderDevice::RDRenderDevice(const QGLContext* renderContex)
     //glBindFramebuffer(GL_FRAMEBUFFER,m_hFrameBuffer);
     glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LINE_SMOOTH);
+    glDepthFunc(GL_LEQUAL);
+    //glEnable(GL_LINE_SMOOTH);
 
     m_pVertexBufferDecl = new RDVertexBufferDecl[RDVertexBufferTypeCount];
     m_pVertexBufferDecl[RDVB_Pos_Color].setType(std::vector<RDVertexType>{RDVB_Pos,RDVB_Color});
@@ -422,6 +439,16 @@ void    RDRenderDevice::ReleaseUniformBufferObject(RDUBO* pBuffer)
 void    RDRenderDevice::SetShaderParam(int nIndex,RDUBO* pBuffer)
 {
     glBindBufferBase( GL_UNIFORM_BUFFER, nIndex, pBuffer->hUbo);
+    Q_ASSERT(!checkError());
+}
+
+void RDRenderDevice::SetShader(RDShader *pVertexShader, RDShader *pGeometryShader, RDShader *pFragmentShader)
+{
+    QMutexLocker locker(&m_lock);
+    m_pShader[VertexShader] = pVertexShader;
+    m_pShader[GeometryShader] = pGeometryShader;
+    m_pShader[FragmentShader] = pFragmentShader;
+    SetShaderToDevice();
 }
 
 void    RDRenderDevice::ModifyUniformBufferObject(RDUBO* pBuffer, const float* pData)
@@ -430,11 +457,11 @@ void    RDRenderDevice::ModifyUniformBufferObject(RDUBO* pBuffer, const float* p
     glBufferSubData(GL_UNIFORM_BUFFER,0,pBuffer->nBufferSize,pData);
 }
 
-void    RDRenderDevice::SetShader(RDShader* pShader,RDShaderType nType)
-{
-    QMutexLocker locker(&m_lock);
-    m_pShader[nType] = pShader;
-}
+//void    RDRenderDevice::SetShader(RDShader* pShader,RDShaderType nType)
+//{
+//    QMutexLocker locker(&m_lock);
+//    m_pShader[nType] = pShader;
+//}
 
 void    RDRenderDevice::SetShaderToDevice()
 {
@@ -447,4 +474,5 @@ void    RDRenderDevice::SetShaderTexture(int nIndex,const RDTexture* tex)
 {
     QMutexLocker locker(&m_lock);
     tex->SetTexture(nIndex);
+    Q_ASSERT(!checkError());
 }

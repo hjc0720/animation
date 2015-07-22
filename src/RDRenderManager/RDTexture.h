@@ -25,6 +25,7 @@ protected:
     GLenum GetTextureTarget(RDTexture_Type nType)const;
     bool IsDepth();
     bool IsTarget();
+    bool checkError()const;
 protected:
     QString m_strFileName;
     int     m_nWidth;

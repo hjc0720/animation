@@ -5,6 +5,7 @@
 #include "mac_define.h"
 #include "RDSpaceConvert.h"
 #include <cfloat>
+#include "RDMaterial.h"
 
 RDModel::RDModel()
     :m_pVertexShader(nullptr)
@@ -64,11 +65,13 @@ void RDModel::AddSubModel(int nCount)
     AddSubModel(nStart,nCount);
 }
 
-void RDModel::DrawSubset(size_t nSubset) const
+void RDModel::DrawSubset(size_t nSubset,RDMaterial* pMat) const
 {
     RDRenderDevice* pDevice = RDRenderDevice::GetRenderManager();
     const RDSubModel& subModel = m_arSubModel[nSubset];
-    pDevice->SetShader(m_pVertexShader,VertexShader);
+    pDevice->SetShader(m_pVertexShader,nullptr,pMat->getFragmentShader());
+    pMat->SetParamToDevice();
+    //pDevice->SetShader(m_pVertexShader,VertexShader);
     pDevice->SetVertexBuffer(m_hVertex);
     pDevice->Render(GL_TRIANGLES,subModel.nStart,subModel.nCount );
 }

@@ -5,5 +5,5 @@ layout(binding = 2, std140)uniform DiffuseBuffer
     float fAlpha;
 }Diffuse;
 
-layout(binding=0)uniform sampler2D DiffuseTex;
+layout(binding = 0)uniform sampler2D DiffuseTex;
 //end Diffuse
