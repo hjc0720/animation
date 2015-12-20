@@ -5,7 +5,7 @@
 #CONFIG -= debug
 #CONFIG += release
 QT += widgets
-QMAKE_CXXFLAGS += -std=c++11 -pipe
+QMAKE_CXXFLAGS += -std=c++11 -pipe -Werror -Wall
 debug{
     DESTDIR  = ../../bin_debug
     DEFINES += _DEBUG

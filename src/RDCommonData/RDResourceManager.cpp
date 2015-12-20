@@ -24,6 +24,7 @@
 #include <QDir>
 #include <QDebug>
 #include "RDModelResource.h"
+#include "rdexception.h"
 using namespace std;
 
 const char* g_fileDir[] = {
@@ -55,7 +56,7 @@ void RDResourceManager::ReleaseResourceManager()
         cmdStr += dstFilePath;
         cmdStr += g_fileDir[i];
         cmdStr += "*";
-        system(cmdStr.toUtf8().data());
+        callSystem(cmdStr.toUtf8().data());
     }
 }
 

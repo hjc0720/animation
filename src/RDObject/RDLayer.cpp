@@ -52,9 +52,10 @@ protected:
     size_t m_nTypeLightCount[RDLightTypeCount]; 
 };
 
-RDLayer::RDLayer(RDLayerType nType,const std::string& strName)
+RDLayer::RDLayer(const std::string& strName)
     :RDNode(strName)
-     ,m_nType(nType)
+    ,m_bZOrder(true)
+    ,m_bPerspective(false)
 {
     RDCamera* pCamera = new RDCamera("camera",1080,PerspectiveProject);
     pCamera->SetParent(this);
@@ -103,7 +104,6 @@ float2      RDLayer::CalObjMinMax(const std::string& pRDName)
 {
     std::stack<RDNode*> nodeSt;
 
-    float3 vMin(FLT_MAX,FLT_MAX,FLT_MAX),vMax(-FLT_MAX,-FLT_MAX,-FLT_MAX);
     RDLayerRenderData* pLayerRD = dynamic_cast<RDLayerRenderData*>(GetRenderData(pRDName));
     float2 vNearFar;
     vNearFar.x = -FLT_MAX;
@@ -232,10 +232,8 @@ void RDLayer::Serialize(RDFileDataStream& buffer,bool bSave)
     int nVersion = 0;
     buffer.Serialize(nVersion,bSave);
     RDNode::Serialize(buffer,bSave);
-    int nType = m_nType;
-    buffer.Serialize(nType,bSave);
-    if(!bSave)
-        m_nType = static_cast<RDLayerType>(nType);
+    buffer.Serialize(m_bZOrder,bSave);
+    buffer.Serialize(m_bPerspective,bSave);
     
     int nCameraCount = m_vecCameraObj.size();
     buffer.Serialize(nCameraCount,bSave);

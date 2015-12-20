@@ -22,6 +22,7 @@
 #include "RDRenderData.h"
 #include "RDObject.h"
 #include "RDNode.h"
+#include "rdlayeredit.h"
 
 RDEditerManager* RDEditerManager::m_pEditerManager = NULL;
 
@@ -71,6 +72,8 @@ void RDEditerManager::RegisterEditer()
 {
     RDBaseEdit* pNewEdit = new RDImageEdit(RDMd5("RDImageObject"));
     m_EditList[pNewEdit->GetEditerMd5()] = pNewEdit;
+
+    m_EditList[RDMd5("RDLayer")] = new RDLayerEdit(RDMd5("RDLayer"));
 }
 
 void RDEditerManager::RegisterCell()
@@ -100,7 +103,7 @@ void    RDEditerManager::CellChange(const RDMd5& pCell,int nIndex)
 {
     if(!m_pCurNode)
         return;
-    RDBaseEdit* pEdit = m_EditList[m_pCurNode->GetObject()->GetObjMd5()];
+    RDBaseEdit* pEdit = m_EditList[m_pCurNode->getNodeMd5()];
     if(!pEdit)
         return;
     pEdit->UpdateValue(pCell,nIndex,*m_pCurNode);

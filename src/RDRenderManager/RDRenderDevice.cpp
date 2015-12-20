@@ -362,7 +362,7 @@ RDRenderDevice::RDRenderDevice(const QGLContext* renderContex)
     glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    //glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_LINE_SMOOTH);
 
     m_pVertexBufferDecl = new RDVertexBufferDecl[RDVertexBufferTypeCount];
     m_pVertexBufferDecl[RDVB_Pos_Color].setType(std::vector<RDVertexType>{RDVB_Pos,RDVB_Color});

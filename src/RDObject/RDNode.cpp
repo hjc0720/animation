@@ -585,6 +585,15 @@ bool    RDNode::isParentCollapse()const
         return m_pParent->isParentCollapse();
 }
 
+const RDMd5 &RDNode::getNodeMd5() const
+{
+    static RDMd5 null;
+    if(m_pObj)
+        return m_pObj->GetObjMd5();
+    else
+        return null;
+}
+
 RDRenderPrivateData* RDNode::GetPrivateData(const std::string& name)const
 {
     return GetRenderData(name)->GetPrivateData();

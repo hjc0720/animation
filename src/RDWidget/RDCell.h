@@ -28,10 +28,11 @@ class RDCell : public QWidget
 public:
     RDCell(const QString& title, QWidget* parent);
     virtual const RDMd5& GetCellMd5() = 0 ;
-    void AddWidget(QWidget* pWidget){m_pMainLayout->addWidget(pWidget);};
+    void AddWidget(QWidget* pWidget){m_pMainLayout->addWidget(pWidget);}
     void AddLayout(QLayout* pLayout){m_pMainLayout->addLayout(pLayout);}
 protected:
-    virtual int GetCurChangeIndex() = 0;
+    size_t GetCurChangeIndex()const{return  m_nCurChangeIndex;}
+    void setCurChangeIndex(size_t nIndex){m_nCurChangeIndex = nIndex;}
 signals:
     void    CellChanged(const RDMd5& pCell,int nIndex);
 protected slots:
@@ -40,5 +41,6 @@ protected slots:
 protected:
     QWidget*     m_pMainWidget;
     QVBoxLayout* m_pMainLayout;
+    size_t       m_nCurChangeIndex;
 };
 #endif   // ----- #ifndef rdcell_INC  -----

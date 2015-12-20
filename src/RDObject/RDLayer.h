@@ -19,12 +19,6 @@
 #define _RD_LAYER_H
 #include "RDNode.h"
 
-enum RDLayerType
-{
-    RD2DLayer,
-    RD3DLayer,
-};
-
 class RDCamera;
 class RDLight;
 class RDLayerRenderData;
@@ -33,7 +27,7 @@ class RDLayer : public RDNode
 {
 public:
     RDLayer(){};
-    RDLayer(RDLayerType nType,const std::string& strName);
+    RDLayer(const std::string& strName);
     virtual ~RDLayer();
     virtual void Serialize(RDFileDataStream& buffer,bool bSave);
 
@@ -58,9 +52,14 @@ public:
     size_t GetLightCount()const{return m_vecLight.size();}
     const RDLight* GetLight(size_t i)const{return m_vecLight[i];}
     RDLight*    GetLight(size_t i){return m_vecLight[i];}
-    size_t      GetLightTypeCount(RDLayerType nType);
 
     RDUBO*      GetLightParam(const std::string& name)const;
+
+    void        setZOrder(bool bEnable){m_bZOrder = bEnable;}
+    void        setPerspective(bool bEnable){m_bPerspective = bEnable;}
+
+    bool        isZOrder()const{return m_bZOrder;}
+    bool        isPerspective()const{return m_bPerspective;}
 protected:
     RDCamera* GetCurCamera(const RDLayerRenderData& pLayerRD) const;
     float2      CalObjMinMax(const std::string& pRDName);
@@ -69,7 +68,8 @@ protected:
     virtual void    CalChildFrame(const RDTime& nTime,const std::string& pRDName)override;
 
 protected:
-    RDLayerType m_nType;
+    bool m_bZOrder;
+    bool m_bPerspective;
     std::vector<RDCamera*> m_vecCameraObj;
     std::vector<RDLight*> m_vecLight;
 

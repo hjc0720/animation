@@ -95,7 +95,7 @@ void RDTexture::SetTexture(int loc)const
     Q_ASSERT(!checkError());
     glBindTexture(target , m_nTexture);
     Q_ASSERT(!checkError());
-    GLint logLen;
+    //GLint logLen;
     glUniform1i(loc,loc);
     Q_ASSERT(!checkError());
 }

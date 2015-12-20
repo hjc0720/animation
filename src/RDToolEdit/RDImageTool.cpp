@@ -109,7 +109,7 @@ void RDImageTool::setRect()
     if(!m_pLine)
         m_pLine = new RDLine(1);
     m_pLine->clear();
-    m_pLine->setColor(0xffff0000);
+    m_pLine->setColor(0xff0000ff);
     m_pLine->addRect(QRectF((m_fLeftTop.x), (m_fLeftTop.y),static_cast<float>(m_nImageWidth),static_cast<float>(m_nImageHeight)));
 }
 
@@ -117,8 +117,8 @@ void RDImageTool::setRect()
 QRectF RDImageTool::GetDirtyRect(const std::string& strName)
 {
     float fScale = m_pFieldNode->GetRenderData(strName)->GetSceneScale();
-    //return QRectF(m_vImagePos.x() * fScale, m_vImagePos.y() * fScale,m_nImageWidth * fScale,m_nImageHeight * fScale);
-    return QRectF(0,0,1920,1080);
+    return QRectF(m_vImagePos.x() * fScale, m_vImagePos.y() * fScale,m_nImageWidth * fScale,m_nImageHeight * fScale);
+    //return QRectF(0,0,1920,1080);
 }
 
 void RDImageTool::OnDrawNoDepth(const std::string& strName)

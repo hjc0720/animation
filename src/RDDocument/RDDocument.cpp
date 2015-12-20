@@ -28,6 +28,7 @@
 #include "RDLayer.h"
 #include "RDCamera.h"
 #include "RDLight.h"
+#include "rdexception.h"
 
 // =====================================================================================
 class RDUndoRedo :public QUndoCommand
@@ -82,7 +83,7 @@ RDDocument::RDDocument(bool bCreateNewProj)
         auto pStory = pRenderData->GetCurTrigStory();
 		pScene->AddSection(m_nCurFrame - pStory.GetStartTime(),1000000000,pStory.GetStoryId());
 
-        RDLayer* pLayer = new RDLayer(RD3DLayer,"layer");
+        RDLayer* pLayer = new RDLayer("layer");
         pLayer->SetParent(pScene);
         pScene->AddChild(*pLayer);
         pLayer->AddSection(m_nCurFrame - pStory.GetStartTime(),1000000000,pStory.GetStoryId());
@@ -218,39 +219,42 @@ void RDDocument::CreateTempProjDir()
     m_strCachePath += m_DocUUID.toString();
     QString cmdStr("mkdir ");
     cmdStr += m_strCachePath;
-    system(cmdStr.toUtf8().data());
+    callSystem(cmdStr.toUtf8().data());
 
     QString cmdStr2("mkdir ");
     cmdStr2 += m_strCachePath;
     cmdStr2 += "/Resource";
-    system(cmdStr2.toUtf8().data());
+    callSystem(cmdStr2.toUtf8().data());
 
 //image
     QString imageStr2("mkdir ");
     imageStr2 += m_strCachePath;
     imageStr2 += "/Resource/Image";
-    system(imageStr2.toUtf8().data());
+    callSystem(imageStr2.toUtf8().data());
 //movie
     QString movieStr2("mkdir ");
     movieStr2 += m_strCachePath;
     movieStr2 += "/Resource/Movie";
-    system(movieStr2.toUtf8().data());
+    callSystem(movieStr2.toUtf8().data());
 
 #ifdef _DEBUG
     qDebug() << m_strCachePath;
 #endif
 }
 
-int RDDocument::DeleteTempProjDir()
+void RDDocument::DeleteTempProjDir()
 {
     QString cmdStr("rm -rf ");
     cmdStr += m_strCachePath;
-    int nRet = system(cmdStr.toUtf8().data());
-    if(nRet)
+
+    try{
+        callSystem(cmdStr.toUtf8().data());
+    }catch(RDException& e)
+    {
         m_strCachePath.clear();
-    return nRet;
+    }
 }
-int RDDocument::TarProjDir(const QString& strProjPath)
+void RDDocument::TarProjDir(const QString& strProjPath)
 {
     QString cmdStr1("cd ");
     cmdStr1 += m_strCachePath;
@@ -262,13 +266,12 @@ int RDDocument::TarProjDir(const QString& strProjPath)
 
     cmdStr1 += cmdStr2;
 
-    int nRet = system(cmdStr1.toUtf8().data());
+    callSystem(cmdStr1.toUtf8().data());
     //system(cmdStr2.toUtf8().data());
 #ifdef _DEBUG
     qDebug() << cmdStr1;
     qDebug() << cmdStr2;
 #endif
-    return nRet;
 }
 
 void RDDocument::UntarProjDir(const QString& strProjPath)
@@ -279,14 +282,14 @@ void RDDocument::UntarProjDir(const QString& strProjPath)
     cmdStr += m_strCachePath;
 
     qDebug()  << cmdStr;
-    system(cmdStr.toUtf8().data());
+    callSystem(cmdStr.toUtf8().data());
 
     QString copyStr("cp -rf ");
     copyStr += m_strCachePath + "/Resource/* ";
     copyStr += RDResourceManager::GetResourceManager()->GetResourcePath();
 
     qDebug()  << copyStr;
-    system(copyStr.toUtf8().data());
+    callSystem(copyStr.toUtf8().data());
 }
 void RDDocument::ClearRDStack()
 {

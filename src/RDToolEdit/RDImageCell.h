@@ -53,7 +53,6 @@ protected slots:
     void OnOriginSize();
 protected:
     RDImageCell(QWidget* parent);
-    virtual int GetCurChangeIndex(){return RDImageSizeChange;};
 protected:
     QLineEdit*      m_pImageFile;
     QLabel*         m_pResolution;

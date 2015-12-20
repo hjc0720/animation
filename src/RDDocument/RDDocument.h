@@ -97,8 +97,8 @@ protected:
     void SaveProj(RDProject& pProj);
     void SaveProjAs(RDProject& pProj,const QString& filePath);
     void CreateTempProjDir();
-    int DeleteTempProjDir();
-    int TarProjDir(const QString& strProjPath);
+    void DeleteTempProjDir();
+    void TarProjDir(const QString& strProjPath);
     void UntarProjDir(const QString& strProjPath);
     void ClearRDStack();
 

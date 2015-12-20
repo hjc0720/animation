@@ -39,6 +39,8 @@ typedef std::lock_guard<std::mutex> RDSingleLock;
 
 class RDScene;
 class RDCamera;
+class RDMd5;
+
 class RDNode
 {
 public:
@@ -56,6 +58,7 @@ public:
     bool    collapse()const{return m_bCollapse;}
     void    setCollapse(bool bCollapse){m_bCollapse = bCollapse;}
     bool    isParentCollapse()const;
+    virtual const RDMd5 &getNodeMd5()const;
 
     //static pos
     const float3& GetPos()const{return m_vPos;}

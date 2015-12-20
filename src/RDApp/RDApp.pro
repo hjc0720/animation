@@ -1,5 +1,5 @@
 CONFIG += qt
-CONFIG += debug
+#CONFIG += debug
 TEMPLATE = app
 TARGET = animation
 include(../path.pri)

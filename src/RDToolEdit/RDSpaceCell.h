@@ -35,7 +35,6 @@ public:
     void            SetScale(const float3& newScale);
     const float3&   GetScale()const;
 protected:
-    virtual int GetCurChangeIndex(){return -1;};
     RDVec3Widget*  CreateVectorWidget(const QString& name,double fMin,double fMax,int decimals,double step);
     RDSpaceCell(QWidget* parent);
 protected:
