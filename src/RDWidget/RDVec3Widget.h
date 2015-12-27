@@ -21,7 +21,7 @@
 #include <QWidget>
 #include "HVector3f.h"
 
-class QDoubleSpinBox;
+class RDDoubleSpinBox;
 class RDVec3Widget :public QWidget
 {
     Q_OBJECT
@@ -42,6 +42,6 @@ protected slots:
     void VectorChanged();
 protected:
     float3 m_vValue;
-    QDoubleSpinBox* m_pVector[3];
+    RDDoubleSpinBox* m_pVector[3];
 };
 #endif   /* ----- #ifndef RDVec3Widget_INC  ----- */

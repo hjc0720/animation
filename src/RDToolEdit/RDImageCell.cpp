@@ -21,7 +21,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QSpinBox>
+#include "rddoublespinbox.h"
 #include <QFileDialog>
 
 RDImageCell* RDImageCell::GetImageCell()
@@ -55,13 +55,13 @@ RDImageCell::RDImageCell(QWidget* parent)
 
     pHLayout = new QHBoxLayout();
     QLabel* pWidth = new QLabel(tr("Width"));
-    m_pWidth = new QSpinBox();
-    connect(m_pWidth, SIGNAL(editingFinished()), this, SLOT(CellChange()));
+    m_pWidth = new RDSpinBox();
+    connect(m_pWidth, SIGNAL(valueChanging(int)), this, SLOT(onImageSizeChange()));
     m_pWidth->setMinimum(1);
     QLabel* pHeight = new QLabel(tr("Height"));
-    m_pHeight = new QSpinBox();
+    m_pHeight = new RDSpinBox();
     m_pHeight->setMinimum(1);
-    connect(m_pHeight, SIGNAL(editingFinished()), this, SLOT(CellChange()));
+    connect(m_pHeight, SIGNAL(valueChanging(int)), this, SLOT(onImageSizeChange()));
     pHLayout->addWidget(pWidth);
     pHLayout->addWidget(m_pWidth);
     pHLayout->addStretch();
@@ -121,8 +121,9 @@ void    RDImageCell::SetImageOriginSize(int nWidth,int nHeight)
 
 void    RDImageCell::SetImageSize(int nWidth,int nHeight)
 {
-    m_pWidth->setValue(nWidth);
-    m_pHeight->setValue(nHeight);
+    m_bSetValue = true;
+    m_pWidth->updateValue(nWidth);
+    m_pHeight->updateValue(nHeight);
 }
 
 int     RDImageCell::GetImageWidth()const
@@ -138,18 +139,23 @@ int     RDImageCell::GetImageHeight()const
 void RDImageCell::OnKeepWidth()
 {
     m_pHeight->setValue(m_pHeight->maximum() * m_pWidth->value() / m_pWidth->maximum());
-    emit CellChanged(GetCellMd5(),RDImageSizeChange);
+    //emit CellChanged(GetCellMd5(),RDImageSizeChange);
 }
 
 void RDImageCell::OnKeepHeight()
 {
     m_pWidth->setValue(m_pWidth->maximum() * m_pHeight->value() / m_pHeight->maximum());
-    emit CellChanged(GetCellMd5(),RDImageSizeChange);
+    //emit CellChanged(GetCellMd5(),RDImageSizeChange);
 }
 
 void RDImageCell::OnOriginSize()
 {
-    m_pWidth->setValue(m_pWidth->maximum());
-    m_pHeight->setValue(m_pHeight->maximum());
+    m_pWidth->updateValue(m_pWidth->maximum());
+    m_pHeight->updateValue(m_pHeight->maximum());
+    emit CellChanged(GetCellMd5(),RDImageSizeChange);
+}
+
+void RDImageCell::onImageSizeChange()
+{
     emit CellChanged(GetCellMd5(),RDImageSizeChange);
 }

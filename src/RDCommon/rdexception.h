@@ -26,8 +26,7 @@ public:
 
 void callSystem(const char* command)
 {
-
-    if(system(command) == 0)
+    if(system(command) > 1)
         throw RDException();
 }
 

@@ -29,7 +29,7 @@ enum RDImageCellChange
 };
 
 class QLineEdit;
-class QSpinBox;
+class RDSpinBox;
 class QLabel;
 
 class RDImageCell : public RDCell
@@ -51,13 +51,15 @@ protected slots:
     void OnKeepWidth();
     void OnKeepHeight();
     void OnOriginSize();
+    void onImageSizeChange();
 protected:
     RDImageCell(QWidget* parent);
 protected:
+    bool            m_bSetValue;
     QLineEdit*      m_pImageFile;
     QLabel*         m_pResolution;
-    QSpinBox*       m_pWidth;
-    QSpinBox*       m_pHeight;
+    RDSpinBox*       m_pWidth;
+    RDSpinBox*       m_pHeight;
 };
 #endif   /* ----- #ifndef RDImageCell_INC  ----- */
 

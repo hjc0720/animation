@@ -18,7 +18,7 @@
 #include "RDVec3Widget.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QDoubleSpinBox>
+#include "rddoublespinbox.h"
 #include <QLabel>
 
 RDVec3Widget::RDVec3Widget(QWidget* parent,bool bHorizon /*= false*/)
@@ -32,8 +32,8 @@ RDVec3Widget::RDVec3Widget(QWidget* parent,bool bHorizon /*= false*/)
     QStringList st(QStringList()<<tr("x")<<tr("y")<<tr("z"));
     for(int i = 0; i < 3; i++)
     {
-        m_pVector[i] = new QDoubleSpinBox(this);
-        connect(m_pVector[i],SIGNAL(editingFinished()),this,SLOT(VectorChanged()));
+        m_pVector[i] = new RDDoubleSpinBox(this);
+        connect(m_pVector[i],SIGNAL(valueChanging(double)),this,SLOT(VectorChanged()));
         QLabel* pLabel = new QLabel(st[i],this);
         QHBoxLayout* pItem = new QHBoxLayout();
         pItem->addWidget(pLabel);
@@ -87,7 +87,7 @@ void RDVec3Widget::VectorChanged()
 void RDVec3Widget::SetValue(const float3& value)
 {
     m_vValue = value;
-    m_pVector[0]->setValue(m_vValue.x());
-    m_pVector[1]->setValue(m_vValue.y());
-    m_pVector[2]->setValue(m_vValue.z());
+    m_pVector[0]->updateValue(m_vValue.x());
+    m_pVector[1]->updateValue(m_vValue.y());
+    m_pVector[2]->updateValue(m_vValue.z());
 }
