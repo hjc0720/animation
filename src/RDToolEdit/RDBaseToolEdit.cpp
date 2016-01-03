@@ -95,6 +95,7 @@ void   RDBaseToolEdit::MoveItemPos(const float3& vNewPos,RDNode& pNode,bool bUpd
     }
     pNode.SetChangeLevel(RDRender_TransChange);
     pNode.UnLock();
+    RDEditerManager::GetEditerManager().updateKey();
     if(bUpdateCell)
         RDEditerManager::GetEditerManager().UpdateCell(&RDSpaceCell::GetSpaceCell()->GetCellMd5(),pNode);
 }

@@ -74,6 +74,7 @@ void MainWindow::InitWindow()
 
     connect(RDToolManager::GetToolManager(),SIGNAL(SceneChange()),m_pCenterWidget,SLOT(updateGL()));
     connect(&RDEditerManager::GetEditerManager(),SIGNAL(SceneChange()),m_pCenterWidget,SLOT(updateGL()));
+    connect(&RDEditerManager::GetEditerManager(),SIGNAL(UpdateKey()),this,SLOT(OnSectionChange()));
     resize(800,600);
 	m_UndoGroup.setActiveStack(GetCurDocument()->GetUndoStack());
     m_bInit = true;

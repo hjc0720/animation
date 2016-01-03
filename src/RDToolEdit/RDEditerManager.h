@@ -39,10 +39,12 @@ public:
 
     void SetDocument(RDDocument* pDoc){m_pCurDoc = pDoc;}
     RDDocument* GetDocument(){return m_pCurDoc;}
+    void    updateKey(){emit UpdateKey();}
 signals:
     void 	PropertyChanged(RDCell** pCellArray,int nCount);
 	void 	AddNoded(RDNode&);
     void    SceneChange();
+    void    UpdateKey();
 public slots:
     void    CellChange(const RDMd5& pCell,int nIndex);
 protected:
