@@ -218,6 +218,7 @@ void MainWindow::OnReloadTimeLine(RDScene& pScene)
 	m_pTimeLineView = new RDTimelineView(pScene,this);
     connect(&RDEditerManager::GetEditerManager(),SIGNAL(AddNoded(RDNode&)),m_pTimeLineView,SLOT(InsertObj(RDNode&)));
     connect(m_pCenterWidget,SIGNAL(DelNoded(RDNode&)),m_pTimeLineView,SLOT(DelObj(RDNode&)));
+    connect(&RDEditerManager::GetEditerManager(),SIGNAL(UpdateKey(const RDNode*)),m_pTimeLineView,SIGNAL(ItemChange(const RDNode*)));
     connect(m_pTimeLineView,SIGNAL(FrameChanged(const RDTime& )),this,SLOT(OnFrameChanged(const RDTime&)));
     connect(m_pTimeLineView,SIGNAL(SectionChanged()),this,SLOT(OnSectionChange()));
 

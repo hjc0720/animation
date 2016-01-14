@@ -63,7 +63,8 @@ KeyType RDKeyList<KeyType>::Interpolation(const RDTime& nTime, const RDBaseKey<K
 template <typename KeyType>
 void RDKeyList<KeyType>::GetTime(std::set<RDTime>& times)const
 {
-	std::for_each(m_KeyList.begin(),m_KeyList.end(),[&](std::pair<const RDTime,RDBaseKey<KeyType>*> it){times.insert(it.first);});
+    for(auto& key : m_KeyList)
+        times.insert(key.first);
 }
 // =====================================================================================
 template class RDKeyList<float3>;

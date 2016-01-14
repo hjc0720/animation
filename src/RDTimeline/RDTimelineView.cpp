@@ -73,6 +73,7 @@ RDTimelineView::RDTimelineView(RDScene& pScene,QWidget* pParent)
     setWidget(pTimeLineWidget);
     connect(m_pSectionView,SIGNAL(FrameChanged(const RDTime&)),this,SIGNAL(FrameChanged(const RDTime&)));
     connect(m_pSectionView,SIGNAL(SectionChanged()),this,SIGNAL(SectionChanged()));
+    connect(this,SIGNAL(ItemChange(const RDNode*)),m_pSectionView,SLOT(ItemChange(const RDNode*)));
 
 	QScrollBar* pLeftScroll = m_pHead->verticalScrollBar();
 	QScrollBar* pRightScroll = m_pSectionView->verticalScrollBar();

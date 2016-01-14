@@ -95,7 +95,7 @@ void   RDBaseToolEdit::MoveItemPos(const float3& vNewPos,RDNode& pNode,bool bUpd
     }
     pNode.SetChangeLevel(RDRender_TransChange);
     pNode.UnLock();
-    RDEditerManager::GetEditerManager().updateKey();
+    RDEditerManager::GetEditerManager().updateKey(&pNode);
     if(bUpdateCell)
         RDEditerManager::GetEditerManager().UpdateCell(&RDSpaceCell::GetSpaceCell()->GetCellMd5(),pNode);
 }
@@ -121,6 +121,7 @@ void   RDBaseToolEdit::MoveItemAngle(const float3& vAngle,RDNode& pNode,bool bUp
     }
     pNode.SetChangeLevel(RDRender_TransChange);
     pNode.UnLock();
+    RDEditerManager::GetEditerManager().updateKey(&pNode);
     if(bUpdateCell)
         RDEditerManager::GetEditerManager().UpdateCell(&RDSpaceCell::GetSpaceCell()->GetCellMd5(),pNode);
 }

@@ -128,7 +128,16 @@ void RDSectionView::DelNode(RDNode* pNode)
 
 void RDSectionView::UpdateStoryLength()
 {
-	m_pStoryItem->updateLength();
+    m_pStoryItem->updateLength();
+}
+
+void RDSectionView::ItemChange(const RDNode *pNode)
+{
+    if(pNode == nullptr)   
+        return;
+    
+    RDSectionScene* pScene = dynamic_cast<RDSectionScene*>(scene());
+    pScene->itemChange(pNode);
 }
 
 void RDSectionView::keyReleaseEvent(QKeyEvent * event)

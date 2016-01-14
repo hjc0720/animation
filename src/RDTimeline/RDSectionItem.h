@@ -17,9 +17,13 @@
  */
 #include <QGraphicsItem>
 #include "mac_define.h"
+#include <vector>
+#include <QPainterPath>
 
+using  namespace std;
 class RDSection;
 class RDNode;
+class RDKeyItem;
 class RDSectionItem : public QGraphicsItem
 {
 public:
@@ -28,15 +32,20 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 	bool	isEqual(const RDNode* pNode)const{return m_pNode == pNode;}
 	void	removeSection();
+    void    itemChange();
 protected:
+    void createKeyItem();
+    void removeKeyItem();
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void SetSectionType();
     void DrawKey(RDTime time,float fScale,QPainter *painter);
 protected:
-    bool        m_bHitTest;
+    QPainterPath    m_shape;
+    vector<RDTime> m_nHitKey;
     int         m_nHeight;
     int         m_nYOffset;
     RDNode*     m_pNode;
     RDSection*  m_pSection;
     QImage      m_imgSectionType;
+    vector<RDKeyItem*> m_vecKeyItem;
 };

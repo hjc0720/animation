@@ -28,10 +28,10 @@
 #include "RDSectionScene.h"
 #include <QKeyEvent>
 #include <functional>
+#include "rdkeyitem.h"
 
 RDSectionItem::RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int nYOffset)
-    :m_bHitTest(false)
-     ,m_nHeight(nHeight)
+     :m_nHeight(nHeight)
      ,m_nYOffset(nYOffset)
      ,m_pNode(pNode)
       ,m_pSection(pSection)
@@ -40,6 +40,8 @@ RDSectionItem::RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int n
     setPos(m_pSection->GetStartTime(),m_nYOffset);
     setFlags(ItemIsMovable | ItemIsSelectable);
 //    setAcceptedMouseButtons(Qt::LeftButton);
+
+    createKeyItem();
 }
 
 void RDSectionItem::SetSectionType()
@@ -84,16 +86,16 @@ void RDSectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * , 
         painter->drawImage(target,m_imgSectionType);
     }
 
-	std::set<RDTime>  keyTimeSet;
-	for(int i = RDSectionPos; i < RDSectionCount;i++)
-	{
-		const RDKeyList<float3>& list = m_pSection->getKeyList(static_cast<RDSectionKeyType>(i));
-		list.GetTime(keyTimeSet);
-	}
+//	std::set<RDTime>  keyTimeSet;
+//	for(int i = RDSectionPos; i < RDSectionCount;i++)
+//	{
+//		const RDKeyList<float3>& list = m_pSection->getKeyList(static_cast<RDSectionKeyType>(i));
+//		list.GetTime(keyTimeSet);
+//	}
 	
-    painter->setPen(Qt::yellow);
-	using namespace std::placeholders;
-	std::for_each(keyTimeSet.begin(),keyTimeSet.end(),std::bind(std::mem_fn(&RDSectionItem::DrawKey),this,_1,fScale,painter));
+//    painter->setPen(Qt::yellow);
+    //using namespace std::placeholders;
+    //std::for_each(keyTimeSet.begin(),keyTimeSet.end(),std::bind(std::mem_fn(&RDSectionItem::DrawKey),this,_1,fScale,painter));
 }
 
 void RDSectionItem::DrawKey(RDTime time,float fScale,QPainter *painter)
@@ -140,5 +142,37 @@ void RDSectionItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void	RDSectionItem::removeSection()
 {
-	m_pNode->RemoveSection(m_pSection);
+    m_pNode->RemoveSection(m_pSection);
+}
+
+void RDSectionItem::itemChange()
+{
+    removeKeyItem();
+    createKeyItem();
+}
+
+void RDSectionItem::createKeyItem()
+{
+    std::set<RDTime>  keyTimeSet;
+    for(int i = RDSectionPos; i < RDSectionCount;i++)
+    {
+        const RDKeyList<float3>& list = m_pSection->getKeyList(static_cast<RDSectionKeyType>(i));
+        list.GetTime(keyTimeSet);
+    }
+
+    for(RDTime time : keyTimeSet)
+    {
+        RDKeyItem* pKey = new RDKeyItem(m_nHeight,time,this);
+        pKey->setPos(time,0);
+        m_vecKeyItem.push_back(pKey);
+    }
+}
+
+void RDSectionItem::removeKeyItem()
+{
+    for(RDKeyItem* pItem : m_vecKeyItem)
+    {
+        SAFE_DELETE(pItem);
+    }
+    m_vecKeyItem.clear();
 }

@@ -42,6 +42,7 @@ signals:
 		void 	addStory();
 		void	switchStory(int nIndex);
 		void 	removeCurStory();
+        void    ItemChange(const RDNode* pNode);
 protected:
 		void RDFillHead(RDNode& pNode);
 		QHBoxLayout*  AddToolBar();

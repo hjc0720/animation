@@ -39,6 +39,8 @@ public:
 signals:
     void    FrameChanged(const RDTime& nFrame);
     void    SectionChanged();
+public slots:
+    void    ItemChange(const RDNode* pNode);
 protected:
     void AddChildNodeSection(int& nIndex,RDNode* pNode,const QUuid& idStory);
     virtual void resizeEvent(QResizeEvent* event);
