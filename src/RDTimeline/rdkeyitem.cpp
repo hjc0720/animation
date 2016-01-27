@@ -17,18 +17,21 @@
 #include "rdkeyitem.h"
 #include <QPainter>
 #include <QPointF>
+#include "RDSection.h"
+#include <QGraphicsSceneMouseEvent>
 
 const float RDKeyItem::value = 6 ;
-RDKeyItem::RDKeyItem(int nHeight,RDTime time,QGraphicsItem* parent)
-    :QGraphicsItem(parent)
+RDKeyItem::RDKeyItem(int nHeight, RDTime time, QGraphicsItem* parent)
+    :QGraphicsObject(parent)
     ,m_nHeight(nHeight)
     ,m_nTime(time)
 {
+    setFlags(ItemIsMovable | ItemIsSelectable);
 }
 
 QRectF RDKeyItem::boundingRect() const
 {
-    return QRectF(-m_fRealWidth,value,m_fRealWidth,m_nHeight-value);
+    return QRectF(-m_fRealWidth,value,2*m_fRealWidth,m_nHeight-2*value);
 }
 
 void RDKeyItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
@@ -53,4 +56,15 @@ void RDKeyItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 
     //qDebug() << pt[0] << pt[1] << pt[2] << pt[3];
     painter->drawPolygon(pt,4);
+}
+
+
+void RDKeyItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsItem::mouseMoveEvent(event);
+
+    RDTime offsetPos = event->scenePos().x() - event->lastScenePos().x();
+    emit TimeMoved(m_nTime,m_nTime+offsetPos);
+    m_nTime+=offsetPos;
+    setPos(m_nTime,0);
 }

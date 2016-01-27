@@ -47,6 +47,39 @@ void RDSection::AddScaleKey(const RDTime& nStoryTime,const float3& value)
     m_nLength = max(m_nLength,nSectionTime);
 }
 
+void RDSection::delPosKey(const RDTime &nSectionTime)
+{
+    delKey(nSectionTime,RDSectionPos);
+}
+
+void RDSection::delAngleKey(const RDTime &nSectionTime)
+{
+    m_RotateKey.delKey(nSectionTime);
+    delKey(nSectionTime,RDSectionAngle);
+}
+
+void RDSection::delScaleKey(const RDTime &nSectionTime)
+{
+    delKey(nSectionTime,RDSectionScale);
+}
+
+void RDSection::delKey(RDTime nSectionTime)
+{
+    for(int eType = RDSectionPos; eType != RDSectionCount; ++eType)
+    {
+        delKey(nSectionTime,static_cast<RDSectionKeyType>(eType));
+    }
+}
+
+void RDSection::moveKey(RDTime nSrcTime, RDTime nDstTime)
+{
+    for(int eType = RDSectionPos; eType != RDSectionCount; ++eType)
+    {
+        auto& keylist = getKeyList(static_cast<RDSectionKeyType>(eType));
+        keylist.moveKey(nSrcTime,nDstTime);
+    }
+}
+
 void RDSection::AddPosKey(const RDTime& nStoryTime,const float3& value)
 {
     RDTime nSectionTime = nStoryTime - m_nStartTime;
@@ -54,34 +87,66 @@ void RDSection::AddPosKey(const RDTime& nStoryTime,const float3& value)
     m_nLength = max(m_nLength,nSectionTime);
 }
 
-float3 RDSection::GetPosVector(const RDTime& nSectionTime)
+float3 RDSection::GetPosVector(RDTime nSectionTime)
 {
     return m_PosKey.GetKeyValue(nSectionTime);
 }
 
-float3 RDSection::GetAngleVector(const RDTime& nSectionTime)
+float3 RDSection::GetAngleVector(RDTime nSectionTime)
 {
     return m_RotateKey.GetKeyValue(nSectionTime);
 }
 
-float3 RDSection::GetScaleVector(const RDTime& nSectionTime)
+float3 RDSection::GetScaleVector(RDTime nSectionTime)
 {
     return m_ScaleKey.GetKeyValue(nSectionTime,float3::GetOne());
 }
 
+std::set<RDTime> RDSection::getKeyTimeSet() const
+{
+    std::set<RDTime>  keyTimeSet;
+    for(int i = RDSectionPos; i < RDSectionCount;i++)
+    {
+        const RDKeyList<float3>& list = getKeyList(static_cast<RDSectionKeyType>(i));
+        list.GetTime(keyTimeSet);
+    }
+    return keyTimeSet;
+}
+
+RDKeyList<float3>& RDSection::getKeyList(RDSectionKeyType eType)
+{
+    switch(eType)
+    {
+    case RDSectionPos:
+        return m_PosKey;
+    case RDSectionAngle:
+        return m_RotateKey;
+    case RDSectionScale:
+        return m_ScaleKey;
+    default:
+        throw;
+    }
+}
+
 const RDKeyList<float3>& RDSection::getKeyList(RDSectionKeyType eType)const
 {
-	switch(eType)
-	{
-	case RDSectionPos:
-		return m_PosKey;
-	case RDSectionAngle:
-		return m_RotateKey;
-	case RDSectionScale:
-		return m_ScaleKey;
-	default:
-		throw; 
-	}
+    switch(eType)
+    {
+    case RDSectionPos:
+        return m_PosKey;
+    case RDSectionAngle:
+        return m_RotateKey;
+    case RDSectionScale:
+        return m_ScaleKey;
+    default:
+        throw;
+    }
+}
+
+void RDSection::delKey(RDTime nSectionTime, RDSectionKeyType type)
+{
+    auto& keylist = getKeyList(type);
+    keylist.delKey(nSectionTime);
 }
 // =====================================================================================
 RDFileDataStream& operator << (RDFileDataStream& buffer,const RDSection& Section)

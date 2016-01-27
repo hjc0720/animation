@@ -21,6 +21,24 @@
 #include <QDebug>
 
 template <typename KeyType>
+void RDKeyList<KeyType>::delKey(RDTime nTime)
+{
+    m_KeyList.erase(nTime);
+}
+
+template <typename KeyType>
+void RDKeyList<KeyType>::moveKey(RDTime srcTime, RDTime dstTime)
+{
+    auto it = m_KeyList.find(srcTime);
+    if(it != m_KeyList.end())
+    {
+        RDBaseKey<KeyType>* value = it->second;
+        m_KeyList.erase(it);
+        m_KeyList.insert({dstTime,value});
+    }
+}
+
+template <typename KeyType>
 KeyType RDKeyList<KeyType>::GetKeyValue(const RDTime& nSectionTime,const KeyType& vDefaultValue)
 {
     //qDebug() << "key list count:"<< m_KeyList.size();

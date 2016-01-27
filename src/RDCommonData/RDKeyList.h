@@ -45,6 +45,8 @@ class RDKeyList : public RDBaseKeyList
 {
 public:
     void AddKey(const RDTime& nFrame,const KeyType& keyValue);
+    void delKey(RDTime nTime);
+    void moveKey(RDTime srcTime, RDTime dstTime);
     KeyType GetKeyValue(const RDTime& nSectionTime,const KeyType& vDefaultValue=KeyType());
 	void GetTime(std::set<RDTime>& set)const;
 protected:

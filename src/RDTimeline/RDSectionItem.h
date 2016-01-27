@@ -24,8 +24,9 @@ using  namespace std;
 class RDSection;
 class RDNode;
 class RDKeyItem;
-class RDSectionItem : public QGraphicsItem
+class RDSectionItem : public QGraphicsObject
 {
+    Q_OBJECT
 public:
     RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int nYOffset);
     QRectF boundingRect()const;
@@ -33,12 +34,15 @@ public:
 	bool	isEqual(const RDNode* pNode)const{return m_pNode == pNode;}
 	void	removeSection();
     void    itemChange();
+signals:
+    void    changed();
+protected slots:
+    void    KeyTimeChanged(RDTime srcTime, RDTime dstTime);
 protected:
     void createKeyItem();
     void removeKeyItem();
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void SetSectionType();
-    void DrawKey(RDTime time,float fScale,QPainter *painter);
 protected:
     QPainterPath    m_shape;
     vector<RDTime> m_nHitKey;

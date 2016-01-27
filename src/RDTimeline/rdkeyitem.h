@@ -20,8 +20,11 @@
 #include <QGraphicsItem>
 #include "mac_define.h"
 
-class RDKeyItem : public QGraphicsItem
+class RDSection;
+
+class RDKeyItem : public QGraphicsObject
 {
+    Q_OBJECT
 public:
     explicit RDKeyItem(int nHeight, RDTime time, QGraphicsItem* parent = nullptr);
     QRectF boundingRect()const;
@@ -29,11 +32,17 @@ public:
     // QGraphicsItem interface
 public:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+signals:
+    void TimeMoved(RDTime srcTime,RDTime dstTime);
 protected:
     int         m_nHeight;
     RDTime      m_nTime;
-    static const float value ;
     float       m_fRealWidth;
+
+    static const float value ;
+    // QGraphicsItem interface
+protected:
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif // RDKEYITEM_H

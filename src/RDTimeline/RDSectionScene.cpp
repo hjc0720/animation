@@ -36,20 +36,14 @@ void RDSectionScene::ChangeFrame(const RDTime& nFrame)
 void 	RDSectionScene::delNode(const RDNode* pNode)
 {
 	QList<QGraphicsItem *> sectionList = items();
-    std::vector<QGraphicsItem *> removeSection;
 	for(int i = 0; i < sectionList.size(); i++)
 	{
 		RDSectionItem* pItem = dynamic_cast<RDSectionItem*>(sectionList[i]);
 		if(pItem && pItem->isEqual(pNode))
-		{
-            removeSection.push_back(pItem);
-		}
-    }
-
-    for(QGraphicsItem* item:removeSection)
-    {
-        removeItem(item);
-        SAFE_DELETE(item);
+        {
+            removeItem(pItem);
+            SAFE_DELETE(pItem);
+        }
     }
 }
 

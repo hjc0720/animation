@@ -85,41 +85,7 @@ void RDSectionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * , 
         QRectF target(m_pSection->GetLength() - fRealSize,0,fRealSize,m_nHeight);
         painter->drawImage(target,m_imgSectionType);
     }
-
-//	std::set<RDTime>  keyTimeSet;
-//	for(int i = RDSectionPos; i < RDSectionCount;i++)
-//	{
-//		const RDKeyList<float3>& list = m_pSection->getKeyList(static_cast<RDSectionKeyType>(i));
-//		list.GetTime(keyTimeSet);
-//	}
-	
-//    painter->setPen(Qt::yellow);
-    //using namespace std::placeholders;
-    //std::for_each(keyTimeSet.begin(),keyTimeSet.end(),std::bind(std::mem_fn(&RDSectionItem::DrawKey),this,_1,fScale,painter));
 }
-
-void RDSectionItem::DrawKey(RDTime time,float fScale,QPainter *painter)
-{
-	const float value = 6;
-	float width = (m_nHeight - value * 2) / 2 / fScale;
-	QPointF pt[4];
-
-	pt[0].setX(time);
-	pt[0].setY(value);
-
-	pt[1].setX(time - width);
-	pt[1].setY(m_nHeight / 2.f );
-
-	pt[2].setX(time);
-	pt[2].setY(m_nHeight - value);
-
-	pt[3].setX(time + width);
-	pt[3].setY(m_nHeight / 2.f);
-
-	qDebug() << pt[0] << pt[1] << pt[2] << pt[3];
-	painter->drawPolygon(pt,4);
-}
-
 
 QRectF RDSectionItem::boundingRect()const
 {
@@ -128,15 +94,14 @@ QRectF RDSectionItem::boundingRect()const
 
 void RDSectionItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
+    QGraphicsItem::mouseMoveEvent(event);
+
     RDTime offsetPos = event->scenePos().x() - event->lastScenePos().x();
-    event->accept();
-    update();
     m_pSection->MovSection(offsetPos);
     m_pNode->SetChangeLevel(RDRender_TransChange);
-	setPos(m_pSection->GetStartTime(),m_nYOffset);
-    RDSectionScene* pScene = dynamic_cast<RDSectionScene*>(scene());
-    if(pScene)
-        pScene->SectionChange();
+    setPos(m_pSection->GetStartTime(),m_nYOffset);
+    //    update();
+    emit changed();
     qDebug() << "cur start Time:" << m_pSection->GetStartTime();
 }
 
@@ -151,19 +116,21 @@ void RDSectionItem::itemChange()
     createKeyItem();
 }
 
+void RDSectionItem::KeyTimeChanged(RDTime srcTime,RDTime dstTime)
+{
+    m_pSection->moveKey(srcTime,dstTime);
+    m_pNode->SetChangeLevel(RDRender_TransChange);
+    emit changed();
+}
+
 void RDSectionItem::createKeyItem()
 {
-    std::set<RDTime>  keyTimeSet;
-    for(int i = RDSectionPos; i < RDSectionCount;i++)
-    {
-        const RDKeyList<float3>& list = m_pSection->getKeyList(static_cast<RDSectionKeyType>(i));
-        list.GetTime(keyTimeSet);
-    }
-
+    std::set<RDTime> keyTimeSet(m_pSection->getKeyTimeSet());
     for(RDTime time : keyTimeSet)
     {
         RDKeyItem* pKey = new RDKeyItem(m_nHeight,time,this);
         pKey->setPos(time,0);
+        connect(pKey,SIGNAL(TimeMoved(RDTime,RDTime)),this,SLOT(KeyTimeChanged(RDTime,RDTime)));
         m_vecKeyItem.push_back(pKey);
     }
 }

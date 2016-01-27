@@ -53,11 +53,22 @@ public:
     void AddAngleKey(const RDTime& nStoryTime,const float3& value);
     void AddScaleKey(const RDTime& nStoryTime,const float3& value);
 
-    float3 GetPosVector(const RDTime& nSectionTime);
-    float3 GetAngleVector(const RDTime& nSectionTime);
-    float3 GetScaleVector(const RDTime& nSectionTime);
+    void delPosKey(const RDTime& nSectionTime);
+    void delAngleKey(const RDTime& nSectionTime);
+    void delScaleKey(const RDTime& nSectionTime);
 
-	const RDKeyList<float3>& getKeyList(RDSectionKeyType eType)const;
+    void delKey(RDTime nSectionTime);
+    void moveKey(RDTime nSrcTime,RDTime nDstTime);
+
+    float3 GetPosVector(RDTime nSectionTime);
+    float3 GetAngleVector(RDTime nSectionTime);
+    float3 GetScaleVector(RDTime nSectionTime);
+
+    std::set<RDTime> getKeyTimeSet()const;
+protected:
+    void delKey(RDTime nSectionTime,RDSectionKeyType type);
+    RDKeyList<float3>& getKeyList(RDSectionKeyType eType) ;
+    const RDKeyList<float3>& getKeyList(RDSectionKeyType eType) const;
 protected:
     RDKeyList<float3> m_PosKey;
     RDKeyList<float3> m_RotateKey;
