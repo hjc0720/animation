@@ -18,3 +18,4 @@ else{
 }
 #CONFIG += debug
 INCLUDEPATH += ../../include
+LIBS += -ljsoncpp

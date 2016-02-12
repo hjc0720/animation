@@ -25,7 +25,7 @@
 #include <QRectF>
 
 class RDSceneRenderData;
-class RDFileDataStream;
+class RDJsonDataStream;
 class RDStory;
 enum RDScene_BackType
 {
@@ -47,7 +47,7 @@ public:
     RDScene();
     RDScene(const std::string& strName);
     virtual ~RDScene();
-    virtual void Serialize(RDFileDataStream& buffer,bool bSave);
+    virtual void Serialize(RDJsonDataStream& buffer, Json::Value &parent, bool bSave)override;
     void SetWidthHeight(int nWidth,int nHeight);
     void SetBackType(RDScene_BackType nType,const void* pData);
     const RDSceneData& GetBackData()const {return m_BackData;}

@@ -17,7 +17,7 @@
 #include "RDBaseTool.h"
 #include "RDToolManager.h"
 
-RDBaseTool::RDBaseTool(const QString& name)
+RDBaseTool::RDBaseTool(const std::string& name)
     :RDBaseToolEdit(name)
 {
     m_pActiveEdit = NULL;

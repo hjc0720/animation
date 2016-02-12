@@ -19,7 +19,7 @@
 #include "RDBuffer.h"
 #include "RDTexture.h"
 
-RDImageResource::RDImageResource(const QString& imagePath,const RDMd5& md5Id)
+RDImageResource::RDImageResource(const std::string &imagePath, const RDMd5& md5Id)
     :RDResource(md5Id)
      ,m_ImagePath(imagePath)
 {

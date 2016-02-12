@@ -17,8 +17,7 @@
 #include "RDScene.h"
 #include "mac_define.h"
 #include "RDFileDataStream.h"
-
-const int g_nNowProjVersion = 0;
+#include <iterator>
 
 RDProject::RDProject()
 {
@@ -46,25 +45,15 @@ void RDProject::CreateNewScene(const std::string& strSceneName)
    m_SceneList.push_back(pscene);
 }
 
-void RDProject::Serialize(RDFileDataStream& buffer,bool bSave)
+void RDProject::Serialize(RDJsonDataStream& buffer,Json::Value& parent,bool bSave)
 {
-    int nVersion = g_nNowProjVersion;
-    buffer.Serialize(nVersion,bSave);
-    buffer.Serialize(m_nWidth,bSave);
-    buffer.Serialize(m_nHeight,bSave);
-    buffer.Serialize(m_dFrameRate,bSave);
-    int nSceneListSize = static_cast<int>(m_SceneList.size());
-    buffer.Serialize(nSceneListSize,bSave);
-    for(int i = 0; i < nSceneListSize;i++)
-    {
-        RDScene* pScene = nullptr;
-        if(bSave)
-            pScene = m_SceneList[i];
-        else
-        {
-            pScene = new RDScene;
-            m_SceneList.push_back(pScene);
-        }
-        pScene->Serialize(buffer,bSave);
-    }
+    buffer.Serialize(parent,"width",bSave,m_nWidth);
+    buffer.Serialize(parent,"height",bSave,m_nHeight);
+    buffer.Serialize(parent,"frame_rate",bSave,m_dFrameRate);
+    buffer.Serialize(parent,"scenes",bSave,m_SceneList.begin(),m_SceneList.end(),std::back_inserter(m_SceneList),[&buffer](Json::Value& child,RDScene* scene,bool bSave)->RDScene*{
+        if(!bSave)
+            scene = new RDScene;
+        scene->Serialize(buffer,child,bSave);
+        return scene;
+    });
 }

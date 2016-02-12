@@ -89,7 +89,7 @@ bool RDImageTool::OnMouseRelease(const Qt::MouseButtons& nButtonState,const floa
     RDSpaceParam param = m_pFieldNode->GetEditSpaceParam(strName,&m_pFieldNode->GetNodeMatrix(strName));
     float3 vPos = param.Convert2DTo3D(m_vImagePos,param.GetZValue());
 
-    RDImageObject* pNewObject = new RDImageObject( fileName);
+    RDImageObject* pNewObject = new RDImageObject( fileName.toStdString());
     pNewObject->SetWidth(m_nImageWidth);
     pNewObject->SetHeight(m_nImageHeight);
     QString imageName( QString(QObject::tr("Image %1")).arg(nObjIndex));

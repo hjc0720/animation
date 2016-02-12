@@ -28,7 +28,7 @@ class QString;
 class RDShader
 {
 public:
-    RDShader(const QString &code, const QString &shaderName, RDShaderType nType);
+    RDShader(const std::string &code, const std::string  &shaderName, RDShaderType nType);
 
     void AddRef(){m_nRef++;}
     bool Release(){
@@ -40,7 +40,7 @@ public:
         }
         return false;
     }
-    const QString& ShaderName()const{return m_shaderName;}
+    const std::string& ShaderName()const{return m_shaderName;}
     GLuint GetGLShader()const{return m_hShader;}
 protected:
     ~RDShader() { 
@@ -49,13 +49,13 @@ protected:
 protected:
     int         m_nRef;
     GLuint      m_hShader;
-    QString     m_shaderName;
+    std::string     m_shaderName;
 };
 
 class RDShaderProgram
 {
 public:
-    RDShaderProgram(const QString& shaderName,RDShader* pVertexShader,RDShader* pGeometryShader,RDShader* pFragmentShader);
+    RDShaderProgram(const std::string& shaderName,RDShader* pVertexShader,RDShader* pGeometryShader,RDShader* pFragmentShader);
     ~RDShaderProgram(){glDeleteProgram(m_hShaderProgram);}
 
     void SetShader(RDShader* pShader,RDShaderType nType);
@@ -68,6 +68,6 @@ public:
 protected:
     RDShader*   m_pShader[3];
     GLuint      m_hShaderProgram;
-    QString     m_ProgramName;
+    std::string     m_ProgramName;
 };
 

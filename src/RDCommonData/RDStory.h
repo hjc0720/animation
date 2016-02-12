@@ -20,7 +20,10 @@
 #include "mac_define.h"
 #include <string>
 
-class RDFileDataStream;
+class RDJsonDataStream;
+namespace Json {
+class Value;
+}
 
 class RDStory
 {
@@ -36,7 +39,7 @@ public:
     const QUuid& GetStoryId()const{return m_Id;}
 	const std::string& GetStroyName()const{return m_strName;}
 
-    void Serialize(RDFileDataStream& buffer,bool bSave);
+    void Serialize(RDJsonDataStream &buffer, Json::Value &parent, bool bSave);
 protected:
     bool    m_bPass;
     RDTime m_nPlayStartFrame;

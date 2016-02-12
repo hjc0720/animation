@@ -75,10 +75,10 @@ public:
     static void ReleaseRenderManager();
 public:
     //create functionpGer
-    RDTexture* CreateTexture(const QString& fileName);
+    RDTexture* CreateTexture(const std::string &fileName);
     RDTexture* CreateTexture(int nWidth, int nHeight,const uint* buffer,  RDTexture_Type nType);
-    RDShader* CreateShader(const QString &fileName, RDShaderType nType);
-    RDShader* CreateShader(const QString& code,const QString& shaderName,RDShaderType nType);
+    RDShader* CreateShader(const std::string &fileName, RDShaderType nType);
+    RDShader* CreateShader(const std::string & code, const std::string &shaderName, RDShaderType nType);
     RDVertexBufferHandle     CreateVertexBuffer(float* pVertexData, int nVertexCount, size_t nVertexSize, RDVertexBufferType eType);
     RDUBO*         CreateUniformBufferObject(int nCount,const float* vBuffer);
     //release function
@@ -116,7 +116,7 @@ public:
 protected:
     RDRenderDevice(const QGLContext *renderContex);
     virtual ~RDRenderDevice();
-    RDShader* GetExistShader(const QString& shaderName);
+    RDShader* GetExistShader(const std::string &shaderName);
     void    SetShaderToDevice();
     RDShaderProgram* CreateShaderProgram(RDShader *pVertexShader,  RDShader*pGeometryShader,  RDShader* pPixelShader);
     void    SetShader(RDShaderProgram* pShader);
@@ -127,9 +127,9 @@ protected:
 
 //    std::list<RDTexHandle> m_vecTex;
     //std::list<RDVertexBufferHandle> m_vecVertexBuffer;
-    std::map<QString,RDTexture* > m_vecFileTex;
-    std::map<QString,RDShader*> m_vecShader;
-    std::map<QString,RDShaderProgram*> m_vecShaderProgram;
+    std::map<std::string,RDTexture* > m_vecFileTex;
+    std::map<std::string,RDShader*> m_vecShader;
+    std::map<std::string,RDShaderProgram*> m_vecShaderProgram;
     GLuint                 m_hFrameBuffer;
     RDShader*               m_pShader[ShaderTypeCount];
 

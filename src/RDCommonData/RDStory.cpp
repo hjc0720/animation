@@ -24,14 +24,14 @@ RDStory::RDStory(const std::string& name)
 {
     m_bPass = false; 
     m_nPlayStartFrame = 0;
-	m_nStoryLength = 1000000000;
+    m_nStoryLength = 1000000000LL;
 }
 
-void RDStory::Serialize(RDFileDataStream& buffer,bool bSave)
+void RDStory::Serialize(RDJsonDataStream& buffer, Json::Value &parent,  bool bSave)
 {
-    buffer.Serialize(m_bPass,bSave);
-    buffer.Serialize(m_nPlayStartFrame,bSave);
-    buffer.Serialize(m_nStoryLength,bSave);
-    buffer.Serialize(m_Id,bSave);
-    buffer.Serialize(m_strName,bSave);
+    buffer.Serialize(parent,"pass",bSave,m_bPass,false);
+    buffer.Serialize(parent,"start",bSave,m_nPlayStartFrame,0LL);
+    buffer.Serialize(parent,"length",bSave,m_nStoryLength,1000000000LL);
+    buffer.Serialize(parent,"id",bSave,m_Id ,QUuid::createUuid());
+    buffer.Serialize(parent,"name",bSave,m_strName,std::string());
 }

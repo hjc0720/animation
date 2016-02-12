@@ -18,10 +18,9 @@
 #include "RDFileDataStream.h"
 #include "RDNode.h"
 
-const int g_nObjVersion = 0;
-
 RDObject::RDObject()
      :m_ObjID(QUuid::createUuid())
+     ,m_pParent(nullptr)
 {
 }
 
@@ -34,9 +33,7 @@ void RDObject::UnLock()const
     m_pParent->UnLock();
 }
 
-void RDObject::Serialize(RDFileDataStream& buffer,bool bSave)
+void RDObject::Serialize(RDJsonDataStream& buffer, Json::Value &parent, bool bSave)
 {
-    int nVersion = g_nObjVersion;
-    buffer.Serialize(nVersion,bSave);
-    buffer.Serialize(m_ObjID,bSave);
+    buffer.Serialize(parent,"id",bSave,m_ObjID,QUuid::createUuid());
 }

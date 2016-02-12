@@ -48,12 +48,12 @@ RDTexture::RDTexture(int nWidth,int nHeight,const uint* pBuffer,RDTexture_Type n
     }
 }
 
-RDTexture::RDTexture(const QString &fileName)
+RDTexture::RDTexture(const std::string &fileName)
     :m_strFileName(fileName)
       ,m_nTextureType(RDReadOnly2DTexture)
       ,m_nRef(1)
 {
-    QImage image = QGLWidget::convertToGLFormat(QImage(fileName));
+    QImage image = QGLWidget::convertToGLFormat(QImage(fileName.data()));
     m_nWidth = image.bytesPerLine() / 4;
     m_nHeight = image.height();
     RDRenderDevice* pManager = RDRenderDevice::GetRenderManager();

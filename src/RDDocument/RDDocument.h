@@ -46,13 +46,13 @@ public:
     RDDocument(bool bCreateNewProj);
     ~RDDocument();
     bool bHavePath();
-    void SetProjPath(const QString& path);
-    const QString& GetProjPath();
+    void SetProjPath(const std::string &path);
+    const std::string &GetProjPath();
     //save load function
     bool bOpenProj()const{return m_pProject;}
     void SaveProj();
-    void SaveProjAs(const QString& filePath);
-    void LoadProj(const QString& filePath);
+    void SaveProjAs(const std::string &filePath);
+    void LoadProj(const std::string &filePath);
     void CloseProj();
 
     void SetCurScene(int nSceneIndex);
@@ -95,11 +95,11 @@ public:
 
 protected:
     void SaveProj(RDProject& pProj);
-    void SaveProjAs(RDProject& pProj,const QString& filePath);
+    void SaveProjAs(RDProject& pProj, const std::string &filePath);
     void CreateTempProjDir();
     void DeleteTempProjDir();
-    void TarProjDir(const QString& strProjPath);
-    void UntarProjDir(const QString& strProjPath);
+    void TarProjDir(const std::string &strProjPath);
+    void UntarProjDir(const std::string &strProjPath);
     void ClearRDStack();
 
 protected:
@@ -110,7 +110,7 @@ protected:
     RDTime         m_nCurFrame;
     std::stack<RDNode*>   m_EditRDStack;
     std::vector<RDNode*>    m_SelItemList;
-    QString         m_strCachePath;//have no '/'
+    std::string         m_strCachePath;//have no '/'
     QUuid           m_DocUUID;
     QUndoStack      m_UndoStack;
 

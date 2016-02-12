@@ -35,12 +35,11 @@ GLenum GetGLType(RDShaderType nType)
     return GL_VERTEX_SHADER;
 }
 
-RDShader::RDShader(const QString &code, const QString &shaderName, RDShaderType nType)
+RDShader::RDShader(const std::string &code, const std::string &shaderName, RDShaderType nType)
     :m_nRef(1)
     ,m_shaderName(shaderName)
 {
-    QByteArray ba = code.toLocal8Bit();
-    char* pCode = ba.data();
+    const char* pCode = code.data();
     const GLchar* shaderCodeArray[] = {pCode};
     m_hShader = glCreateShader(GetGLType(nType));
     glShaderSource(m_hShader,1,shaderCodeArray,nullptr);    
@@ -70,7 +69,7 @@ RDShader::RDShader(const QString &code, const QString &shaderName, RDShaderType 
 ////////////////////////////////////////////////////////////////////////////////
 
 
-RDShaderProgram::RDShaderProgram(const QString& shaderName,RDShader* pVertexShader,RDShader* pGeometryShader,RDShader* pFragmentShader)
+RDShaderProgram::RDShaderProgram(const std::string &shaderName, RDShader* pVertexShader, RDShader* pGeometryShader, RDShader* pFragmentShader)
     :m_ProgramName(shaderName)
 {
     m_hShaderProgram = glCreateProgram();

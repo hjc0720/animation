@@ -17,7 +17,11 @@
 #ifndef  RDBASEKEY_INC
 #define  RDBASEKEY_INC
 
-class RDFileDataStream;
+class RDJsonDataStream;
+namespace Json
+{
+class Value;
+}
 enum RDKeyType
 {
     RDLineKey,
@@ -30,14 +34,13 @@ public:
 	static RDBaseKey<Value>* CreateKey(const Value& value, RDKeyType type = RDLineKey);
 	static RDBaseKey<Value>* CreateKey(RDKeyType type = RDLineKey);
 public:
-    RDBaseKey(const Value& value):m_KeyValue(value){};
+    RDBaseKey(const Value& value):m_KeyValue(value){}
     RDBaseKey() = default;
-	virtual ~RDBaseKey(){};
+    virtual ~RDBaseKey(){}
 	virtual RDKeyType GetKeyType()const{return RDLineKey;}
     const Value& GetValue()const{return m_KeyValue;}
     void SetValue(const Value& value){m_KeyValue = value;}
-
-	virtual void Serialize(RDFileDataStream& buffer,bool bSave);
+    void Serialize(RDJsonDataStream &buffer, Json::Value &parent, bool bSave);
 
     virtual Value Interpolation(double& dWeight, const RDBaseKey<Value>& SecondKey)const = 0;
 protected:
@@ -52,4 +55,5 @@ public:
     RDLinearKey() = default;
     virtual Value Interpolation(double& dWeight, const RDBaseKey<Value>& SecondKey)const override;
 };
+
 #endif   // ----- #ifndef rdbasekey_INC  -----

@@ -32,6 +32,27 @@ RDMd5::RDMd5(const char* pString,int nLen)
     memcpy(md5Value,tmp.constData(), 16 * sizeof(char));
 }
 
+char charToHex(char v)
+{
+    v = toupper(v);
+    if(v >='A')
+        return 10+v-'A';
+    else
+        return v - '0';
+}
+
+RDMd5::RDMd5(const std::string &value)
+{
+    auto strIt = value.begin();
+    for(int j = 0;j < 16;j++)
+    {
+        md5Value[j] = (charToHex(*strIt) << 4);
+        strIt++;
+        md5Value[j] |= charToHex(*strIt);
+        strIt++;
+    }
+}
+
 bool RDMd5::operator < (const RDMd5& right)const
 {
     for(int i = 0; i < 16; i++)
@@ -43,12 +64,16 @@ bool RDMd5::operator < (const RDMd5& right)const
     return false;
 }
 
-QString RDMd5::GetMd5String()const
+std::string RDMd5::GetMd5String()const
 {
-    QString md5Str;
+    static char hex[]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+    std::string md5Str;
+    char value[3]={0};
     for(int j = 0;j < 16;j++)
     {
-        md5Str += QString("%1").arg(md5Value[j],0,16);
+        value[1] = hex[md5Value[j]%16];
+        value[0] = hex[md5Value[j] >> 4];
+        md5Str += value;
     }
     return md5Str;
 }

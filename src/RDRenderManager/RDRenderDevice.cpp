@@ -116,11 +116,11 @@ void RDRenderDevice::ReleaseRenderManager()
 
 RDRenderDevice::~RDRenderDevice()
 {
-    std::for_each(m_vecShaderProgram.begin(),m_vecShaderProgram.end(),[](std::pair<QString,RDShaderProgram*> pair)
+    std::for_each(m_vecShaderProgram.begin(),m_vecShaderProgram.end(),[](std::pair<std::string,RDShaderProgram*> pair)
             {SAFE_DELETE(pair.second);});
 }
 
-RDTexture*  RDRenderDevice::CreateTexture(const QString &fileName)
+RDTexture*  RDRenderDevice::CreateTexture(const std::string &fileName)
 {
     QMutexLocker locker(&m_lock);
     auto it = m_vecFileTex.find(fileName);
@@ -160,29 +160,29 @@ const char* GetShaderExt(RDShaderType nType)
     return "";
 }
 
-RDShader *RDRenderDevice::CreateShader(const QString &fileName, RDShaderType nType)
+RDShader *RDRenderDevice::CreateShader(const std::string &fileName, RDShaderType nType)
 {
     QMutexLocker locker(&m_lock);
-    QFileInfo info(fileName);
-    QString strShaderName = info.baseName() + GetShaderExt(nType);
+    QFileInfo info(fileName.data());
+    std::string strShaderName(info.baseName().toStdString() + GetShaderExt(nType));
     RDShader* pShader = GetExistShader(strShaderName);
 
     if(!pShader)
     {
-        QFile file(fileName);
+        QFile file(fileName.data());
         file.open(QIODevice::ReadOnly);
         QTextStream shader(&file);
-        pShader = new RDShader(shader.readAll(),strShaderName,nType);
+        pShader = new RDShader(shader.readAll().toStdString(),strShaderName,nType);
         m_vecShader[strShaderName] = pShader;
         Q_ASSERT(!checkError());
     }
     return pShader;
 }
 
-RDShader *RDRenderDevice::CreateShader(const QString& code,const QString& shaderName,RDShaderType nType)
+RDShader *RDRenderDevice::CreateShader(const std::string& code,const std::string& shaderName,RDShaderType nType)
 {
     QMutexLocker locker(&m_lock);
-    QString strShaderName = shaderName + GetShaderExt(nType);
+    std::string strShaderName(shaderName + GetShaderExt(nType));
     RDShader* pShader = GetExistShader(strShaderName);
 
     if(!pShader)
@@ -218,7 +218,7 @@ RDShader *RDRenderDevice::CreateShader(const QString& code,const QString& shader
 RDShaderProgram *RDRenderDevice::CreateShaderProgram(RDShader *pVertexShader,  RDShader*pGeometryShader,  RDShader* pPixelShader)
 {
     QMutexLocker locker(&m_lock);
-    QString programName;
+    std::string programName;
     if(pVertexShader)
         programName += pVertexShader->ShaderName() ;
     if(pGeometryShader)
@@ -370,7 +370,7 @@ RDRenderDevice::RDRenderDevice(const QGLContext* renderContex)
 
 }
 
-RDShader * RDRenderDevice::GetExistShader(const QString &shaderName)
+RDShader * RDRenderDevice::GetExistShader(const std::string &shaderName)
 {
     QMutexLocker locker(&m_lock);
     auto it = m_vecShader.find(shaderName);
@@ -393,10 +393,9 @@ void    RDRenderDevice::ReleaseVertexBuffer(RDVertexBufferHandle hVertexBuffer)
 
 void    RDRenderDevice::ReleaseTexture(RDTexture*  hTex)
 {
-    QString strFile = hTex->GetFileName();
     bool bRelease = hTex->Release();
     if(bRelease)
-        m_vecFileTex.erase(strFile);
+        m_vecFileTex.erase(hTex->GetFileName());
 }
 
 int    RDRenderDevice::GetTextureWidth(const RDTexture*  hTex)
@@ -413,10 +412,9 @@ void    RDRenderDevice::ReleaseShader(RDShader* hShader)
 {
     if(!hShader)
         return;
-     QString strShaderName = hShader->ShaderName();   
      bool bRelease = hShader->Release();
      if(bRelease)
-         m_vecShader.erase(strShaderName);
+         m_vecShader.erase(hShader->ShaderName());
 }
 
 RDUBO* RDRenderDevice::CreateUniformBufferObject(int nCount,const float* pData)

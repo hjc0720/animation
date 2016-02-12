@@ -35,7 +35,7 @@ public slots:
     void OnChangeTool(QAction* pAction);
 //trig a group tool ,just for sub tool bar;
     void OnTrigGroupTool();
-    void OnTrigTool(const QString& pToolName);
+    void OnTrigTool(const std::string &pToolName);
 protected:
     QActionGroup* m_pGroup;
     MainWindow*   m_pMainWindow;

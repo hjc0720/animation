@@ -36,7 +36,7 @@ enum RDSectionKeyType
 	RDSectionCount,
 };
 
-class RDFileDataStream; 
+class RDJsonDataStream; 
 class RDSection
 {
 public:
@@ -65,6 +65,8 @@ public:
     float3 GetScaleVector(RDTime nSectionTime);
 
     std::set<RDTime> getKeyTimeSet()const;
+
+    void Serialize(RDJsonDataStream& buffer, Json::Value &parent, bool bSave);
 protected:
     void delKey(RDTime nSectionTime,RDSectionKeyType type);
     RDKeyList<float3>& getKeyList(RDSectionKeyType eType) ;
@@ -77,9 +79,5 @@ protected:
     RDTime   m_nStartTime; //relative to story time;
     RDTime   m_nLength;
     RDSectionOutType m_nType;
-    friend RDFileDataStream& operator << (RDFileDataStream& buffer,const RDSection& proj);
-    friend RDFileDataStream& operator >> (RDFileDataStream& buffer,RDSection& proj);
 };
-RDFileDataStream& operator << (RDFileDataStream& buffer,const RDSection& proj);
-RDFileDataStream& operator >> (RDFileDataStream& buffer,RDSection& proj);
 #endif   // ----- #ifndef rdsection_INC  -----

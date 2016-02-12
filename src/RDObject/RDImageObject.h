@@ -26,15 +26,15 @@ class RDImageObject : public RDObject
 public:
     RDImageObject();
     RDImageObject(const RDMd5& image);
-    RDImageObject(const QString& fileName);
+    RDImageObject(const std::string &fileName);
     ~RDImageObject();
     virtual void CreateRenderData(RDRenderData& );
     virtual void ReleaseRenderData(RDRenderData& ){}
 
     const RDMd5& GetObjMd5()const ;
 
-    void SetFile(const QString& fileName,bool bInit = false);
-    const QString& GetFile()const;
+    void SetFile(const std::string &fileName, bool bInit = false);
+    const std::string &GetFile()const;
     void SetWidth(int nWidth){m_nWidth = nWidth;}
     void SetHeight( int nHeight){m_nHeight = nHeight;}
     int GetWidth()const {return m_nWidth;}
@@ -47,7 +47,7 @@ public:
 
     virtual float HitTest(const float3& vScenePt,const RDNode& pNode,const std::string& RDName) const override;
 
-    virtual void Serialize(RDFileDataStream& buffer,bool bSave);
+    virtual void Serialize(RDJsonDataStream& buffer, Json::Value& parent, bool bSave)override;
 protected:
     RDMd5 m_Image;
     int m_nWidth;

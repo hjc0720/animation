@@ -20,18 +20,18 @@ class RDMatTexture
 {
 public:
     RDMatTexture();
-    RDMatTexture(const QString& strFileName);
+    RDMatTexture(const std::string &strFileName);
     RDMatTexture(const uint* pBuffer,int nWidth,int nHeight);
     RDMatTexture(const RDTexture*  hTex,const QRectF& texBound);
     ~RDMatTexture();
-    const QString&  GetFileName()const{return m_strFile;}   
+    const std::string&  GetFileName()const{return m_strFile;}
     void            SetParamToDevice(int nIndex,RDRenderDevice* pDevice );
     void            UpdateFrame(RDRenderDevice* pDevice ,const RDTime& time);
     const RDTexture*  GetTex()const{return m_hTex;}
 protected:
     void        InitData();
 protected:
-    QString     m_strFile;
+    std::string     m_strFile;
     bool        m_bFileTex;
 
     float2      m_vTexCenter;
@@ -61,7 +61,7 @@ class RDMaterial
 public:
     RDMaterial();
     RDMaterial(bool bEnableLight,unsigned int color);
-    void AddTex(RDMatTextureType nTexType,const QString& fileName);
+    void AddTex(RDMatTextureType nTexType, const std::string &fileName);
     void AddTex(RDMatTextureType nTexType,const uint* pBuffer,int nWidth,int nHeight);
     void AddTex(RDMatTextureType nTexType,const RDTexture*  hTex,const QRectF& texBount);
     bool UpdateFrame(const RDTime& time,char m_nPointLightNum,char m_nLineLightNum,char m_nSpotLightNum);
@@ -92,8 +92,8 @@ protected:
 
     RDTime          m_nNowTime;
 
-    QString         m_strShaderName;
-    QString         m_strShader;
+    std::string     m_strShaderName;
+    std::string     m_strShader;
     RDShader*       m_pShader;
     RDUBO*           m_pMatParam;
 

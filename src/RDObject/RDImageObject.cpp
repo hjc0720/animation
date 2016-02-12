@@ -56,7 +56,7 @@ RDImageObject::RDImageObject()
 {
 }
 
-RDImageObject::RDImageObject(const QString& fileName)
+RDImageObject::RDImageObject(const std::string& fileName)
 {
     SetFile(fileName,true);
 }
@@ -77,7 +77,7 @@ RDImageObject::~RDImageObject()
     pResManager->RemoveResource(m_Image);
 }
 
-void RDImageObject::SetFile(const QString& fileName,bool bInit )
+void RDImageObject::SetFile(const std::string& fileName,bool bInit )
 {
     qDebug() << fileName;
     RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
@@ -86,9 +86,9 @@ void RDImageObject::SetFile(const QString& fileName,bool bInit )
     m_Image = pResManager->AddResource(fileName,RDResource_Image)->GetMd5();
 }
 
-const QString& RDImageObject::GetFile()const
+const std::string& RDImageObject::GetFile()const
 {
-    static QString strNull("");
+    static std::string strNull;
     RDResourceManager* pResManager = RDResourceManager::GetResourceManager();
     RDImageResource* pResource = dynamic_cast<RDImageResource*>(pResManager->GetResource(m_Image));
     if(!pResource)
@@ -197,12 +197,10 @@ void RDImageObject::CreateRenderData(RDRenderData& pRD)
     pPrivateData->m_pMaterial->AddTex(RDNormalMatTexture,pPrivateData->m_pImage,bound);
 }
 
-void RDImageObject::Serialize(RDFileDataStream& buffer,bool bSave)
+void RDImageObject::Serialize(RDJsonDataStream& buffer, Json::Value &parent, bool bSave)
 {
-    int nVersion = 0;
-    buffer.Serialize(nVersion,bSave);
-	RDObject::Serialize(buffer,bSave);
-    buffer.Serialize(m_Image,bSave);
+    RDObject::Serialize(buffer,parent,bSave);
+    buffer.Serialize(parent,"image",bSave,m_Image);
     if(bSave)
     {
         RDImageResource* pResource = dynamic_cast<RDImageResource*>(RDResourceManager::GetResourceManager()->GetResource(m_Image));
@@ -212,6 +210,6 @@ void RDImageObject::Serialize(RDFileDataStream& buffer,bool bSave)
     {
         RDResourceManager::GetResourceManager()->AddResource(m_Image);
     }
-    buffer.Serialize(m_nWidth,bSave);
-    buffer.Serialize(m_nHeight,bSave);
+    buffer.Serialize(parent,"width",bSave,m_nWidth);
+    buffer.Serialize(parent,"height",bSave,m_nHeight);
 }

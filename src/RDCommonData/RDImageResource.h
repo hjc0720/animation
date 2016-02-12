@@ -25,12 +25,12 @@ class RDTexture;
 class RDImageResource : public RDResource
 {
 public:
-    RDImageResource(const QString& imagePath,const RDMd5& md5Id);
+    RDImageResource(const std::string& imagePath,const RDMd5& md5Id);
     ~RDImageResource();
     const RDTexture* GetBuffer()const{return m_pImage;}
-    const QString& GetPath()const{return m_ImagePath;}
+    const std::string& GetPath()const{return m_ImagePath;}
 protected:
-    QString m_ImagePath;
+    std::string m_ImagePath;
     RDTexture* m_pImage;
 
 };

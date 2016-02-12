@@ -75,7 +75,7 @@ template <typename KeyType>
 KeyType RDKeyList<KeyType>::Interpolation(const RDTime& nTime, const RDBaseKey<KeyType>& FirstKey,const RDTime& nFirstTime, const RDBaseKey<KeyType>& SecondKey,const RDTime& nSecondTime)
 {
 	double dWeight = (nTime - nFirstTime) / (double)(nSecondTime - nFirstTime);
-	return FirstKey.Interpolation(dWeight,SecondKey);
+    return FirstKey.Interpolation(dWeight,SecondKey);
 }
 
 template <typename KeyType>
@@ -84,6 +84,30 @@ void RDKeyList<KeyType>::GetTime(std::set<RDTime>& times)const
     for(auto& key : m_KeyList)
         times.insert(key.first);
 }
+
+template <typename KeyType>
+void RDKeyList<KeyType>::Serialize(RDJsonDataStream &buffer, Json::Value &parent, bool bSave)
+{
+    buffer.Serialize(parent,"keylist",bSave,m_KeyList,[&buffer](Json::Value& child,RDTime& id,RDBaseKey<KeyType>*& key,bool bSave){
+        buffer.Serialize(child,"key",bSave,id);
+        RDKeyType keyType;
+        if(bSave)
+            keyType = key->GetKeyType();
+        buffer.Serialize(child["value"],"type",bSave,keyType);
+
+        if(!bSave)
+            key = RDBaseKey<KeyType>::CreateKey(keyType);
+        key->Serialize(buffer,child["value"],bSave);
+    });
+}
+
+template<>
+class JsonHelper<RDKeyType>
+{
+public:
+    Json::Value toJson(const RDKeyType& value) { return Json::Value(value); }
+    void fromJson(RDKeyType& v,const Json::Value& json){ v = static_cast<RDKeyType>(json.asInt()); }
+};
 // =====================================================================================
 template class RDKeyList<float3>;
 template class RDKeyList<float>;

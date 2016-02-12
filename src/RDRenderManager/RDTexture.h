@@ -1,14 +1,13 @@
 #ifndef RDTEXTURE_H
 #define RDTEXTURE_H
 # include <GL/gl.h>
-#include <QString>
 #include "RDRenderDevice.h"
 
 class RDTexture
 {
 public:
     RDTexture(int nWidth,int nHeight,const uint* pBuffer,RDTexture_Type nType);
-    RDTexture(const QString& fileName);
+    RDTexture(const std::string& fileName);
     
     bool Release();
     void Dump(const QString& fileName);
@@ -17,7 +16,7 @@ public:
     bool SetRenderTarget(int nIndex);
     bool SetDepth();
     void AddRef(){m_nRef++;}
-    const QString& GetFileName()const {return m_strFileName;}
+    const std::string& GetFileName()const {return m_strFileName;}
     int     GetWidth()const{return m_nWidth;}
     int     GetHeight()const{return m_nHeight;}
 protected:
@@ -27,7 +26,7 @@ protected:
     bool IsTarget();
     bool checkError()const;
 protected:
-    QString m_strFileName;
+    std::string m_strFileName;
     int     m_nWidth;
     int     m_nHeight;
     RDTexture_Type  m_nTextureType;

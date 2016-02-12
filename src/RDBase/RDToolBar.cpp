@@ -37,21 +37,20 @@ RDToolBar::RDToolBar(QWidget* parent ,bool bSubTool )
         for(RDToolIt it = pToolManger->GetBeginTool();it != pToolManger->GetEndTool(); it++)
         {
             RDBaseTool* pTool = it->second;
-            QAction* pAction = addAction(pTool->GetToolIcon(),pTool->GetName());
-            pAction->setObjectName(pTool->GetName());
+            QAction* pAction = addAction(pTool->GetToolIcon(),pTool->GetName().data());
+            pAction->setObjectName(pTool->GetName().data());
             pAction->setActionGroup(m_pGroup);
             pAction->setCheckable(true);        
             if(bFirst)
             {
                 pAction->setChecked(true);
-                QString toolName(pAction->objectName());
-                pToolManger->SwitchTool(&toolName,*m_pMainWindow->GetCurDocument());
+                pToolManger->SwitchTool(pTool->GetName(),*m_pMainWindow->GetCurDocument());
                 bFirst = false;
             }
         }
         //addSeparator();
         connect(m_pGroup,SIGNAL(triggered(QAction*)),this,SLOT(OnChangeTool(QAction*)));
-        connect(pToolManger,SIGNAL(ChangeTool(const QString& )),this,SLOT(OnTrigTool(const QString& )));
+        connect(pToolManger,SIGNAL(ChangeTool(const std::string& )),this,SLOT(OnTrigTool(const std::string& )));
     }
 }
 
@@ -62,17 +61,16 @@ RDToolBar::~RDToolBar()
 void RDToolBar::OnChangeTool(QAction* pAction)
 {
     qDebug()<< "switch tool" << pAction->objectName();
-    QString toolName(pAction->objectName());
-    RDToolManager::GetToolManager()->SwitchTool(&toolName,*m_pMainWindow->GetCurDocument());
+    RDToolManager::GetToolManager()->SwitchTool(pAction->objectName().toStdString(),*m_pMainWindow->GetCurDocument());
 }
 void RDToolBar::OnTrigGroupTool()
 {
 
 }
-void RDToolBar::OnTrigTool(const QString& pToolName)
+void RDToolBar::OnTrigTool(const std::string& pToolName)
 {
     qDebug() << "trig tool slot";
-    QAction* pAction = FindToolAction(pToolName);
+    QAction* pAction = FindToolAction(pToolName.data());
     if(pAction)
         pAction->setChecked(true);
 }

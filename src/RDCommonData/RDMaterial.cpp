@@ -8,6 +8,7 @@
 #include <QTextStream>
 #include <QDebug>
 #include "RDFileDataStream.h"
+#include <fstream>
 
 const int MAT_PARAM_INDEX = 1;
 const int MAT_TEX_PARAM_START = 2;
@@ -15,12 +16,12 @@ const int MAT_TEX_PARAM_START = 2;
 class RDMatShaderCode
 {
 public:
-    RDMatShaderCode(const QString& filePath){
-        if(!LoadCode(filePath))  m_pPath = new QString(filePath);
+    RDMatShaderCode(const std::string& filePath){
+        if(!LoadCode(filePath))  m_pPath = new std::string(filePath);
         else                    m_pPath = nullptr;
     }
     ~RDMatShaderCode(){ SAFE_DELETE(m_pPath);}
-    const QString& GetStr(){
+    const std::string& GetStr(){
         if(m_pPath){
             LoadCode(*m_pPath);
             SAFE_DELETE(m_pPath);
@@ -28,23 +29,23 @@ public:
         return m_strCode;
     }
 protected:
-    bool LoadCode(const QString& filePath){
-        QFile shader(filePath);
+    bool LoadCode(const std::string& filePath){
+        QFile shader(filePath.data());
         if(shader.open(QIODevice::ReadOnly)){
             QTextStream stream(&shader);
-            m_strCode = stream.readAll();
+            m_strCode = stream.readAll().toStdString();
             return true;
         }
         return false;
     }
 protected:
-    QString* m_pPath;
-    QString m_strCode;
+    std::string * m_pPath;
+    std::string m_strCode;
 };
 
 RDMatShaderCode MainMatCode(":/shader/main_ps");
-RDMatShaderCode TexMatCode[] = {QString(":/shader/diffuse_ps")};
-RDMatShaderCode ParamMatCode[] = {QString(":/shader/diffusebuffer")};
+RDMatShaderCode TexMatCode[] = {std::string(":/shader/diffuse_ps")};
+RDMatShaderCode ParamMatCode[] = {std::string(":/shader/diffusebuffer")};
 RDMatShaderCode LightParamCode(":/shader/lightbuffer");
 RDMatShaderCode LightCode(":/shader/light_ps");
 
@@ -54,7 +55,7 @@ RDMatTexture::RDMatTexture()
     InitData();
 }
 
-RDMatTexture::RDMatTexture(const QString& strFileName)
+RDMatTexture::RDMatTexture(const std::string& strFileName)
      :m_strFile(strFileName)
     ,m_bFileTex(true)
       ,m_bReleaseTex(true)
@@ -160,7 +161,7 @@ RDMaterial::RDMaterial(bool bEnableLight,unsigned int color)
     m_pMatParam = nullptr;
 }
 
-void RDMaterial::AddTex(RDMatTextureType nTexType,const QString& fileName)
+void RDMaterial::AddTex(RDMatTextureType nTexType,const std::string& fileName)
 {
     if(m_MatTexture[nTexType])
     {
@@ -227,14 +228,14 @@ int  RDMaterial::SetChange(int nChangeType)
     return m_nChange;
 }
 
-const QString texShaderName[] = 
+const std::string texShaderName[] =
 {
     "Normal_",
 };
 
 void RDMaterial::CreateShader()
 {
-    QString shaderName;
+    std::string shaderName;
     for(int i = 0; i < RDMatTextureCount; i++)
     {
         if(m_MatTexture[i])
@@ -256,7 +257,7 @@ void RDMaterial::CreateShader()
 void RDMaterial::GenerateShader()
 {
     m_strShader = MainMatCode.GetStr();
-    int nParamIndex = m_strShader.indexOf("//end param");
+    int nParamIndex = m_strShader.find("//end param");
 
     if(m_bEnableLight)
         m_strShader.insert(nParamIndex,LightParamCode.GetStr());
@@ -267,7 +268,7 @@ void RDMaterial::GenerateShader()
         qDebug() << "tex shader:\n"<< ParamMatCode[i].GetStr();
     }
 
-    int nCodeIndex = m_strShader.indexOf("//end code");
+    int nCodeIndex = m_strShader.find("//end code");
 
     if(m_bEnableLight)
         m_strShader.insert(nCodeIndex,LightCode.GetStr());
@@ -276,7 +277,13 @@ void RDMaterial::GenerateShader()
         if(m_MatTexture[i])
             m_strShader.insert(nCodeIndex,TexMatCode[i].GetStr());
     }
-    m_strShader.replace("POINT_COUNT","1");
+    size_t nIndex = m_strShader.find("POINT_COUNT");
+    size_t length = strlen("POINT_COUNT");
+    while(nIndex != std::string::npos)
+    {
+        m_strShader.replace(nIndex,length,"1");
+        nIndex = m_strShader.find("POINT_COUNT",nIndex);
+    }
 }
 
 void RDMaterial::SetParamToDevice()

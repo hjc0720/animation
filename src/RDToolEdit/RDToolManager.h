@@ -23,7 +23,7 @@
 class RDBaseTool;
 class RDDocument;
 class QCursor;
-typedef std::map<QString,RDBaseTool*>::iterator RDToolIt;
+typedef std::map<std::string,RDBaseTool*>::iterator RDToolIt;
 
 class RDToolManager :public QObject
 {
@@ -34,7 +34,7 @@ public:
     ~RDToolManager();
     RDToolIt GetBeginTool(){return m_vecTool.begin();}
     RDToolIt GetEndTool(){return m_vecTool.end();}
-    bool SwitchTool(const QString* newToolName,RDDocument& pDocument); 
+    bool SwitchTool(const std::string &newToolName, RDDocument& pDocument);
     void StopCurTool();
 
     const RDBaseTool* GetCurTool()const{return m_pCurTool;}
@@ -45,7 +45,7 @@ public:
 	void sendDelSelItems(){emit deleteSelItems();}
 	void 	CursorChange(QCursor& cursor){emit cursorChange(cursor);}
 signals:
-    void ChangeTool(const QString& toolName);
+    void ChangeTool(const std::string& toolName);
     void SceneChange();
 	void deleteSelItems();
 	void 	cursorChange(QCursor&);
@@ -54,7 +54,7 @@ protected:
     void RegisterTool();
     void RegisterTool(RDBaseTool* pTool);
 protected:
-    std::map<QString,RDBaseTool*> m_vecTool;
+    std::map<std::string,RDBaseTool*> m_vecTool;
     RDBaseTool* m_pCurTool;
     RDDocument* m_pCurDoc;
 ////////////////////////////////////////////////////////////////////////////////

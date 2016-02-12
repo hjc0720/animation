@@ -39,20 +39,20 @@ public:
     static RDResourceManager* GetResourceManager();
     static void ReleaseResourceManager();
     ~RDResourceManager();
-    RDResource* AddResource(const QString& resPath,RDResouceType nType);
-    RDResource* AddImageResource(const QString& resPath){return AddResource(resPath,RDResource_Image);}
+    RDResource* AddResource(const std::string &resPath, RDResouceType nType);
+    RDResource* AddImageResource(const std::string& resPath){return AddResource(resPath,RDResource_Image);}
     RDResource* AddModelResource(const QString& modelName);
     RDResource* AddResource(const RDMd5& pMd5);
     RDResource* GetResource(const RDMd5& pMd5);
     bool RemoveResource(const RDMd5& pMd5);
-    void SetResPath(const QString& strPath){m_strResDir = strPath;}
-    const QString& GetResourcePath()const{return m_strResDir;}
+    void SetResPath(const std::string& strPath){m_strResDir = strPath;}
+    const std::string& GetResourcePath()const{return m_strResDir;}
 protected:
     RDResourceManager();
 protected:
     static RDResourceManager* m_pManager;
     std::map<RDMd5*,RDResource*,RDMd5PtrCompare> m_resource;
-    QString m_strResDir;
+    std::string m_strResDir;
     mutable QMutex m_lock;
 };
 #endif   // ----- #ifndef rdresourcemanager_INC  -----

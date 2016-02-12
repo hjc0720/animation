@@ -29,7 +29,7 @@ public:
     RDLayer(){};
     RDLayer(const std::string& strName);
     virtual ~RDLayer();
-    virtual void Serialize(RDFileDataStream& buffer,bool bSave);
+    virtual void Serialize(RDJsonDataStream& buffer, Json::Value &parent,  bool bSave)override;
 
     virtual size_t GetChildCount()const{return  GetCameraCount() + GetLightCount() + RDNode::GetChildCount();}
     virtual RDNode* GetChild(size_t i);

@@ -29,6 +29,7 @@
 #include "RDRenderDevice.h"
 #include "RDBox.h"
 #include "RDRenderManager.h"
+#include <iterator>
 
 RDObjectCreator<RDLayer,false> LayerCreator;
 
@@ -227,45 +228,31 @@ RDLayer::~RDLayer()
     }
 }
 
-void RDLayer::Serialize(RDFileDataStream& buffer,bool bSave)
+void RDLayer::Serialize(RDJsonDataStream& buffer, Json::Value &parent,  bool bSave)
 {
-    int nVersion = 0;
-    buffer.Serialize(nVersion,bSave);
-    RDNode::Serialize(buffer,bSave);
-    buffer.Serialize(m_bZOrder,bSave);
-    buffer.Serialize(m_bPerspective,bSave);
+    RDNode::Serialize(buffer,parent,bSave);
+    buffer.Serialize(parent,"zorder",bSave,m_bZOrder);
+    buffer.Serialize(parent,"perspective",bSave,m_bPerspective);
     
-    int nCameraCount = m_vecCameraObj.size();
-    buffer.Serialize(nCameraCount,bSave);
-    for(int i = 0; i < nCameraCount; i++)
-    {
-        RDCamera* pCamera = nullptr;
-        if(bSave)
-            pCamera = m_vecCameraObj[i];
-        else
+    buffer.Serialize(parent,"cameras",bSave,m_vecCameraObj.begin(),m_vecCameraObj.end(),std::back_inserter(m_vecCameraObj),[this,&buffer](Json::Value& child,RDCamera*& camera,bool bSave)->RDCamera*{
+        if(!bSave)
         {
-            pCamera = new RDCamera;
-            m_vecCameraObj.push_back(pCamera);
-            pCamera->SetParent(this);
+            camera = new RDCamera;
+            camera->SetParent(this);
         }
-        pCamera->Serialize(buffer,bSave);
-    }
+        camera->Serialize(buffer,child,bSave);
+        return camera;
+    });
 
-    int nLightCount = m_vecLight.size();
-    buffer.Serialize(nLightCount,bSave);
-    for(int i = 0;i  < nLightCount; i++)
-    {
-        RDLight* pLight = nullptr;
-        if(bSave)
-            pLight = m_vecLight[i];
-        else
+    buffer.Serialize(parent,"lights",bSave,m_vecLight.begin(),m_vecLight.end(),std::back_inserter(m_vecLight),[this,&buffer](Json::Value& child,RDLight* light,bool bSave)->RDLight*{
+        if(!bSave)
         {
-            pLight = new RDLight;
-            m_vecLight.push_back(pLight);
-            pLight->SetParent(this);
+            light = new RDLight;
+            light->SetParent(this);
         }
-        pLight->Serialize(buffer,bSave);
-    }
+        light->Serialize(buffer,child,bSave);
+        return light;
+    });
 }
 
 RDLight* RDLayer::RemoveLight(size_t nIndex)

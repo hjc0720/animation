@@ -28,6 +28,7 @@
 #include <QDebug>
 #include "RDLayer.h"
 #include "RDRenderManager.h"
+#include <iterator>
 
 using namespace std;
 const int g_nSceneVersion = 0;
@@ -294,29 +295,21 @@ QRectF RDScene::GetSceneRt(const std::string& strName)const
     return QRectF(0,0,RenderData->GetWidth(),RenderData->GetHeight());
 }
 
-void RDScene::Serialize(RDFileDataStream& buffer,bool bSave)
+void RDScene::Serialize(RDJsonDataStream& buffer, Json::Value &parent,  bool bSave)
 {
-    RDSingleLock locker(m_lock);
 	qDebug() <<"begin to save scene" ;
-    RDNode::Serialize(buffer,bSave);
-    int nVersion = 0;
-    buffer.Serialize(nVersion,bSave);
+    RDNode::Serialize(buffer,parent,bSave);
     //story list
-    int nCount = (int)m_StoryList.size();
-    buffer.Serialize(nCount,bSave);
-    for(int i = 0 ; i < nCount; i++)
-    {
-        RDStory* pStory = NULL;
-        if(bSave)
-            pStory = m_StoryList[i];
-        else
-        {
-            pStory = new RDStory("");
-            m_StoryList.push_back(pStory);
-        }
-        pStory->Serialize(buffer,bSave);
-    }
-	buffer.Serialize(m_nStoryCreateIndex,bSave);
+//    int nCount = (int)m_StoryList.size();
+//    buffer.Serialize(nCount,bSave);
+    RDSingleLock locker(m_lock);
+    buffer.Serialize(parent,"stories",bSave,m_StoryList.begin(),m_StoryList.end(),back_inserter(m_StoryList),[&buffer](Json::Value& child,RDStory* story,bool bSave)->RDStory*{
+        if(!bSave)
+            story = new RDStory("");
+        story->Serialize(buffer,child,bSave);
+        return story;
+    });
+    buffer.Serialize(parent,"create",bSave,m_nStoryCreateIndex,0);
 	qDebug() <<"end to save scene" ;
 }
 

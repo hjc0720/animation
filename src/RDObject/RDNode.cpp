@@ -477,94 +477,58 @@ const RDLayer*        RDNode::GetLayerNode()const
     return pLayer;
 }
 
-void RDNode::Serialize(RDFileDataStream& buffer,bool bSave)
+void RDNode::Serialize(RDJsonDataStream& buffer, Json::Value &parent, bool bSave)
 {
     RDSingleLock locker(m_lock);
-    int nVersion = g_nNowVersion;
-    buffer.Serialize(nVersion,bSave);
-    buffer.Serialize(m_strName,bSave);
+    buffer.Serialize(parent,"name",bSave,m_strName,std::string());
     //qDebug() << "begin to serialize node :" << m_strName;
-    buffer.Serialize(m_vPos,bSave);
-    buffer.Serialize(m_NodeID,bSave);
-    buffer.Serialize(m_bCollapse,bSave);
+    buffer.Serialize(parent,"pos",bSave,m_vPos,float3::GetZero());
+    buffer.Serialize(parent,"id",bSave,m_NodeID);
+    buffer.Serialize(parent,"collapse",bSave,m_bCollapse,false);
 
-    bool bHaveObj = m_pObj != nullptr;
-    buffer.Serialize(bHaveObj,bSave);
-    if(bHaveObj)
+    if(bSave && m_pObj)
     {
-        if(bSave)
+        std::string ObjType(typeid(*m_pObj).name());
+        buffer.Serialize(parent,"objtype",true,ObjType);
+        Json::Value object(Json::objectValue);
+        m_pObj->Serialize(buffer,object,bSave);
+        parent["obj"] = object;
+    }
+    else if(!bSave)
+    {
+        std::string ObjType;
+        buffer.Serialize(parent,"objtype",false,ObjType);
+        if(ObjType != "")
         {
-            QString ObjType(typeid(*m_pObj).name());
-            buffer.Serialize(ObjType,true);
-        }
-        else
-        {
-            QString ObjType;
-            buffer.Serialize(ObjType,false);
             m_pObj = CreateObj(ObjType);
-        }
-        m_pObj->Serialize(buffer,bSave);
-    }
-    //serialize section
-    int nSectionListCount = m_vecSetctionListMap.size();
-    buffer.Serialize(nSectionListCount,bSave);
-    if(bSave)
-    {
-        for(auto it = m_vecSetctionListMap.begin(); it != m_vecSetctionListMap.end(); it++)
-        {
-            buffer << it->first;
-            const vector<RDSection*>& SectionList = it->second;
-            int nSectionCount = SectionList.size();
-            buffer << nSectionCount;
-            for(auto SectionIt = SectionList.begin(); SectionIt != SectionList.end(); SectionIt ++)
-            {
-                RDSection* pSection = *SectionIt;
-                buffer << *pSection;
-            }
+            m_pObj->Serialize(buffer,parent["obj"],bSave);
+            m_pObj->SetNode(this);
         }
     }
-    else
-    {
-        for(int i = 0; i < nSectionListCount; i++)
-        {
-            QUuid StoryId;
-            buffer >> StoryId;
-            vector<RDSection*> SectionList;
-            int nSectionCount;
-            buffer >> nSectionCount;
-            for(int i = 0; i < nSectionCount; i++)
-            {
-                RDSection* pSection = new RDSection;
-                buffer >> *pSection;
-                SectionList.push_back(pSection);
-            }
-            m_vecSetctionListMap[StoryId] = SectionList;
-        }
-    }
-    //serialize child
-    int nChildCount = static_cast<int>(m_vecChildObj.size());
-    buffer.Serialize(nChildCount,bSave);
-    for(int i = 0; i < nChildCount; i++)
-    {
-        RDNode* pNode = nullptr;
-        if(bSave)
-        {
-            pNode = m_vecChildObj[i];
-            QString pTypeName(typeid(*pNode).name());
 
-            //qDebug() << "serialize node type" << pTypeName;
-            buffer.Serialize(pTypeName,true);
-        }
-        else
+    buffer.Serialize(parent,"sections",bSave,m_vecSetctionListMap,[&buffer](Json::Value& child,QUuid& id,vector<RDSection*>& sections,bool bSave){
+        buffer.Serialize(child,"key",bSave,id);
+        buffer.Serialize(child,"value",bSave,sections.begin(),sections.end(),back_inserter(sections),[&buffer](Json::Value& value,RDSection* section,bool bSave)->RDSection*{
+            if(!bSave)
+                section = new RDSection;
+            section->Serialize(buffer,value,bSave);
+            return section;
+        });
+    });
+    //serialize child
+    buffer.Serialize(parent,"child",bSave,m_vecChildObj.begin(),m_vecChildObj.end(),back_inserter(m_vecChildObj),[&buffer,this](Json::Value& child,RDNode* node,bool bSave)->RDNode*{
+        std::string childType;
+        if(bSave)
+            childType = typeid(*node).name();
+        buffer.Serialize(child,"type",bSave,childType);
+        if(!bSave)
         {
-            QString pTypeName;
-            buffer.Serialize(pTypeName,false);
-            pNode = CreateNode(pTypeName);
-            m_vecChildObj.push_back(pNode);
-            pNode->m_pParent = this;
+            node = CreateNode(childType);
+            node->m_pParent = this;
         }
-        pNode->Serialize(buffer,bSave);
-    }
+        node->Serialize(buffer,child,bSave);
+        return node;
+    });
 
     //qDebug() << "end to serialize node :" << m_strName;
 }

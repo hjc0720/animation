@@ -20,28 +20,32 @@
 #include <stdexcept>
 #include <vector>
 
+namespace Json
+{
+class Value;
+}
 class RDScene;
-class RDFileDataStream;
+class RDJsonDataStream;
 class RDProject
 {
 public:
     RDProject();
     RDProject(int nWidth,int nHeight,double dFrameRate);
     ~RDProject();
-    const QString& GetFilePath()const{return m_strFilePath;}
-    void SetFilePath(const QString& newFilePath){m_strFilePath = newFilePath;}
+    const std::string& GetFilePath()const{return m_strFilePath;}
+    void SetFilePath(const std::string& newFilePath){m_strFilePath = newFilePath;}
     void CreateNewScene(const std::string& strSceneName);
     int GetWidth()const{return m_nWidth;}
     int GetHeight()const{return m_nHeight;}
     RDScene* GetScene(int nIndex){try{return m_SceneList.at(nIndex);}catch(std::out_of_range& ){return 0;}}
     size_t GetSceneCount(){return m_SceneList.size();}
 
-    void Serialize(RDFileDataStream& buffer,bool bSave);
+    void Serialize(RDJsonDataStream& buffer,Json::Value& parent,bool bSave);
 protected:
     int     m_nWidth;
     int     m_nHeight;
     double  m_dFrameRate; //framecount per second;
-    QString m_strFilePath;
+    std::string m_strFilePath;
     std::vector<RDScene*> m_SceneList;
 
 };

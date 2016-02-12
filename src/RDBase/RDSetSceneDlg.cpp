@@ -133,7 +133,7 @@ void RDSetSceneDlg::UpdateGUI()
     case RDScene_Back_Picture:
         backImag->setChecked(true);
         RDImageResource* pImageResource = dynamic_cast<RDImageResource*>(RDResourceManager::GetResourceManager()->GetResource(*m_data.pImage));
-        filePath->setText(pImageResource->GetPath());
+        filePath->setText(pImageResource->GetPath().data());
         checkBox->setChecked(m_data.bStrech);
         break;
     }
@@ -148,7 +148,7 @@ void RDSetSceneDlg::accept()
     else if(backImag->isChecked())
     {
         RDResourceManager* pManager = RDResourceManager::GetResourceManager();
-        RDImageResource* pResource = dynamic_cast<RDImageResource*>(pManager->AddImageResource(filePath->text()));
+        RDImageResource* pResource = dynamic_cast<RDImageResource*>(pManager->AddImageResource(filePath->text().toStdString()));
 
         if(pResource)
         {

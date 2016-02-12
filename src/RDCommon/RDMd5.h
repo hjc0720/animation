@@ -16,16 +16,17 @@
 
 #ifndef  RD_MD5_INC
 #define  RD_MD5_INC
-#include <QString>
+#include <string>
 
 class RDMd5
 {
 public:
     RDMd5();
     RDMd5(const char* pString,int nLen = -1);
+    RDMd5(const std::string& value);
     RDMd5(const RDMd5& pMd5);
     
-    QString GetMd5String()const;
+    std::string GetMd5String()const;
     bool operator < (const RDMd5& left)const;
 protected:
     unsigned char md5Value[16];

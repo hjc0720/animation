@@ -113,6 +113,25 @@ std::set<RDTime> RDSection::getKeyTimeSet() const
     return keyTimeSet;
 }
 
+void RDSection::Serialize(RDJsonDataStream &buffer, Json::Value &parent, bool bSave)
+{
+    m_PosKey.Serialize(buffer,parent["pos"],bSave);
+    m_RotateKey.Serialize(buffer,parent["rot"],bSave);
+    m_ScaleKey.Serialize(buffer,parent["scale"],bSave);
+
+    buffer.Serialize(parent,"start",bSave,m_nStartTime); //relative to story time;
+    buffer.Serialize(parent,"length",bSave, m_nLength);
+    buffer.Serialize(parent,"type",bSave, m_nType);
+}
+
+template<>
+class JsonHelper<RDSectionOutType>
+{
+public:
+    Json::Value toJson(const RDSectionOutType& value){return Json::Value(value);}
+    void fromJson(RDSectionOutType& t,const Json::Value& json){t = static_cast<RDSectionOutType>(json.asInt());}
+};
+
 RDKeyList<float3>& RDSection::getKeyList(RDSectionKeyType eType)
 {
     switch(eType)
@@ -149,25 +168,3 @@ void RDSection::delKey(RDTime nSectionTime, RDSectionKeyType type)
     keylist.delKey(nSectionTime);
 }
 // =====================================================================================
-RDFileDataStream& operator << (RDFileDataStream& buffer,const RDSection& Section)
-{
-    buffer << Section.m_PosKey;
-    buffer << Section.m_RotateKey;
-    buffer << Section.m_ScaleKey;
-    buffer << Section.m_nStartTime;
-    buffer << Section.m_nLength;
-    buffer << Section.m_nType;
-    return buffer;
-}
-RDFileDataStream& operator >> (RDFileDataStream& buffer,RDSection& Section)
-{
-    buffer >> Section.m_PosKey;
-    buffer >> Section.m_RotateKey;
-    buffer >> Section.m_ScaleKey;
-    buffer >> Section.m_nStartTime;
-    buffer >> Section.m_nLength;
-    int nType;
-    buffer >> nType;
-    Section.m_nType = (RDSectionOutType)nType;
-    return buffer;
-}

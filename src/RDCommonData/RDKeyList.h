@@ -25,18 +25,11 @@
 #include <QDebug>
 #include <set>
 
-// =====================================================================================
-template <typename KeyType> class RDKeyList ;
-template <typename KeyType>
-RDFileDataStream& operator << (RDFileDataStream& buffer,const RDKeyList<KeyType>& KeyList);
-template <typename KeyType>
-RDFileDataStream& operator >> (RDFileDataStream& buffer,RDKeyList<KeyType>& KeyList);
-
-// =====================================================================================
 class RDBaseKeyList
 {
 public:
     RDBaseKeyList(){};
+    virtual void Serialize(RDJsonDataStream &buffer, Json::Value &parent, bool bSave)=0;
 };
 // =====================================================================================
 
@@ -49,13 +42,12 @@ public:
     void moveKey(RDTime srcTime, RDTime dstTime);
     KeyType GetKeyValue(const RDTime& nSectionTime,const KeyType& vDefaultValue=KeyType());
 	void GetTime(std::set<RDTime>& set)const;
+    void Serialize(RDJsonDataStream &buffer, Json::Value &parent, bool bSave)override;
 protected:
     bool IsKeyTime(const RDTime& nSectionTime); 
     KeyType Interpolation(const RDTime& nTime, const RDBaseKey<KeyType>& FirstKey,const RDTime& nFirstTime, const RDBaseKey<KeyType>& SecondKey,const RDTime& nSecondTime);
 protected:
     std::map<RDTime,RDBaseKey<KeyType>*> m_KeyList;
-friend RDFileDataStream& operator << <KeyType>(RDFileDataStream& buffer,const RDKeyList<KeyType>& proj);
-friend RDFileDataStream& operator >> <KeyType>(RDFileDataStream& buffer,RDKeyList<KeyType>& proj);
 };
 
 // =====================================================================================
@@ -77,36 +69,4 @@ inline void RDKeyList<KeyType>::AddKey(const RDTime& nSectionTime,const KeyType&
 }
 
 // =====================================================================================
-template <typename KeyType>
-RDFileDataStream& operator << (RDFileDataStream& buffer,const RDKeyList<KeyType>& KeyList)
-{
-    quint64 nCount = (quint64)KeyList.m_KeyList.size();
-    buffer << nCount;
-    for(auto it = KeyList.m_KeyList.begin(); it != KeyList.m_KeyList.end(); it++)
-    {
-        auto pKey = it->second;
-        buffer << it->first;
-		buffer << (int)(pKey->GetKeyType());
-        pKey->Serialize(buffer,true);
-    }
-    return buffer;
-}
-
-template <typename KeyType>
-RDFileDataStream& operator >> (RDFileDataStream& buffer,RDKeyList<KeyType>& KeyList)
-{
-    quint64 nCount = 0;
-    buffer >> nCount;
-    for(quint64 i = 0 ; i < nCount; i++)
-    {
-        RDTime nFrame;
-        buffer >> nFrame;
-		int nType;
-		buffer >> nType;
-        RDBaseKey<KeyType>* pKey = RDBaseKey<KeyType>::CreateKey((RDKeyType)nType);
-		pKey->Serialize(buffer,false);
-        KeyList.m_KeyList[nFrame] = pKey;
-    }
-    return buffer;
-}
 #endif   // ----- #ifndef rdkeylist_INC  -----

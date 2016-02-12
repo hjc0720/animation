@@ -48,15 +48,15 @@ RDResourceManager* RDResourceManager::GetResourceManager()
 
 void RDResourceManager::ReleaseResourceManager()
 {
-    QString dstFilePath(m_pManager->m_strResDir);
+    std::string dstFilePath(m_pManager->m_strResDir);
     SAFE_DELETE(m_pManager);
+    std::string commond("rm -rf ");
+    commond += dstFilePath;
     for(size_t i = 0; i < sizeof(g_fileDir) / sizeof(char*);i++)
     {
-        QString cmdStr = "rm -rf ";
-        cmdStr += dstFilePath;
-        cmdStr += g_fileDir[i];
+        std::string cmdStr(commond + g_fileDir[i]);
         cmdStr += "*";
-        callSystem(cmdStr.toUtf8().data());
+        callSystem(cmdStr.data());
     }
 }
 
@@ -80,9 +80,9 @@ RDResourceManager::~RDResourceManager()
     }
 }
 
-RDResource* RDResourceManager::AddResource(const QString& resPath,RDResouceType nType)
+RDResource* RDResourceManager::AddResource(const std::string& resPath,RDResouceType nType)
 {
-    QFile srcFile(resPath);
+    QFile srcFile(resPath.data());
     if(!srcFile.open(QIODevice::ReadOnly))
         return 0;
     char* fileData = new char[srcFile.size()];
@@ -101,16 +101,15 @@ RDResource* RDResourceManager::AddResource(const QString& resPath,RDResouceType 
         return pResource;
     }
 
-    QString dstFilePath(m_strResDir);
+    std::string dstFilePath(m_strResDir);
     dstFilePath += g_fileDir[nType];
     dstFilePath += pMd5->GetMd5String();
-    dstFilePath += ".";
-    dstFilePath += resPath.section('.',-1);
-    if(!QFile::exists(dstFilePath))
+    dstFilePath += resPath.substr(resPath.rfind('.'));
+    if(!QFile::exists(dstFilePath.data()))
     {
-        if(!srcFile.copy(dstFilePath))
+        if(!srcFile.copy(dstFilePath.data()))
         {
-            qDebug() << dstFilePath;
+            qDebug() << dstFilePath.data();
             SAFE_DELETE(pMd5);
             return 0;
         }
@@ -148,19 +147,19 @@ RDResource* RDResourceManager::AddResource(const RDMd5& pMd5)
     QMutexLocker locker(&m_lock);
     for(size_t i = 0; i < sizeof(g_fileDir) / sizeof(char*);i++)
     {
-        QString dstFilePath(m_strResDir);
+        std::string dstFilePath(m_strResDir);
         dstFilePath += g_fileDir[i];
-        QDir dir(dstFilePath,QString()); 
+        QDir dir(dstFilePath.data(),QString());
         QStringList names = dir.entryList();
-        QStringList findName = names.filter(pMd5.GetMd5String());
+        QStringList findName = names.filter(pMd5.GetMd5String().data());
 
-        qDebug() << dstFilePath << names << findName;
+        qDebug() << dstFilePath.data() << names << findName;
         if(!findName.isEmpty())
         {
-            qDebug() << dstFilePath << names << findName;
+            qDebug() << dstFilePath.data() << names << findName;
             RDResouceType nType = static_cast<RDResouceType>(i);
-            dstFilePath += findName.at(0);
-			qDebug() << "success add resource " << pMd5.GetMd5String();
+            dstFilePath += findName.at(0).toStdString();
+            qDebug() << "success add resource " << pMd5.GetMd5String().data();
             return AddResource(dstFilePath,nType);
         }
     }

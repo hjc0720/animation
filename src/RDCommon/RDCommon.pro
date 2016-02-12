@@ -17,14 +17,19 @@ DEFINES += RDCOMMON_LIBRARY
 DEFINES += __GTEST__
 
 SOURCES += HMatrixQ4F.cpp HVector4f.cpp \ 
-    rdexception.cpp
+    rdexception.cpp \
+    rdthreadpool.cpp \
+    jsonhelper.cpp
 SOURCES += HVector3f.cpp 
 SOURCES += RDSpaceConvert.cpp
 SOURCES += RDMd5.cpp
 SOURCES += RDBox.cpp
 
 HEADERS += HMatrixQ4F.h HVector4f.h \  
-    rdexception.h
+    rdexception.h \
+    rdthreadpool.h \
+    rdthreadsafepriorityqueue.h \
+    jsonhelper.h
 HEADERS += HVector3f.h 
 HEADERS += RDSpaceConvert.h
 HEADERS += RDMd5.h

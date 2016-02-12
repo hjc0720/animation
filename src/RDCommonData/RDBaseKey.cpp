@@ -19,11 +19,6 @@
 #include "RDBaseKey.h"
 #include "RDFileDataStream.h"
 
-template <typename Value>
-void RDBaseKey<Value>::Serialize(RDFileDataStream& buffer,bool bSave)
-{
-	buffer.Serialize(m_KeyValue,bSave);
-}
 // =====================================================================================
 template <typename Value>
 Value RDLinearKey<Value>::Interpolation(double& dWeight, const RDBaseKey<Value>& SecondKey)const
@@ -50,7 +45,13 @@ RDBaseKey<Value>* RDBaseKey<Value>::CreateKey(RDKeyType type /* = RDLineKey  */)
 	case RDLineKey:
 		return new RDLinearKey<Value>();
 	}
-	return nullptr;
+    return nullptr;
+}
+
+template <typename Value>
+void RDBaseKey<Value>::Serialize(RDJsonDataStream &buffer, Json::Value &parent, bool bSave)
+{
+    buffer.Serialize(parent,"value",bSave,m_KeyValue);
 }
 // =====================================================================================
 template class RDBaseKey<float3>;

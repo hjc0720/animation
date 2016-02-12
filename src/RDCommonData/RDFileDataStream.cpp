@@ -18,118 +18,70 @@
 #include "RDFileDataStream.h"
 #include <QDir>
 #include "HMatrixQ4F.h"
+#include "rdthreadpool.h"
 
-RDFileDataStream::RDFileDataStream ( QIODevice * d ,const QString& strResourcePath)
-    :QDataStream(d)
-     ,m_strResourcePath(strResourcePath)
-{
-}
-RDFileDataStream::RDFileDataStream ( QIODevice * d )
-    :QDataStream(d)
-{
+using namespace std;
 
-}
-
-void RDFileDataStream::SaveResource(const QString& filePath)
+RDJsonDataStream::RDJsonDataStream (fstream& in , const std::string& strResourcePath, bool bSave)
+    :m_bSave(bSave)
+    ,m_file(in)
+    ,m_strResourcePath(strResourcePath)
 {
-    m_ResourceList.append(filePath);
-}
-
-void RDFileDataStream::EndSaveResource()
-{
-    m_ResourceList.removeDuplicates();
-    for (QStringList::const_iterator str = m_ResourceList.constBegin(); str != m_ResourceList.constEnd(); ++str)
+    if(!bSave)
     {
-		qDebug() <<  *str;
-        QString dstFilePath(m_strResourcePath);
-        dstFilePath += "/";
-        dstFilePath += (*str).section('/',-2,-1);
+        in.seekg(0,ios::end);
+        size_t size = in.tellg();
+        in.seekg(0,ios::beg);
+        if(in.is_open()&& size > 0 )
+        {
+            m_task = RDThreadPool::AddTask([&]()->bool{
+                                               Json::Reader reader;
+                                               return reader.parse(in,m_jsonRoot,false);
+                                           });
+        }
+    }
+}
 
-        if(!QFile::exists(dstFilePath))
+RDJsonDataStream::~RDJsonDataStream()
+{
+    close();
+}
+RDJsonDataStream::RDJsonDataStream (fstream& in,bool bSave)
+    :RDJsonDataStream(in,"",bSave)
+{
+}
+
+void RDJsonDataStream::SaveResource(const std::string &filePath)
+{
+    m_ResourceList.insert(filePath);
+}
+
+void RDJsonDataStream::EndSaveResource()
+{
+    for (auto str = m_ResourceList.begin(); str != m_ResourceList.end(); ++str)
+    {
+        qDebug() <<  str->data();
+        std::string dstFilePath(m_strResourcePath + str->substr(str->rfind('/',str->rfind('/') - 1)));
+
+        if(!QFile::exists(dstFilePath.c_str()))
         {
             qDebug() << "copy file "<< *str  << "to" << dstFilePath ;
-            if(!QFile::copy(*str,dstFilePath))
+            if(!QFile::copy(str->data(),dstFilePath.data()))
                 qDebug() << dstFilePath;
         }
          //m_ResourceList[i];
     }
 }
 
-// =====================================================================================
-#include "HVector3f.h"
-RDFileDataStream& operator << (RDFileDataStream& buffer,const float3& vec)
+void RDJsonDataStream::close()
 {
-    buffer << vec.x();
-    buffer << vec.y();
-    buffer << vec.z();
-    return buffer;
-}
-RDFileDataStream& operator >> (RDFileDataStream& buffer,float3& vec)
-{
-    float value;
-    buffer >> value;
-    vec.SetX(value );
-
-    buffer >> value;
-    vec.SetY(value );
-
-    buffer >> value;
-    vec.SetZ(value );
-    return buffer;
-}
-
-#include "RDMd5.h"
-RDFileDataStream& operator << (RDFileDataStream& buffer,const RDMd5& md5)
-{
-	buffer.writeRawData( (char*)&md5,sizeof(RDMd5));
-    return buffer;
-}
-
-RDFileDataStream& operator >> (RDFileDataStream& buffer,RDMd5& md5)
-{
-	buffer.readRawData( (char*)&md5,sizeof(RDMd5));
-    return buffer;
-}
-
-RDFileDataStream& operator << (RDFileDataStream& buffer,const std::string& str)
-{
-    buffer.writeBytes(str.c_str(), str.length());
-    return buffer;
-}
-
-RDFileDataStream& operator >> (RDFileDataStream& buffer,std::string& str)
-{
-    char* pData = nullptr;
-    uint length = 0;
-    buffer.readBytes(pData,length);
-    str = std::string(pData,length);
-    return buffer;
-}
-
-//================================================================================
-QDebug operator<<(QDebug dbg, const matrix4x4 &mat)
-{
-    for(int i = 0; i < 4; i++)
+    if(m_bSave)
     {
-        for(int j = 0; j < 4; j++)
-        {
-            dbg.nospace() << mat.Get(i,j) << "\t";
-        }
-        dbg.nospace() << ";\n";
+        Json::StyledStreamWriter write;
+        write.write(m_file,m_jsonRoot);
+        m_file.flush();
+        m_bSave = false;
     }
-    return dbg.space();
 }
 
-QDebug operator<<(QDebug dbg, const float3 & vec)
-{
-    for(int i = 0; i < 3; i++)
-        dbg.nospace() << vec.GetData()[i] << "\t";
-    return dbg.space();
-}
-
-QDebug operator<<(QDebug dbg, const std::string & vec)
-{
-    if(!vec.empty())
-        dbg << vec.c_str();
-    return dbg.space();
-}
+// =====================================================================================

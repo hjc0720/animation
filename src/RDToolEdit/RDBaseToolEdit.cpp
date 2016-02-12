@@ -25,7 +25,7 @@
 #include "RDFileDataStream.h"
 #include "rdline.h"
 
-RDBaseToolEdit::RDBaseToolEdit(const QString& name)
+RDBaseToolEdit::RDBaseToolEdit(const std::string& name)
     :m_ToolEditName(name)
 {
     m_pFieldNode = NULL;

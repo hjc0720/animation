@@ -43,7 +43,7 @@ bool    RDImageEdit::UpdateCell(const RDMd5& pCell,const RDNode& pData)
             return false;
         RDImageCell* pCell = RDImageCell::GetImageCell();
         pImage->Lock();
-        pCell->SetImageFileName(pImage->GetFile());
+        pCell->SetImageFileName(pImage->GetFile().data());
         pCell->SetImageOriginSize(pImage->GetOriginWidth(),pImage->GetOriginHeight());
         pCell->SetImageSize(pImage->GetWidth(),pImage->GetHeight());
         pImage->UnLock();
@@ -63,7 +63,7 @@ void    RDImageEdit::UpdateValue(const RDMd5& pCell,int nIndex,RDNode& pData)
         pImage->Lock();
         if(nIndex == RDImageFileChange)
         {
-            pImage->SetFile(pCell->GetImageFileName());
+            pImage->SetFile(pCell->GetImageFileName().toStdString());
             pData.SetChangeLevel(RDRender_GraphicChange);
             pCell->SetImageOriginSize(pImage->GetOriginWidth(),pImage->GetOriginHeight());
         }

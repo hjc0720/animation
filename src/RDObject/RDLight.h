@@ -45,7 +45,7 @@ public:
     void SetLigthIntensity(float fIntensity){m_fIntensity = fIntensity;}
     float GetLigthIntensity(){return m_fIntensity; }
 
-    virtual void Serialize(RDFileDataStream& buffer,bool bSave);
+    virtual void Serialize(RDJsonDataStream& buffer, Json::Value &parent,  bool bSave)override;
     size_t    GenerateShaderParam(char* pBuffer,const std::string& name);
     RDLightType GetLightType()const{return m_nType;}
 protected:

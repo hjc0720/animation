@@ -20,40 +20,41 @@
 #include <QString>
 #include <map>
 #include <QDebug>
+#include "jsonhelper.h"
 
-std::map<QString,pCreateObj>* g_pCreateObj = nullptr;
-std::map<QString,pCreateNode>* g_pCreateNode = nullptr;
-void RegisterObj(const QString& pStr,pCreateObj pFun)
+std::map<std::string,pCreateObj>* g_pCreateObj = nullptr;
+std::map<std::string,pCreateNode>* g_pCreateNode = nullptr;
+void RegisterObj(const std::string &pStr, pCreateObj pFun)
 {
     if(!g_pCreateObj)
-        g_pCreateObj = new std::map<QString,pCreateObj>;
+        g_pCreateObj = new std::map<std::string,pCreateObj>;
     (*g_pCreateObj)[pStr] = pFun;
     qDebug()<<"register obj creator"<<pStr;
 }
 
-void UnRegisterObj(const QString& pStr)
+void UnRegisterObj(const std::string &pStr)
 {
     g_pCreateObj->erase(pStr); 
     if(g_pCreateObj->empty())
         SAFE_DELETE(g_pCreateObj);
 }
 
-void RegisterNode(const QString& pStr,pCreateNode pFun)
+void RegisterNode(const std::string &pStr, pCreateNode pFun)
 {
     if(!g_pCreateNode)
-        g_pCreateNode= new std::map<QString,pCreateNode>;
+        g_pCreateNode= new std::map<std::string,pCreateNode>;
     (*g_pCreateNode)[pStr] = pFun;
     qDebug()<<"register obj node"<<pStr;
 }
 
-void UnRegisterNode(const QString& pStr)
+void UnRegisterNode(const std::string &pStr)
 {
     g_pCreateNode->erase(pStr); 
     if(g_pCreateNode->empty())
         SAFE_DELETE(g_pCreateNode);
 }
 
-RDObject* CreateObj(const QString& strType)
+RDObject* CreateObj(const std::string& strType)
 {
     qDebug() << "creat Obj" << strType;
     auto it = g_pCreateObj->find(strType);
@@ -62,7 +63,7 @@ RDObject* CreateObj(const QString& strType)
     return it->second();
 }
 
-RDNode* CreateNode(const QString& strType)
+RDNode* CreateNode(const std::string& strType)
 {
     qDebug() << "creat node" << strType;
     auto it = g_pCreateNode->find(strType);

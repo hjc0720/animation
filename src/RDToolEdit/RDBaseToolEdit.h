@@ -27,11 +27,11 @@ class RDLine;
 class RDBaseToolEdit
 {
 public:
-    RDBaseToolEdit(const QString& name);
+    RDBaseToolEdit(const std::string& name);
     virtual ~RDBaseToolEdit();
     virtual bool BeginEdit(RDNode* pFiledNode);
     virtual void EndEdit();
-    const QString& GetName(){return m_ToolEditName;}
+    const std::string& GetName(){return m_ToolEditName;}
 
 // =====================================================================================
 // event process
@@ -55,6 +55,6 @@ protected:
     RDLine* m_pLine;
 private:
     //only initialize in constructor. no other way to modify
-    QString       m_ToolEditName;
+    std::string       m_ToolEditName;
 };
 #endif   // ----- #ifndef rdbasetooledit_INC  -----

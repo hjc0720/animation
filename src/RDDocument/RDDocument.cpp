@@ -119,7 +119,7 @@ void RDDocument::SaveProj(RDProject& pProj)
 {
     SaveProjAs(pProj,pProj.GetFilePath());
 }
-void RDDocument::SaveProjAs(const QString& filePath)
+void RDDocument::SaveProjAs(const std::string& filePath)
 {
     if(m_pProject)
     {
@@ -129,51 +129,48 @@ void RDDocument::SaveProjAs(const QString& filePath)
 }
 
 const char* MAGICNUM = "JENNYHJC";
-void RDDocument::SaveProjAs(RDProject& pProj,const QString& filePath)
+void RDDocument::SaveProjAs(RDProject& pProj,const std::string& filePath)
 {
-    QFile out(m_strCachePath + "/project");
-	qDebug() << " begin save file" << filePath;
-    out.open(QIODevice::WriteOnly);
-    RDFileDataStream data(&out,m_strCachePath + "/Resource");
-    data << QString(MAGICNUM);
-    pProj.Serialize(data,true);
+    std::fstream file(m_strCachePath + "/project", std::fstream::out);
+
+    RDJsonDataStream data(file,m_strCachePath + "/Resource",true);
+    pProj.Serialize(data,data.getRoot(),true);
     data.EndSaveResource();
-    out.close();
+    data.close();
+    file.close();
 
     TarProjDir(filePath);
 	qDebug() << " end save file" << filePath;
 }
-void RDDocument::LoadProj(const QString& filePath)
+void RDDocument::LoadProj(const std::string& filePath)
 {
     CloseProj();
-    if(!m_strCachePath.isEmpty())
+    if(!m_strCachePath.empty())
         DeleteTempProjDir();
 
     qDebug()<<filePath;
-    QFile in(filePath);
-    if(!in.open(QIODevice::ReadOnly))
+    std::ifstream in(filePath);
+    if(!in.is_open())
         return;
     in.close();
 
     CreateTempProjDir();
     UntarProjDir(filePath);
-    in.setFileName(m_strCachePath + "/project");
+    std::fstream file(m_strCachePath + "/project", std::fstream::in);
     qDebug()<<"project path:" <<m_strCachePath;
-    if(!in.open(QIODevice::ReadOnly))
+    if(!file.is_open())
         return;
-    RDFileDataStream data(&in);
+    RDJsonDataStream data(file,false);
     m_pProject = new RDProject();
-    QString magicNum;
-    data >> magicNum;
-    qDebug() << magicNum;
-    if(magicNum != QString(MAGICNUM))
-    {
-        in.close();
-        return;
-    }
-    m_pProject->Serialize(data,false);
+    m_pProject->Serialize(data,data.getRoot(),false);
     m_pProject->SetFilePath(filePath);
     SetCurScene(0);
+
+    RDScene* pScene = GetCurScene();
+    RDSceneRenderData* pRenderData = dynamic_cast<RDSceneRenderData* >(pScene->GetRenderData(DEFAULT_RD));
+    pScene->TriggerStory(0,0,*pRenderData);
+
+    PushTopNode(pScene->GetChild(0));
 }
 void RDDocument::CloseProj()
 {
@@ -182,13 +179,13 @@ void RDDocument::CloseProj()
 }
 bool RDDocument::bHavePath()
 {
-    return !m_pProject->GetFilePath().isEmpty();
+    return !m_pProject->GetFilePath().empty();
 }
-const QString& RDDocument::GetProjPath()
+const std::string& RDDocument::GetProjPath()
 {
     return m_pProject->GetFilePath();
 }
-void RDDocument::SetProjPath(const QString& path)
+void RDDocument::SetProjPath(const std::string& path)
 {
     m_pProject->SetFilePath(path);
 }
@@ -214,28 +211,28 @@ void RDDocument::SetCurScene(int nSceneIndex)
 }
 void RDDocument::CreateTempProjDir()
 {
-    m_strCachePath = QDir::homePath();
+    m_strCachePath = QDir::homePath().toStdString();
     m_strCachePath += "/.Animation/cache/";
-    m_strCachePath += m_DocUUID.toString();
-    QString cmdStr("mkdir ");
+    m_strCachePath += m_DocUUID.toString().toStdString();
+    std::string cmdStr("mkdir ");
     cmdStr += m_strCachePath;
-    callSystem(cmdStr.toUtf8().data());
+    callSystem(cmdStr.data());
 
-    QString cmdStr2("mkdir ");
+    std::string cmdStr2("mkdir ");
     cmdStr2 += m_strCachePath;
     cmdStr2 += "/Resource";
-    callSystem(cmdStr2.toUtf8().data());
+    callSystem(cmdStr2.data());
 
 //image
-    QString imageStr2("mkdir ");
+    std::string imageStr2("mkdir ");
     imageStr2 += m_strCachePath;
     imageStr2 += "/Resource/Image";
-    callSystem(imageStr2.toUtf8().data());
+    callSystem(imageStr2.data());
 //movie
-    QString movieStr2("mkdir ");
+    std::string movieStr2("mkdir ");
     movieStr2 += m_strCachePath;
     movieStr2 += "/Resource/Movie";
-    callSystem(movieStr2.toUtf8().data());
+    callSystem(movieStr2.data());
 
 #ifdef _DEBUG
     qDebug() << m_strCachePath;
@@ -244,29 +241,29 @@ void RDDocument::CreateTempProjDir()
 
 void RDDocument::DeleteTempProjDir()
 {
-    QString cmdStr("rm -rf ");
+    std::string cmdStr("rm -rf ");
     cmdStr += m_strCachePath;
 
     try{
-        callSystem(cmdStr.toUtf8().data());
+        callSystem(cmdStr.data());
     }catch(RDException& e)
     {
         m_strCachePath.clear();
     }
 }
-void RDDocument::TarProjDir(const QString& strProjPath)
+void RDDocument::TarProjDir(const std::string& strProjPath)
 {
-    QString cmdStr1("cd ");
+    std::string cmdStr1("cd ");
     cmdStr1 += m_strCachePath;
     cmdStr1 += " && ";
-    QString cmdStr2("tar -jcf ");
+    std::string  cmdStr2("tar -jcf ");
     cmdStr2 += strProjPath;
     cmdStr2 += " ";
     cmdStr2 += "*";
 
     cmdStr1 += cmdStr2;
 
-    callSystem(cmdStr1.toUtf8().data());
+    callSystem(cmdStr1.data());
     //system(cmdStr2.toUtf8().data());
 #ifdef _DEBUG
     qDebug() << cmdStr1;
@@ -274,22 +271,22 @@ void RDDocument::TarProjDir(const QString& strProjPath)
 #endif
 }
 
-void RDDocument::UntarProjDir(const QString& strProjPath)
+void RDDocument::UntarProjDir(const std::string& strProjPath)
 {
-    QString cmdStr("tar -jxf ");
+    std::string cmdStr("tar -jxf ");
     cmdStr += strProjPath;
     cmdStr += " -C ";
     cmdStr += m_strCachePath;
 
     qDebug()  << cmdStr;
-    callSystem(cmdStr.toUtf8().data());
+    callSystem(cmdStr.data());
 
-    QString copyStr("cp -rf ");
+    std::string  copyStr("cp -rf ");
     copyStr += m_strCachePath + "/Resource/* ";
     copyStr += RDResourceManager::GetResourceManager()->GetResourcePath();
 
     qDebug()  << copyStr;
-    callSystem(copyStr.toUtf8().data());
+    callSystem(copyStr.data());
 }
 void RDDocument::ClearRDStack()
 {

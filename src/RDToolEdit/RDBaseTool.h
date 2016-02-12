@@ -25,7 +25,7 @@ class RDBaseToolEdit;
 class RDBaseTool : public RDBaseToolEdit
 {
 public:
-    RDBaseTool(const QString& name);
+    RDBaseTool(const std::string &name);
     virtual QIcon GetToolIcon() = 0;
 // =====================================================================================
 // event process

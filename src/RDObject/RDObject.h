@@ -25,9 +25,12 @@
 #include "mac_define.h"
 
 class RDRenderData;
-class RDFileDataStream;
+class RDJsonDataStream;
 class RDNode;
 class RDMd5;
+namespace Json {
+class Value;
+}
 
 //cann't not change the type order, because the type will to save
 class RDObject
@@ -47,7 +50,7 @@ public:
     void SetNode(RDNode* pParent){m_pParent = pParent;} 
     RDNode* GetNode(){return m_pParent;}
 
-    virtual void Serialize(RDFileDataStream& buffer,bool bSave);
+    virtual void Serialize(RDJsonDataStream& buffer, Json::Value& parent, bool bSave);
 
 	//击中测试，返回到近平面的距离，如果小于等于０，没有击中
     virtual float HitTest(const float3& vScenePt,const RDNode& pNode,const std::string& RDName)const = 0;

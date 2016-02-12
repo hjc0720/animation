@@ -17,6 +17,7 @@
  */
 
 #include <typeinfo>
+#include <string>
 
 class RDObject;
 class RDNode;
@@ -25,13 +26,13 @@ class QString;
 typedef RDObject* (*pCreateObj)();
 typedef RDNode* (*pCreateNode)();
 
-void RegisterObj(const QString& pStr,pCreateObj pFun);
-void UnRegisterObj(const QString& pStr);
-void RegisterNode(const QString& pStr,pCreateNode pFun);
-void UnRegisterNode(const QString& pStr);
+void RegisterObj(const std::string& pStr,pCreateObj pFun);
+void UnRegisterObj(const std::string& pStr);
+void RegisterNode(const std::string& pStr,pCreateNode pFun);
+void UnRegisterNode(const std::string& pStr);
 
-RDObject* CreateObj(const QString& strType);
-RDNode* CreateNode(const QString& strType);
+RDObject* CreateObj(const std::string &strType);
+RDNode* CreateNode(const std::string& strType);
 
 template<typename T,bool bObj>
 class RDObjectCreator
@@ -39,14 +40,14 @@ class RDObjectCreator
 public:
     RDObjectCreator(){
         if(bObj)
-            RegisterObj(QString(typeid(T).name()),[]()->RDObject*{return (RDObject*)new T;});
+            RegisterObj(typeid(T).name(),[]()->RDObject*{return (RDObject*)new T;});
         else
-            RegisterNode(QString(typeid(T).name()),[]()->RDNode*{return (RDNode*)new T;});
+            RegisterNode(typeid(T).name(),[]()->RDNode*{return (RDNode*)new T;});
     }
     ~RDObjectCreator(){
         if(bObj)
-            UnRegisterObj(QString(typeid(T).name()));
+            UnRegisterObj(typeid(T).name());
         else
-            UnRegisterNode(QString(typeid(T).name()));
+            UnRegisterNode(typeid(T).name());
     }
 };

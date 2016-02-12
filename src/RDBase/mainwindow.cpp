@@ -46,7 +46,7 @@ void MainWindow::InitGUI()
 }
 void MainWindow::InitData()
 {
-    QString m_strCachePath = QDir::homePath();
+    std::string m_strCachePath(QDir::homePath().toStdString());
     m_strCachePath += "/.Animation/temp_cache/";
     RDResourceManager::GetResourceManager()->SetResPath(m_strCachePath);
 
@@ -74,7 +74,6 @@ void MainWindow::InitWindow()
 
     connect(RDToolManager::GetToolManager(),SIGNAL(SceneChange()),m_pCenterWidget,SLOT(updateGL()));
     connect(&RDEditerManager::GetEditerManager(),SIGNAL(SceneChange()),m_pCenterWidget,SLOT(updateGL()));
-    connect(&RDEditerManager::GetEditerManager(),SIGNAL(UpdateKey()),this,SLOT(OnSectionChange()));
     resize(800,600);
 	m_UndoGroup.setActiveStack(GetCurDocument()->GetUndoStack());
     m_bInit = true;
@@ -102,14 +101,14 @@ void MainWindow::OnSave()
     qDebug() << "BeginSave" << endl;
     if(GetCurDocument()->bHavePath())
     {
-        qDebug() << "Save have path" << GetCurDocument()->GetProjPath();
+        //qDebug() << "Save have path" << GetCurDocument()->GetProjPath();
         GetCurDocument()->SaveProj();
     }
     else
     {
         QString fileName = QFileDialog::getSaveFileName(this,QString(tr("File Name")));
         if(!fileName.isEmpty())      
-            GetCurDocument()->SaveProjAs(fileName);
+            GetCurDocument()->SaveProjAs(fileName.toStdString());
     }
 }
 
@@ -137,7 +136,7 @@ void MainWindow::OnLoad()
     if(!fileName.isEmpty())      
     {
         //RDProject proj(720,576,50);
-        GetCurDocument()->LoadProj(fileName);
+        GetCurDocument()->LoadProj(fileName.toStdString());
     }
     UpdateEditTool();
 	OnReloadTimeLine(*GetCurDocument()->GetCurScene());
@@ -203,7 +202,7 @@ RDDocument* MainWindow::GetCurDocument()
 }
 void MainWindow::UpdateEditTool()
 {
-    RDToolManager::GetToolManager()->SwitchTool(NULL,*GetCurDocument());
+    RDToolManager::GetToolManager()->SwitchTool("",*GetCurDocument());
 }
 void MainWindow::AddProperty()
 {

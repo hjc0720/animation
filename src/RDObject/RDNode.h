@@ -30,7 +30,7 @@
 
 class RDObject;
 class RDRenderData;
-class RDFileDataStream;
+class RDJsonDataStream;
 class RDSection;
 class RDLayer;
 
@@ -40,6 +40,10 @@ typedef std::lock_guard<std::mutex> RDSingleLock;
 class RDScene;
 class RDCamera;
 class RDMd5;
+
+namespace Json {
+class Value;
+}
 
 class RDNode
 {
@@ -51,7 +55,7 @@ public:
     void Lock(){ m_lock.lock();}
     void UnLock(){m_lock.unlock();}
 
-    virtual void Serialize(RDFileDataStream& buffer,bool bSave);
+    virtual void Serialize(RDJsonDataStream& buffer, Json::Value &parent,  bool bSave);
 
     const std::string& GetName()const {return m_strName;}
     const QUuid& GetNodeID()const{return m_NodeID;}
@@ -155,8 +159,8 @@ protected:
 
     mutable std::mutex m_lock;
 
-    friend RDFileDataStream& operator << (RDFileDataStream& buffer,const RDNode& proj);
-    friend RDFileDataStream& operator >> (RDFileDataStream& buffer,RDNode& proj);
+    friend RDJsonDataStream& operator << (RDJsonDataStream& buffer,const RDNode& proj);
+    friend RDJsonDataStream& operator >> (RDJsonDataStream& buffer,RDNode& proj);
 };
 
 //undo

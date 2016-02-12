@@ -36,25 +36,29 @@ RDLight::RDLight(const std::string& strName,RDLightType nType,const float3& vPos
         m_pSpotParam = nullptr;
 }
 
-void RDLight::Serialize(RDFileDataStream& buffer,bool bSave)
+void RDLight::Serialize(RDJsonDataStream& buffer, Json::Value &parent, bool bSave)
 {
+    RDNode::Serialize(buffer,parent,bSave);
     RDSingleLock locker(m_lock);
-    int nVersion = 0;
-    buffer.Serialize(nVersion,bSave);
-    buffer.Serialize(m_bEnable,bSave);
-    int nLightType = m_nType;
-    buffer.Serialize(nLightType,bSave);
-    if(!bSave)
-        m_nType = static_cast<RDLightType>(nLightType);
+    buffer.Serialize(parent,"enable",bSave,m_bEnable);
+    buffer.Serialize(parent,"type",bSave,m_nType);
     if(m_nType == RDSpotLight)
     {
         if(!bSave && !m_pSpotParam)
             m_pSpotParam = new RDSpotParam ;
-        buffer.Serialize(m_pSpotParam->fInner,bSave);
-        buffer.Serialize(m_pSpotParam->fOuter,bSave);
-        buffer.Serialize(m_pSpotParam->fAtten,bSave);
+        buffer.Serialize(parent,"spot_inner",bSave,m_pSpotParam->fInner);
+        buffer.Serialize(parent,"spot_out",bSave,m_pSpotParam->fOuter);
+        buffer.Serialize(parent,"spot_atten",bSave,m_pSpotParam->fAtten);
     }
 }
+
+template<>
+class JsonHelper<RDLightType>
+{
+public:
+    Json::Value toJson(const RDLightType& value){ return Json::Value(value);}
+    void fromJson(RDLightType& t,const Json::Value& json){t = static_cast<RDLightType>(json.asInt());}
+};
 
 size_t    RDLight::GenerateShaderParam(char* pBuffer,const std::string& name)
 {
