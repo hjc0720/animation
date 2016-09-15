@@ -295,21 +295,20 @@ QRectF RDScene::GetSceneRt(const std::string& strName)const
     return QRectF(0,0,RenderData->GetWidth(),RenderData->GetHeight());
 }
 
-void RDScene::Serialize(RDJsonDataStream& buffer, Json::Value &parent,  bool bSave)
+void RDScene::Serialize(RDJsonDataStream& buffer, Json::Value &parent)
 {
 	qDebug() <<"begin to save scene" ;
-    RDNode::Serialize(buffer,parent,bSave);
+    RDNode::Serialize(buffer,parent);
     //story list
 //    int nCount = (int)m_StoryList.size();
 //    buffer.Serialize(nCount,bSave);
     RDSingleLock locker(m_lock);
-    buffer.Serialize(parent,"stories",bSave,m_StoryList.begin(),m_StoryList.end(),back_inserter(m_StoryList),[&buffer](Json::Value& child,RDStory* story,bool bSave)->RDStory*{
-        if(!bSave)
+    buffer.Serialize(parent,"stories",m_StoryList.begin(),m_StoryList.end(),back_inserter(m_StoryList),[](RDJsonDataStream& buffer, Json::Value& child,RDStory*& story){
+        if(!buffer.IsSave())
             story = new RDStory("");
-        story->Serialize(buffer,child,bSave);
-        return story;
+        story->Serialize(buffer,child);
     });
-    buffer.Serialize(parent,"create",bSave,m_nStoryCreateIndex,0);
+    buffer.Serialize(parent,"create",m_nStoryCreateIndex,0);
 	qDebug() <<"end to save scene" ;
 }
 

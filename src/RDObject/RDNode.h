@@ -45,6 +45,11 @@ namespace Json {
 class Value;
 }
 
+enum RDClipboardType
+{
+    RDKeyValue,
+};
+
 class RDNode
 {
 public:
@@ -55,7 +60,7 @@ public:
     void Lock(){ m_lock.lock();}
     void UnLock(){m_lock.unlock();}
 
-    virtual void Serialize(RDJsonDataStream& buffer, Json::Value &parent,  bool bSave);
+    virtual void Serialize(RDJsonDataStream& buffer, Json::Value &parent);
 
     const std::string& GetName()const {return m_strName;}
     const QUuid& GetNodeID()const{return m_NodeID;}
@@ -130,6 +135,8 @@ public:
     RDSpaceParam GetEditSpaceParam(const std::string &strName, const matrix4x4 *pWorldMat)const;
     virtual QRectF GetSceneRt(const std::string& strName)const;
     const matrix4x4& GetNodeMatrix(const std::string &strName)const;
+
+    virtual void paste(const std::string&);
 protected:
     virtual void    CalChildFrame(const RDTime& nTime,const std::string& pRDName);
     RDTime          calSectionTime(RDTime time,RDRenderData& pRD);

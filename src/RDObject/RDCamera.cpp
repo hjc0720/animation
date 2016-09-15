@@ -142,12 +142,12 @@ const matrix4x4&    RDCamera::GetViewProjMat(const std::string& pRDName)
     return pRenderData->m_matRenderViewProj;
 }
 
-void RDCamera::Serialize(RDJsonDataStream& buffer, Json::Value &parent, bool bSave)
+void RDCamera::Serialize(RDJsonDataStream& buffer, Json::Value &parentbSave)
 {
-    RDNode::Serialize(buffer,parent,bSave);
-    buffer.Serialize(parent,"type",bSave,m_nProjType);
-    buffer.Serialize(parent,"up",bSave,m_vUp);
-    buffer.Serialize(parent,"lookat",bSave,m_vLookAt);
+    RDNode::Serialize(buffer,parentbSave);
+    buffer.Serialize(parentbSave,"type",m_nProjType);
+    buffer.Serialize(parentbSave,"up",m_vUp);
+    buffer.Serialize(parentbSave,"lookat",m_vLookAt);
 }
 
 template<>

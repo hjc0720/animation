@@ -20,6 +20,8 @@
 #include <algorithm>
 using namespace std;
 
+string RDSection::m_strKeyType[]={"pos","angle","scale"};
+
 RDSection::RDSection()
 {
     m_nStartTime = 0;
@@ -113,15 +115,30 @@ std::set<RDTime> RDSection::getKeyTimeSet() const
     return keyTimeSet;
 }
 
-void RDSection::Serialize(RDJsonDataStream &buffer, Json::Value &parent, bool bSave)
+void RDSection::Serialize(RDJsonDataStream &buffer, Json::Value &parent)
 {
-    m_PosKey.Serialize(buffer,parent["pos"],bSave);
-    m_RotateKey.Serialize(buffer,parent["rot"],bSave);
-    m_ScaleKey.Serialize(buffer,parent["scale"],bSave);
+    m_PosKey.Serialize(buffer,parent["pos"]);
+    m_RotateKey.Serialize(buffer,parent["rot"]);
+    m_ScaleKey.Serialize(buffer,parent["scale"]);
 
-    buffer.Serialize(parent,"start",bSave,m_nStartTime); //relative to story time;
-    buffer.Serialize(parent,"length",bSave, m_nLength);
-    buffer.Serialize(parent,"type",bSave, m_nType);
+    buffer.Serialize(parent,"start",m_nStartTime); //relative to story time;
+    buffer.Serialize(parent,"length",m_nLength);
+    buffer.Serialize(parent,"type",m_nType);
+}
+
+std::list<RDSingleKey> RDSection::getKeyList(RDTime time)
+{
+    std::list<RDSingleKey>  keyList;
+    for(int i = RDSectionPos; i < RDSectionCount;i++)
+    {
+        const RDKeyList<float3>& list = getKeyList(static_cast<RDSectionKeyType>(i));
+        RDBaseKey*    key =  list.getKey(time);
+        if(key != nullptr)
+        {
+            keyList.push_back({m_strKeyType[i],key});
+        }
+    }
+    return keyList;
 }
 
 template<>

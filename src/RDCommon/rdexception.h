@@ -24,7 +24,7 @@ public:
     RDException();
 };
 
-void callSystem(const char* command)
+inline void callSystem(const char* command)
 {
     if(system(command) > 1)
         throw RDException();

@@ -1,6 +1,6 @@
 // =====================================================================================
 // 
-//       Filename:  RDBaseKey.cpp
+//       Filename:  RDKey.cpp
 // 
 //    Description:  
 // 
@@ -21,13 +21,13 @@
 
 // =====================================================================================
 template <typename Value>
-Value RDLinearKey<Value>::Interpolation(double& dWeight, const RDBaseKey<Value>& SecondKey)const
+Value RDLinearKey<Value>::Interpolation(double& dWeight, const RDKey<Value>& SecondKey)const
 {
 	return (1 - dWeight) * this->GetValue() + dWeight * SecondKey.GetValue();
 }
 // =====================================================================================
 template <typename Value>
-RDBaseKey<Value>* RDBaseKey<Value>::CreateKey(const Value& value, RDKeyType type /* = RDLineKey  */) 
+RDKey<Value>* RDKey<Value>::CreateKey(const Value& value, RDKeyType type /* = RDLineKey  */)
 {
 	switch(type)
 	{
@@ -38,7 +38,7 @@ RDBaseKey<Value>* RDBaseKey<Value>::CreateKey(const Value& value, RDKeyType type
 }
 
 template <typename Value>
-RDBaseKey<Value>* RDBaseKey<Value>::CreateKey(RDKeyType type /* = RDLineKey  */)
+RDKey<Value>* RDKey<Value>::CreateKey(RDKeyType type /* = RDLineKey  */)
 {
 	switch(type)
 	{
@@ -49,10 +49,10 @@ RDBaseKey<Value>* RDBaseKey<Value>::CreateKey(RDKeyType type /* = RDLineKey  */)
 }
 
 template <typename Value>
-void RDBaseKey<Value>::Serialize(RDJsonDataStream &buffer, Json::Value &parent, bool bSave)
+void RDKey<Value>::Serialize(RDJsonDataStream &buffer, Json::Value &parent)
 {
-    buffer.Serialize(parent,"value",bSave,m_KeyValue);
+    buffer.Serialize(parent,"value",m_KeyValue);
 }
 // =====================================================================================
-template class RDBaseKey<float3>;
-template class RDBaseKey<float>;
+template class RDKey<float3>;
+template class RDKey<float>;

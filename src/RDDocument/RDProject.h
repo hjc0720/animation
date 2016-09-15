@@ -40,7 +40,7 @@ public:
     RDScene* GetScene(int nIndex){try{return m_SceneList.at(nIndex);}catch(std::out_of_range& ){return 0;}}
     size_t GetSceneCount(){return m_SceneList.size();}
 
-    void Serialize(RDJsonDataStream& buffer,Json::Value& parent,bool bSave);
+    void Serialize(RDJsonDataStream& buffer, Json::Value& parent);
 protected:
     int     m_nWidth;
     int     m_nHeight;

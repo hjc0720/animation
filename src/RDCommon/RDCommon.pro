@@ -38,5 +38,5 @@ HEADERS += RDBox.h
 CONFIG += dll
 VERSION = 1.0.1
 
-#LIBS += -lssl
+#LIBS += -ljsoncpp
 #DESTDIR  = ../../bin

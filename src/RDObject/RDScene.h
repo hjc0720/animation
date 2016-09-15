@@ -47,7 +47,7 @@ public:
     RDScene();
     RDScene(const std::string& strName);
     virtual ~RDScene();
-    virtual void Serialize(RDJsonDataStream& buffer, Json::Value &parent, bool bSave)override;
+    virtual void Serialize(RDJsonDataStream& buffer, Json::Value &parent)override;
     void SetWidthHeight(int nWidth,int nHeight);
     void SetBackType(RDScene_BackType nType,const void* pData);
     const RDSceneData& GetBackData()const {return m_BackData;}

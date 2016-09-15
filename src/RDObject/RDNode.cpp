@@ -469,6 +469,11 @@ const matrix4x4 &RDNode::GetNodeMatrix(const std::string &strName) const
     return pData->GetGlobalMatrix();
 }
 
+void RDNode::paste(const string &)
+{
+
+}
+
 const RDLayer*        RDNode::GetLayerNode()const
 {
     const RDLayer* pLayer = dynamic_cast<const RDLayer*>(this);
@@ -477,57 +482,55 @@ const RDLayer*        RDNode::GetLayerNode()const
     return pLayer;
 }
 
-void RDNode::Serialize(RDJsonDataStream& buffer, Json::Value &parent, bool bSave)
+void RDNode::Serialize(RDJsonDataStream& buffer, Json::Value &parent)
 {
     RDSingleLock locker(m_lock);
-    buffer.Serialize(parent,"name",bSave,m_strName,std::string());
+    buffer.Serialize(parent,"name",m_strName,std::string());
     //qDebug() << "begin to serialize node :" << m_strName;
-    buffer.Serialize(parent,"pos",bSave,m_vPos,float3::GetZero());
-    buffer.Serialize(parent,"id",bSave,m_NodeID);
-    buffer.Serialize(parent,"collapse",bSave,m_bCollapse,false);
+    buffer.Serialize(parent,"pos",m_vPos,float3::GetZero());
+    buffer.Serialize(parent,"id",m_NodeID);
+    buffer.Serialize(parent,"collapse",m_bCollapse,false);
 
-    if(bSave && m_pObj)
+    if(buffer.IsSave() && m_pObj)
     {
         std::string ObjType(typeid(*m_pObj).name());
-        buffer.Serialize(parent,"objtype",true,ObjType);
+        buffer.Serialize(parent,"objtype",ObjType);
         Json::Value object(Json::objectValue);
-        m_pObj->Serialize(buffer,object,bSave);
+        m_pObj->Serialize(buffer,object);
         parent["obj"] = object;
     }
-    else if(!bSave)
+    else if(!buffer.IsSave())
     {
         std::string ObjType;
-        buffer.Serialize(parent,"objtype",false,ObjType);
+        buffer.Serialize(parent,"objtype",ObjType);
         if(ObjType != "")
         {
             m_pObj = CreateObj(ObjType);
-            m_pObj->Serialize(buffer,parent["obj"],bSave);
+            m_pObj->Serialize(buffer,parent["obj"]);
             m_pObj->SetNode(this);
         }
     }
 
-    buffer.Serialize(parent,"sections",bSave,m_vecSetctionListMap,[&buffer](Json::Value& child,QUuid& id,vector<RDSection*>& sections,bool bSave){
-        buffer.Serialize(child,"key",bSave,id);
-        buffer.Serialize(child,"value",bSave,sections.begin(),sections.end(),back_inserter(sections),[&buffer](Json::Value& value,RDSection* section,bool bSave)->RDSection*{
-            if(!bSave)
+    buffer.Serialize(parent,"sections",m_vecSetctionListMap,[](RDJsonDataStream&buffer, Json::Value& child,QUuid& id,vector<RDSection*>& sections){
+        buffer.Serialize(child,"key",id);
+        buffer.Serialize(child,"value",sections.begin(),sections.end(),back_inserter(sections),[](RDJsonDataStream&buffer,Json::Value& value,RDSection*& section){
+            if(!buffer.IsSave())
                 section = new RDSection;
-            section->Serialize(buffer,value,bSave);
-            return section;
+            section->Serialize(buffer,value);
         });
     });
     //serialize child
-    buffer.Serialize(parent,"child",bSave,m_vecChildObj.begin(),m_vecChildObj.end(),back_inserter(m_vecChildObj),[&buffer,this](Json::Value& child,RDNode* node,bool bSave)->RDNode*{
+    buffer.Serialize(parent,"child",m_vecChildObj.begin(),m_vecChildObj.end(),back_inserter(m_vecChildObj),[this](RDJsonDataStream&buffer,Json::Value& child,RDNode*& node){
         std::string childType;
-        if(bSave)
+        if(buffer.IsSave())
             childType = typeid(*node).name();
-        buffer.Serialize(child,"type",bSave,childType);
-        if(!bSave)
+        buffer.Serialize(child,"type",childType);
+        if(!buffer.IsSave())
         {
             node = CreateNode(childType);
             node->m_pParent = this;
         }
-        node->Serialize(buffer,child,bSave);
-        return node;
+        node->Serialize(buffer,child);
     });
 
     //qDebug() << "end to serialize node :" << m_strName;

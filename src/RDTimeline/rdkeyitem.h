@@ -19,6 +19,7 @@
 
 #include <QGraphicsItem>
 #include "mac_define.h"
+#include "RDSection.h"
 
 class RDSection;
 
@@ -26,7 +27,7 @@ class RDKeyItem : public QGraphicsObject
 {
     Q_OBJECT
 public:
-    explicit RDKeyItem(int nHeight, RDTime time, QGraphicsItem* parent = nullptr);
+    explicit RDKeyItem(int nHeight, RDTime time,const std::list<RDSingleKey>& list,  QGraphicsItem* parent = nullptr);
     QRectF boundingRect()const;
 
     // QGraphicsItem interface
@@ -38,11 +39,16 @@ protected:
     int         m_nHeight;
     RDTime      m_nTime;
     float       m_fRealWidth;
+    std::list<RDSingleKey> m_keylist;
 
     static const float value ;
     // QGraphicsItem interface
 protected:
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+
+    // QGraphicsItem interface
+protected:
+    virtual void keyPressEvent(QKeyEvent *event) override;
 };
 
 #endif // RDKEYITEM_H

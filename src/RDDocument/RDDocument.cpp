@@ -29,6 +29,7 @@
 #include "RDCamera.h"
 #include "RDLight.h"
 #include "rdexception.h"
+#include <fstream>
 
 // =====================================================================================
 class RDUndoRedo :public QUndoCommand
@@ -134,7 +135,7 @@ void RDDocument::SaveProjAs(RDProject& pProj,const std::string& filePath)
     std::fstream file(m_strCachePath + "/project", std::fstream::out);
 
     RDJsonDataStream data(file,m_strCachePath + "/Resource",true);
-    pProj.Serialize(data,data.getRoot(),true);
+    pProj.Serialize(data,data.getRoot());
     data.EndSaveResource();
     data.close();
     file.close();
@@ -162,7 +163,7 @@ void RDDocument::LoadProj(const std::string& filePath)
         return;
     RDJsonDataStream data(file,false);
     m_pProject = new RDProject();
-    m_pProject->Serialize(data,data.getRoot(),false);
+    m_pProject->Serialize(data,data.getRoot());
     m_pProject->SetFilePath(filePath);
     SetCurScene(0);
 

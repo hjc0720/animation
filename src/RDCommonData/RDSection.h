@@ -20,6 +20,7 @@
 #include "RDKeyList.h"
 #include "HVector4f.h"
 #include "HVector3f.h"
+#include <list>
 
 enum RDSectionOutType
 {
@@ -34,6 +35,12 @@ enum RDSectionKeyType
 	RDSectionAngle,
 	RDSectionScale,
 	RDSectionCount,
+};
+
+struct RDSingleKey
+{
+    std::string type;
+    RDBaseKey*      key;
 };
 
 class RDJsonDataStream; 
@@ -66,7 +73,9 @@ public:
 
     std::set<RDTime> getKeyTimeSet()const;
 
-    void Serialize(RDJsonDataStream& buffer, Json::Value &parent, bool bSave);
+    void Serialize(RDJsonDataStream& buffer, Json::Value &parent);
+
+    std::list<RDSingleKey> getKeyList(RDTime time);
 protected:
     void delKey(RDTime nSectionTime,RDSectionKeyType type);
     RDKeyList<float3>& getKeyList(RDSectionKeyType eType) ;
@@ -79,5 +88,6 @@ protected:
     RDTime   m_nStartTime; //relative to story time;
     RDTime   m_nLength;
     RDSectionOutType m_nType;
+    static std::string m_strKeyType[];
 };
 #endif   // ----- #ifndef rdsection_INC  -----

@@ -45,7 +45,6 @@ protected:
     void SetSectionType();
 protected:
     QPainterPath    m_shape;
-    vector<RDTime> m_nHitKey;
     int         m_nHeight;
     int         m_nYOffset;
     RDNode*     m_pNode;

@@ -27,11 +27,11 @@ RDStory::RDStory(const std::string& name)
     m_nStoryLength = 1000000000LL;
 }
 
-void RDStory::Serialize(RDJsonDataStream& buffer, Json::Value &parent,  bool bSave)
+void RDStory::Serialize(RDJsonDataStream& buffer, Json::Value &parent)
 {
-    buffer.Serialize(parent,"pass",bSave,m_bPass,false);
-    buffer.Serialize(parent,"start",bSave,m_nPlayStartFrame,0LL);
-    buffer.Serialize(parent,"length",bSave,m_nStoryLength,1000000000LL);
-    buffer.Serialize(parent,"id",bSave,m_Id ,QUuid::createUuid());
-    buffer.Serialize(parent,"name",bSave,m_strName,std::string());
+    buffer.Serialize(parent,"pass",m_bPass,false);
+    buffer.Serialize(parent,"start",m_nPlayStartFrame,0LL);
+    buffer.Serialize(parent,"length",m_nStoryLength,1000000000LL);
+    buffer.Serialize(parent,"id",m_Id ,QUuid::createUuid());
+    buffer.Serialize(parent,"name",m_strName,std::string());
 }

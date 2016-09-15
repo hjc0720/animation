@@ -39,7 +39,7 @@ public:
     const QUuid& GetStoryId()const{return m_Id;}
 	const std::string& GetStroyName()const{return m_strName;}
 
-    void Serialize(RDJsonDataStream &buffer, Json::Value &parent, bool bSave);
+    void Serialize(RDJsonDataStream &buffer, Json::Value &parent);
 protected:
     bool    m_bPass;
     RDTime m_nPlayStartFrame;

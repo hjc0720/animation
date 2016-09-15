@@ -31,7 +31,7 @@ class RDCamera :public RDNode
 public:
     RDCamera(){};
     RDCamera(const std::string& strName,uint nHeight,RDProjectType nType);
-    virtual void Serialize(RDJsonDataStream& buffer,Json::Value& parent,bool bSave)override;
+    virtual void Serialize(RDJsonDataStream& buffer,Json::Value& parentbSave)override;
     virtual void CalFrame(const RDTime& nTime,const std::string& pRDName) override;
     void    UpdateProject(const std::string& pRDName,QRectF& rt,float fZNear,float fFar);
 

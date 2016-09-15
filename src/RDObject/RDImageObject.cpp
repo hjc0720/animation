@@ -197,11 +197,11 @@ void RDImageObject::CreateRenderData(RDRenderData& pRD)
     pPrivateData->m_pMaterial->AddTex(RDNormalMatTexture,pPrivateData->m_pImage,bound);
 }
 
-void RDImageObject::Serialize(RDJsonDataStream& buffer, Json::Value &parent, bool bSave)
+void RDImageObject::Serialize(RDJsonDataStream& buffer, Json::Value &parentbSave)
 {
-    RDObject::Serialize(buffer,parent,bSave);
-    buffer.Serialize(parent,"image",bSave,m_Image);
-    if(bSave)
+    RDObject::Serialize(buffer,parentbSave);
+    buffer.Serialize(parentbSave,"image",m_Image);
+    if(buffer.IsSave())
     {
         RDImageResource* pResource = dynamic_cast<RDImageResource*>(RDResourceManager::GetResourceManager()->GetResource(m_Image));
         buffer.SaveResource(pResource->GetPath());
@@ -210,6 +210,6 @@ void RDImageObject::Serialize(RDJsonDataStream& buffer, Json::Value &parent, boo
     {
         RDResourceManager::GetResourceManager()->AddResource(m_Image);
     }
-    buffer.Serialize(parent,"width",bSave,m_nWidth);
-    buffer.Serialize(parent,"height",bSave,m_nHeight);
+    buffer.Serialize(parentbSave,"width",m_nWidth);
+    buffer.Serialize(parentbSave,"height",m_nHeight);
 }

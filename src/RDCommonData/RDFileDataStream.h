@@ -20,7 +20,7 @@
 #include <QStringList>
 #include <QString>
 #include "rdthreadpool.h"
-#include <fstream>
+#include <iostream>
 #include <type_traits>
 #include <map>
 #include <set>
@@ -30,12 +30,13 @@
 class RDJsonDataStream
 {
 public:
-    RDJsonDataStream ( std::fstream& d,bool bSave );
-    RDJsonDataStream (std::fstream& d , const std::string &strResourcePath,bool bSave);
+    RDJsonDataStream (std::iostream &d, bool bSave );
+    RDJsonDataStream (std::iostream &d , const std::string &strResourcePath, bool bSave);
     virtual	~RDJsonDataStream ();
     void SetResourcePath(const std::string& strResourcePath){ m_strResourcePath = strResourcePath;}
     void SaveResource(const std::string& filePath);
     void EndSaveResource();
+    bool IsSave()const{return m_bSave;}
     Json::Value& getRoot(){
         if(m_task)
         {
@@ -59,24 +60,24 @@ public:
     }
 
     template<typename T>
-    void Serialize(Json::Value& parent,const std::string& key,bool bSave,T& value,const T& defaultValue=T())
+    void Serialize(Json::Value& parent,const std::string& key,T& value,const T& defaultValue=T())
     {
-        if(bSave)
+        if(m_bSave)
             Save(parent,value,key);
         else
             Load(parent,value,key,defaultValue);
     }
 
     template<typename InIt,typename OutIt,typename Func>
-    void Serialize(Json::Value& parent,const std::string& key,bool bSave,InIt begin,InIt end,OutIt out,Func fun)
+    void Serialize(Json::Value& parent,const std::string& key,InIt begin,InIt end,OutIt out,Func fun)
     {
-        if(bSave)
+        if(m_bSave)
         {
             Json::Value ret(Json::arrayValue);
             for(auto it = begin; it != end; it++)
             {
                 Json::Value child;
-                fun(child,*it,bSave);
+                fun(*this,child,*it);
                 ret.append(child);
             }
             parent[key]=ret;
@@ -90,23 +91,24 @@ public:
             {
                 typedef typename InIt::value_type T;
                 T tmp = T();
-                *out = fun(*it,tmp,bSave);
+                fun(*this,*it,tmp);
+                *out = tmp;
                 out++;
             }
         }
     }
 
     template<typename K,typename V,typename Func>
-    void Serialize(Json::Value& parent,const std::string& key,bool bSave,std::map<K,V>& v,Func fun)
+    void Serialize(Json::Value& parent,const std::string& key,std::map<K,V>& v,Func fun)
     {
-        if(bSave)
+        if(m_bSave)
         {
             Json::Value ret(Json::arrayValue);
             for(auto it = v.begin(); it != v.end(); it++)
             {
                 Json::Value child;
                 K key(it->first);
-                fun(child,key,it->second,bSave);
+                fun(*this,child,key,it->second);
                 ret.append(child);
             }
             parent[key]=ret;
@@ -120,7 +122,7 @@ public:
             {
                 K key;
                 V value;
-                fun(*it,key,value,bSave);
+                fun(*this,*it,key,value);
                 v.insert({key,value});
             }
         }
@@ -129,7 +131,7 @@ public:
     void close();
 protected:
     bool                m_bSave;
-    std::fstream&             m_file;
+    std::iostream&             m_file;
     std::set<std::string> m_ResourceList;
     std::string     m_strResourcePath;
     Json::Value m_jsonRoot;

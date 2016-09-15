@@ -36,19 +36,19 @@ RDLight::RDLight(const std::string& strName,RDLightType nType,const float3& vPos
         m_pSpotParam = nullptr;
 }
 
-void RDLight::Serialize(RDJsonDataStream& buffer, Json::Value &parent, bool bSave)
+void RDLight::Serialize(RDJsonDataStream& buffer, Json::Value &parent)
 {
-    RDNode::Serialize(buffer,parent,bSave);
+    RDNode::Serialize(buffer,parent);
     RDSingleLock locker(m_lock);
-    buffer.Serialize(parent,"enable",bSave,m_bEnable);
-    buffer.Serialize(parent,"type",bSave,m_nType);
+    buffer.Serialize(parent,"enable",m_bEnable);
+    buffer.Serialize(parent,"type",m_nType);
     if(m_nType == RDSpotLight)
     {
-        if(!bSave && !m_pSpotParam)
+        if(!buffer.IsSave() && !m_pSpotParam)
             m_pSpotParam = new RDSpotParam ;
-        buffer.Serialize(parent,"spot_inner",bSave,m_pSpotParam->fInner);
-        buffer.Serialize(parent,"spot_out",bSave,m_pSpotParam->fOuter);
-        buffer.Serialize(parent,"spot_atten",bSave,m_pSpotParam->fAtten);
+        buffer.Serialize(parent,"spot_inner",m_pSpotParam->fInner);
+        buffer.Serialize(parent,"spot_out",m_pSpotParam->fOuter);
+        buffer.Serialize(parent,"spot_atten",m_pSpotParam->fAtten);
     }
 }
 

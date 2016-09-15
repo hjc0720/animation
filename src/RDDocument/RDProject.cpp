@@ -45,15 +45,14 @@ void RDProject::CreateNewScene(const std::string& strSceneName)
    m_SceneList.push_back(pscene);
 }
 
-void RDProject::Serialize(RDJsonDataStream& buffer,Json::Value& parent,bool bSave)
+void RDProject::Serialize(RDJsonDataStream& buffer,Json::Value& parent)
 {
-    buffer.Serialize(parent,"width",bSave,m_nWidth);
-    buffer.Serialize(parent,"height",bSave,m_nHeight);
-    buffer.Serialize(parent,"frame_rate",bSave,m_dFrameRate);
-    buffer.Serialize(parent,"scenes",bSave,m_SceneList.begin(),m_SceneList.end(),std::back_inserter(m_SceneList),[&buffer](Json::Value& child,RDScene* scene,bool bSave)->RDScene*{
-        if(!bSave)
+    buffer.Serialize(parent,"width",m_nWidth);
+    buffer.Serialize(parent,"height",m_nHeight);
+    buffer.Serialize(parent,"frame_rate",m_dFrameRate);
+    buffer.Serialize(parent,"scenes",m_SceneList.begin(),m_SceneList.end(),std::back_inserter(m_SceneList),[](RDJsonDataStream&buffer, Json::Value& child,RDScene*& scene){
+        if(!buffer.IsSave())
             scene = new RDScene;
-        scene->Serialize(buffer,child,bSave);
-        return scene;
+        scene->Serialize(buffer,child);
     });
 }

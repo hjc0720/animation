@@ -47,7 +47,7 @@ public:
 
     virtual float HitTest(const float3& vScenePt,const RDNode& pNode,const std::string& RDName) const override;
 
-    virtual void Serialize(RDJsonDataStream& buffer, Json::Value& parent, bool bSave)override;
+    virtual void Serialize(RDJsonDataStream& buffer, Json::Value& parentbSave)override;
 protected:
     RDMd5 m_Image;
     int m_nWidth;

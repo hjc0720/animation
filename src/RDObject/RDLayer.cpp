@@ -228,30 +228,28 @@ RDLayer::~RDLayer()
     }
 }
 
-void RDLayer::Serialize(RDJsonDataStream& buffer, Json::Value &parent,  bool bSave)
+void RDLayer::Serialize(RDJsonDataStream& buffer, Json::Value &parent)
 {
-    RDNode::Serialize(buffer,parent,bSave);
-    buffer.Serialize(parent,"zorder",bSave,m_bZOrder);
-    buffer.Serialize(parent,"perspective",bSave,m_bPerspective);
+    RDNode::Serialize(buffer,parent);
+    buffer.Serialize(parent,"zorder",m_bZOrder);
+    buffer.Serialize(parent,"perspective",m_bPerspective);
     
-    buffer.Serialize(parent,"cameras",bSave,m_vecCameraObj.begin(),m_vecCameraObj.end(),std::back_inserter(m_vecCameraObj),[this,&buffer](Json::Value& child,RDCamera*& camera,bool bSave)->RDCamera*{
-        if(!bSave)
+    buffer.Serialize(parent,"cameras",m_vecCameraObj.begin(),m_vecCameraObj.end(),std::back_inserter(m_vecCameraObj),[this](RDJsonDataStream&buffer, Json::Value& child,RDCamera*& camera){
+        if(!buffer.IsSave())
         {
             camera = new RDCamera;
             camera->SetParent(this);
         }
-        camera->Serialize(buffer,child,bSave);
-        return camera;
+        camera->Serialize(buffer,child);
     });
 
-    buffer.Serialize(parent,"lights",bSave,m_vecLight.begin(),m_vecLight.end(),std::back_inserter(m_vecLight),[this,&buffer](Json::Value& child,RDLight* light,bool bSave)->RDLight*{
-        if(!bSave)
+    buffer.Serialize(parent,"lights",m_vecLight.begin(),m_vecLight.end(),std::back_inserter(m_vecLight),[this](RDJsonDataStream&buffer,Json::Value& child,RDLight*& light){
+        if(!buffer.IsSave())
         {
             light = new RDLight;
             light->SetParent(this);
         }
-        light->Serialize(buffer,child,bSave);
-        return light;
+        light->Serialize(buffer,child);
     });
 }
 

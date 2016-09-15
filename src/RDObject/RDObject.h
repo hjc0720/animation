@@ -50,7 +50,7 @@ public:
     void SetNode(RDNode* pParent){m_pParent = pParent;} 
     RDNode* GetNode(){return m_pParent;}
 
-    virtual void Serialize(RDJsonDataStream& buffer, Json::Value& parent, bool bSave);
+    virtual void Serialize(RDJsonDataStream& buffer, Json::Value& parent);
 
 	//击中测试，返回到近平面的距离，如果小于等于０，没有击中
     virtual float HitTest(const float3& vScenePt,const RDNode& pNode,const std::string& RDName)const = 0;

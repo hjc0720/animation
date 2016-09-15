@@ -16,8 +16,11 @@
 
 #ifndef  RDBASEKEY_INC
 #define  RDBASEKEY_INC
+#include <type_traits>
+#include "rdexception.h"
 
 class RDJsonDataStream;
+class float3;
 namespace Json
 {
 class Value;
@@ -27,33 +30,63 @@ enum RDKeyType
     RDLineKey,
 };
 
+enum RDKeyValueType
+{
+    RDFloat3,
+    RDInt,
+    RDFloat
+};
+
+template<typename>
+struct is_float3 : public std::false_type { };
+
+template<>
+struct is_float3<float3> : public std::true_type { };
+
+class RDBaseKey{
+public:
+    virtual RDKeyValueType ValueType()const=0;
+    virtual void Serialize(RDJsonDataStream &buffer, Json::Value &parent)=0;
+};
+
 template <typename Value>
-class RDBaseKey
+class RDKey :public RDBaseKey
 {
 public:
-	static RDBaseKey<Value>* CreateKey(const Value& value, RDKeyType type = RDLineKey);
-	static RDBaseKey<Value>* CreateKey(RDKeyType type = RDLineKey);
+    static RDKey<Value>* CreateKey(const Value& value, RDKeyType type = RDLineKey);
+    static RDKey<Value>* CreateKey(RDKeyType type = RDLineKey);
 public:
-    RDBaseKey(const Value& value):m_KeyValue(value){}
-    RDBaseKey() = default;
-    virtual ~RDBaseKey(){}
-	virtual RDKeyType GetKeyType()const{return RDLineKey;}
+    RDKey(const Value& value):m_KeyValue(value){}
+    RDKey() = default;
+    virtual ~RDKey(){}
+    virtual RDKeyType GetKeyType()const{return RDLineKey;}
     const Value& GetValue()const{return m_KeyValue;}
     void SetValue(const Value& value){m_KeyValue = value;}
-    void Serialize(RDJsonDataStream &buffer, Json::Value &parent, bool bSave);
+    void Serialize(RDJsonDataStream &buffer, Json::Value &parent)override;
+    virtual RDKeyValueType ValueType()const override
+    {
+        if(std::is_integral<Value>::value)
+            return RDInt;
+        else if(std::is_floating_point<Value>::value)
+            return RDFloat;
+        else if(is_float3<Value>::value)
+            return RDFloat3;
+        else
+            throw RDException();
+    }
 
-    virtual Value Interpolation(double& dWeight, const RDBaseKey<Value>& SecondKey)const = 0;
+    virtual Value Interpolation(double& dWeight, const RDKey<Value>& SecondKey)const = 0;
 protected:
     Value m_KeyValue;
 };
 
 template <typename Value>
-class RDLinearKey :public RDBaseKey<Value>
+class RDLinearKey :public RDKey<Value>
 {
 public:
-    RDLinearKey(const Value& value):RDBaseKey<Value>(value){};
+    RDLinearKey(const Value& value):RDKey<Value>(value){};
     RDLinearKey() = default;
-    virtual Value Interpolation(double& dWeight, const RDBaseKey<Value>& SecondKey)const override;
+    virtual Value Interpolation(double& dWeight, const RDKey<Value>& SecondKey)const override;
 };
 
 #endif   // ----- #ifndef rdbasekey_INC  -----

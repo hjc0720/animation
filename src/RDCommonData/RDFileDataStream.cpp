@@ -22,7 +22,7 @@
 
 using namespace std;
 
-RDJsonDataStream::RDJsonDataStream (fstream& in , const std::string& strResourcePath, bool bSave)
+RDJsonDataStream::RDJsonDataStream (iostream& in , const std::string& strResourcePath, bool bSave)
     :m_bSave(bSave)
     ,m_file(in)
     ,m_strResourcePath(strResourcePath)
@@ -32,7 +32,7 @@ RDJsonDataStream::RDJsonDataStream (fstream& in , const std::string& strResource
         in.seekg(0,ios::end);
         size_t size = in.tellg();
         in.seekg(0,ios::beg);
-        if(in.is_open()&& size > 0 )
+        if(in.good()&& size > 0 )
         {
             m_task = RDThreadPool::AddTask([&]()->bool{
                                                Json::Reader reader;
@@ -46,7 +46,7 @@ RDJsonDataStream::~RDJsonDataStream()
 {
     close();
 }
-RDJsonDataStream::RDJsonDataStream (fstream& in,bool bSave)
+RDJsonDataStream::RDJsonDataStream (std::iostream& in,bool bSave)
     :RDJsonDataStream(in,"",bSave)
 {
 }

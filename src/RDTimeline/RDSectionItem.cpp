@@ -29,6 +29,7 @@
 #include <QKeyEvent>
 #include <functional>
 #include "rdkeyitem.h"
+#include <jsoncpp/json/json.h>
 
 RDSectionItem::RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int nYOffset)
      :m_nHeight(nHeight)
@@ -38,7 +39,7 @@ RDSectionItem::RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int n
 {
     SetSectionType();
     setPos(m_pSection->GetStartTime(),m_nYOffset);
-    setFlags(ItemIsMovable | ItemIsSelectable);
+    setFlags(ItemIsMovable | ItemIsSelectable );
 //    setAcceptedMouseButtons(Qt::LeftButton);
 
     createKeyItem();
@@ -128,7 +129,7 @@ void RDSectionItem::createKeyItem()
     std::set<RDTime> keyTimeSet(m_pSection->getKeyTimeSet());
     for(RDTime time : keyTimeSet)
     {
-        RDKeyItem* pKey = new RDKeyItem(m_nHeight,time,this);
+        RDKeyItem* pKey = new RDKeyItem(m_nHeight,time,m_pSection->getKeyList(time),this);
         pKey->setPos(time,0);
         connect(pKey,SIGNAL(TimeMoved(RDTime,RDTime)),this,SLOT(KeyTimeChanged(RDTime,RDTime)));
         m_vecKeyItem.push_back(pKey);

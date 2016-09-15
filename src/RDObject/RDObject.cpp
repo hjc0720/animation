@@ -33,7 +33,7 @@ void RDObject::UnLock()const
     m_pParent->UnLock();
 }
 
-void RDObject::Serialize(RDJsonDataStream& buffer, Json::Value &parent, bool bSave)
+void RDObject::Serialize(RDJsonDataStream& buffer, Json::Value &parent)
 {
-    buffer.Serialize(parent,"id",bSave,m_ObjID,QUuid::createUuid());
+    buffer.Serialize(parent,"id",m_ObjID,QUuid::createUuid());
 }

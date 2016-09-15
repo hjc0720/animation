@@ -32,7 +32,7 @@ void RDKeyList<KeyType>::moveKey(RDTime srcTime, RDTime dstTime)
     auto it = m_KeyList.find(srcTime);
     if(it != m_KeyList.end())
     {
-        RDBaseKey<KeyType>* value = it->second;
+        RDKey<KeyType>* value = it->second;
         m_KeyList.erase(it);
         m_KeyList.insert({dstTime,value});
     }
@@ -72,7 +72,7 @@ inline bool RDKeyList<KeyType>::IsKeyTime(const RDTime& nSectionTime)
 } 
 
 template <typename KeyType>
-KeyType RDKeyList<KeyType>::Interpolation(const RDTime& nTime, const RDBaseKey<KeyType>& FirstKey,const RDTime& nFirstTime, const RDBaseKey<KeyType>& SecondKey,const RDTime& nSecondTime)
+KeyType RDKeyList<KeyType>::Interpolation(const RDTime& nTime, const RDKey<KeyType>& FirstKey,const RDTime& nFirstTime, const RDKey<KeyType>& SecondKey,const RDTime& nSecondTime)
 {
 	double dWeight = (nTime - nFirstTime) / (double)(nSecondTime - nFirstTime);
     return FirstKey.Interpolation(dWeight,SecondKey);
@@ -86,19 +86,29 @@ void RDKeyList<KeyType>::GetTime(std::set<RDTime>& times)const
 }
 
 template <typename KeyType>
-void RDKeyList<KeyType>::Serialize(RDJsonDataStream &buffer, Json::Value &parent, bool bSave)
+void RDKeyList<KeyType>::Serialize(RDJsonDataStream &buffer, Json::Value &parent)
 {
-    buffer.Serialize(parent,"keylist",bSave,m_KeyList,[&buffer](Json::Value& child,RDTime& id,RDBaseKey<KeyType>*& key,bool bSave){
-        buffer.Serialize(child,"key",bSave,id);
+    buffer.Serialize(parent,"keylist",m_KeyList,[](RDJsonDataStream& buffer, Json::Value& child,RDTime& id,RDKey<KeyType>*& key){
+        buffer.Serialize(child,"key",id);
         RDKeyType keyType;
-        if(bSave)
+        if(buffer.IsSave())
             keyType = key->GetKeyType();
-        buffer.Serialize(child["value"],"type",bSave,keyType);
+        buffer.Serialize(child["value"],"type",keyType);
 
-        if(!bSave)
-            key = RDBaseKey<KeyType>::CreateKey(keyType);
-        key->Serialize(buffer,child["value"],bSave);
+        if(!buffer.IsSave())
+            key = RDKey<KeyType>::CreateKey(keyType);
+        key->Serialize(buffer,child["value"]);
     });
+}
+
+template <typename KeyType>
+RDKey<KeyType> *RDKeyList<KeyType>::getKey(RDTime time)const
+{
+    auto it = m_KeyList.find(time);
+    if(it != m_KeyList.end())
+        return it->second;
+    else
+        return nullptr;
 }
 
 template<>
