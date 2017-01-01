@@ -30,6 +30,10 @@
 #include <functional>
 #include "rdkeyitem.h"
 #include <jsoncpp/json/json.h>
+#include <sstream>
+#include <QClipboard>
+#include <QApplication>
+
 
 RDSectionItem::RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int nYOffset)
      :m_nHeight(nHeight)
@@ -39,7 +43,7 @@ RDSectionItem::RDSectionItem(RDNode* pNode,RDSection* pSection,int nHeight,int n
 {
     SetSectionType();
     setPos(m_pSection->GetStartTime(),m_nYOffset);
-    setFlags(ItemIsMovable | ItemIsSelectable );
+    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
 //    setAcceptedMouseButtons(Qt::LeftButton);
 
     createKeyItem();
@@ -143,4 +147,48 @@ void RDSectionItem::removeKeyItem()
         SAFE_DELETE(pItem);
     }
     m_vecKeyItem.clear();
+}
+
+
+void RDSectionItem::keyPressEvent(QKeyEvent *event)
+{
+    if(event->matches(QKeySequence::Copy))
+    {
+        std::stringstream ss;
+        RDJsonDataStream json(ss,true);
+        m_pSection->Serialize(json,json.getRoot());
+        json.getRoot()["clipboard_type"] = Json::Value("section");
+        json.close();
+        QClipboard *clipboard = QApplication::clipboard();
+        clipboard->setText(ss.str().c_str());
+        event->accept();
+    }
+    else if(event->matches(QKeySequence::Paste))
+    {
+        QClipboard *clipboard = QApplication::clipboard();
+        std::stringstream ss;
+        ss << clipboard->text().toStdString();
+        RDJsonDataStream json(ss,false);
+        if(json.getRoot()["clipboard_type"].asString() == "section")
+        {
+            RDSection tmp;
+            tmp.Serialize(json,json.getRoot());
+
+            std::set<RDTime> times = tmp.getKeyTimeSet();
+            for(auto it = times.begin(); it != times.end(); it++)
+            {
+                m_pSection->AddPosKey(*it,tmp.GetPosVector(*it));
+                m_pSection->AddAngleKey(*it,tmp.GetAngleVector(*it));
+                m_pSection->AddScaleKey(*it,tmp.GetScaleVector(*it));
+            }
+            event->accept();
+            itemChange();
+
+            m_pNode->SetChangeLevel(RDRender_TransChange);
+            emit changed();
+        }
+        else
+            event->ignore();
+
+    }
 }

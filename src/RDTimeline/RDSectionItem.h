@@ -51,4 +51,8 @@ protected:
     RDSection*  m_pSection;
     QImage      m_imgSectionType;
     vector<RDKeyItem*> m_vecKeyItem;
+
+    // QGraphicsItem interface
+protected:
+    virtual void keyPressEvent(QKeyEvent *event) override;
 };

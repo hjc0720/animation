@@ -22,9 +22,6 @@
 #include <QBrush>
 #include <QKeyEvent>
 #include <QGraphicsScene>
-#include <sstream>
-#include <QClipboard>
-#include <QApplication>
 #include "RDNode.h"
 
 
@@ -35,7 +32,7 @@ RDKeyItem::RDKeyItem(int nHeight, RDTime time, const std::list<RDSingleKey> &lis
     ,m_nTime(time)
     ,m_keylist(list)
 {
-    setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable);
+    setFlags(ItemIsMovable | ItemIsFocusable);
 }
 
 QRectF RDKeyItem::boundingRect() const
