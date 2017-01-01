@@ -41,7 +41,7 @@ protected slots:
 protected:
     void createKeyItem();
     void removeKeyItem();
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void SetSectionType();
 protected:
     QPainterPath    m_shape;

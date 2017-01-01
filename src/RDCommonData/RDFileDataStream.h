@@ -120,8 +120,8 @@ public:
                 return;
             for(auto it = value.begin(); it != value.end(); it++)
             {
-                K key;
-                V value;
+                K key = K();
+                V value = V();
                 fun(*this,*it,key,value);
                 v.insert({key,value});
             }

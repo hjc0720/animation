@@ -90,7 +90,7 @@ void RDKeyList<KeyType>::Serialize(RDJsonDataStream &buffer, Json::Value &parent
 {
     buffer.Serialize(parent,"keylist",m_KeyList,[](RDJsonDataStream& buffer, Json::Value& child,RDTime& id,RDKey<KeyType>*& key){
         buffer.Serialize(child,"key",id);
-        RDKeyType keyType;
+        RDKeyType keyType = RDLineKey;
         if(buffer.IsSave())
             keyType = key->GetKeyType();
         buffer.Serialize(child["value"],"type",keyType);

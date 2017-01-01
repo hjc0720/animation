@@ -46,9 +46,6 @@ protected:
 protected:
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
-    // QGraphicsItem interface
-protected:
-    virtual void keyPressEvent(QKeyEvent *event) override;
 };
 
 #endif // RDKEYITEM_H
