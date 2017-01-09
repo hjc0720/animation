@@ -32,7 +32,7 @@ RDVec3Widget::RDVec3Widget(QWidget* parent,bool bHorizon /*= false*/)
     QStringList st(QStringList()<<tr("x")<<tr("y")<<tr("z"));
     for(int i = 0; i < 3; i++)
     {
-        m_pVector[i] = new RDDoubleSpinBox(this);
+        m_pVector[i] = new RDDoubleSpinBox(false,this);
         connect(m_pVector[i],SIGNAL(valueChanging(double)),this,SLOT(VectorChanged()));
         QLabel* pLabel = new QLabel(st[i],this);
         QHBoxLayout* pItem = new QHBoxLayout();

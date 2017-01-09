@@ -59,9 +59,12 @@ public:
     RDKey(const Value& value):m_KeyValue(value){}
     RDKey() = default;
     virtual ~RDKey(){}
+
     virtual RDKeyType GetKeyType()const{return RDLineKey;}
+
     const Value& GetValue()const{return m_KeyValue;}
     void SetValue(const Value& value){m_KeyValue = value;}
+
     void Serialize(RDJsonDataStream &buffer, Json::Value &parent)override;
     virtual RDKeyValueType ValueType()const override
     {
@@ -77,7 +80,7 @@ public:
 
     virtual Value Interpolation(double& dWeight, const RDKey<Value>& SecondKey)const = 0;
 protected:
-    Value m_KeyValue;
+    Value   m_KeyValue;
 };
 
 template <typename Value>

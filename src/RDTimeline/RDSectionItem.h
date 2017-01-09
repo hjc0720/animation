@@ -38,6 +38,7 @@ signals:
     void    changed();
 protected slots:
     void    KeyTimeChanged(RDTime srcTime, RDTime dstTime);
+    void    KeyChanged(RDTime);
 protected:
     void createKeyItem();
     void removeKeyItem();

@@ -23,6 +23,10 @@
 #include <QKeyEvent>
 #include <QGraphicsScene>
 #include "RDNode.h"
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include "rddoublespinbox.h"
 
 
 const float RDKeyItem::value = 6 ;
@@ -81,4 +85,86 @@ void RDKeyItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     emit TimeMoved(m_nTime,m_nTime+offsetPos);
     m_nTime+=offsetPos;
     setPos(m_nTime,0);
+}
+
+Q_DECLARE_METATYPE(float3)
+
+void RDKeyItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
+{
+    QDialog* pEditDlg = new QDialog();
+    QFormLayout* pLayout = new QFormLayout(pEditDlg);
+    pEditDlg->setLayout(pLayout);
+
+    std::vector<QVariant> initValue;
+    for(auto it = m_keylist.begin(); it != m_keylist.end(); it++)
+    {
+        if(it->key->ValueType() == RDFloat3)
+        {
+            RDKey<float3>* pKey = dynamic_cast<RDKey<float3>*>(it->key);
+            addKeyEdit(pLayout,it->type,pKey);
+            QVariant v;
+            v.setValue(pKey->GetValue());
+            initValue.push_back(v);
+        }
+    }
+
+    QDialogButtonBox* pButton = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, pEditDlg);
+    connect(pButton,SIGNAL(accepted()),pEditDlg,SLOT(accept()));
+    connect(pButton,SIGNAL(rejected()),pEditDlg,SLOT(reject()));
+    pLayout->addRow(nullptr,pButton);
+
+    if(!pEditDlg->exec())
+    {
+        restoreValue(initValue);
+        emit valueChanged(m_nTime);
+    }
+}
+
+void RDKeyItem::restoreValue(const std::vector<QVariant> &initValue)
+{
+    auto value = initValue.begin();
+    for(auto it = m_keylist.begin(); it != m_keylist.end(); it++)
+    {
+        if(it->key->ValueType() == RDFloat3)
+        {
+            RDKey<float3>* pKey = dynamic_cast<RDKey<float3>*>(it->key);
+            pKey->SetValue(value->value<float3>());
+            value++;
+        }
+    }
+}
+
+void RDKeyItem::addKeyEdit(QFormLayout *pLayout, const std::string &type, RDKey<float3> *pKey)
+{
+    pLayout->addRow(type.c_str(),(QWidget*)nullptr);
+
+    RDDoubleSpinBox* x = new RDDoubleSpinBox(true);
+    x->updateValue(pKey->GetValue().x());
+    connect(x,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double v){
+        float3 value = pKey->GetValue();
+        value.SetX(v);
+        pKey->SetValue(value);
+        emit valueChanged(m_nTime);
+    });
+    pLayout->addRow("x",x);
+
+    RDDoubleSpinBox* y = new RDDoubleSpinBox(true);
+    y->updateValue(pKey->GetValue().y());
+    connect(y,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double v){
+        float3 value = pKey->GetValue();
+        value.SetY(v);
+        pKey->SetValue(value);
+        emit valueChanged(m_nTime);
+    });
+    pLayout->addRow("y",y);
+
+    RDDoubleSpinBox* z = new RDDoubleSpinBox(true);
+    z->updateValue(pKey->GetValue().z());
+    connect(z,static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),[=](double v){
+        float3 value = pKey->GetValue();
+        value.SetZ(v);
+        pKey->SetValue(value);
+        emit valueChanged(m_nTime);
+    });
+    pLayout->addRow("z",z);
 }

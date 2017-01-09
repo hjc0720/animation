@@ -128,6 +128,12 @@ void RDSectionItem::KeyTimeChanged(RDTime srcTime,RDTime dstTime)
     emit changed();
 }
 
+void RDSectionItem::KeyChanged(RDTime )
+{
+    m_pNode->SetChangeLevel(RDRender_TransChange);
+    emit changed();
+}
+
 void RDSectionItem::createKeyItem()
 {
     std::set<RDTime> keyTimeSet(m_pSection->getKeyTimeSet());
@@ -136,6 +142,7 @@ void RDSectionItem::createKeyItem()
         RDKeyItem* pKey = new RDKeyItem(m_nHeight,time,m_pSection->getKeyList(time),this);
         pKey->setPos(time,0);
         connect(pKey,SIGNAL(TimeMoved(RDTime,RDTime)),this,SLOT(KeyTimeChanged(RDTime,RDTime)));
+        connect(pKey,SIGNAL(valueChanged(RDTime)),this,SLOT(KeyChanged(RDTime)));
         m_vecKeyItem.push_back(pKey);
     }
 }
