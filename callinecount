@@ -1,4 +1,2 @@
 #!/bin/bash
-mv temp_line temp_line~
-find ./ -name "*.h" -o -name "*.cpp" | xargs wc -l > temp_line
-sort -n temp_line
+find $1 -name "*.cpp" -o -name "*.h" | xargs cat | wc -l
